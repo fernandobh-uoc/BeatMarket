@@ -1,26 +1,13 @@
 {
   "name": "beatmarket",
-<<<<<<< HEAD
-  "version": "1.0.0",
+  "version": "0.0.1",
+  "author": "fernandobh@uoc.edu",
+  "homepage": "https://gitlab.com/tfg5261618/beatmarket#readme",
   "description": "TFG project at UOC",
-  "main": "index.js",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
-  },
   "repository": {
     "type": "git",
     "url": "git+ssh://git@gitlab.com/tfg5261618/beatmarket.git"
   },
-  "author": "fernandobh@uoc.edu",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://gitlab.com/tfg5261618/beatmarket/issues"
-  },
-  "homepage": "https://gitlab.com/tfg5261618/beatmarket#readme"
-=======
-  "version": "0.0.1",
-  "author": "Ionic Framework",
-  "homepage": "https://ionicframework.com/",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",
@@ -79,5 +66,4 @@
     "typescript": "~5.6.3"
   },
   "description": "An Ionic project"
->>>>>>> e278633 (Initial commit)
 }
