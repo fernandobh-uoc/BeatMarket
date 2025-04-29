@@ -1,0 +1,7 @@
+{
+  "name": "beatmarket",
+  "integrations": {
+    "capacitor": {}
+  },
+  "type": "angular-standalone"
+}
