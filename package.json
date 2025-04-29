@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "author": "fernandobh@uoc.edu",
   "homepage": "https://gitlab.com/tfg5261618/beatmarket#readme",
-  "description": "TFG project at UOC",
+  "description": "An Ionic project",
   "repository": {
     "type": "git",
     "url": "git+ssh://git@gitlab.com/tfg5261618/beatmarket.git"
@@ -32,6 +32,7 @@
     "@capacitor/keyboard": "7.0.1",
     "@capacitor/status-bar": "7.0.1",
     "@ionic/angular": "^8.0.0",
+    "firebase": "^11.6.1",
     "ionicons": "^7.0.0",
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
@@ -64,6 +65,5 @@
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
     "typescript": "~5.6.3"
-  },
-  "description": "An Ionic project"
+  }
 }
