@@ -1,0 +1,19 @@
+{
+  "name": "beatmarket",
+  "version": "1.0.0",
+  "description": "TFG project at UOC",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@gitlab.com/tfg5261618/beatmarket.git"
+  },
+  "author": "fernandobh@uoc.edu",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://gitlab.com/tfg5261618/beatmarket/issues"
+  },
+  "homepage": "https://gitlab.com/tfg5261618/beatmarket#readme"
+}
