@@ -1,2 +1,119 @@
-// For information on how to create your own theme, please see:
-// http://ionicframework.com/docs/theming/
+:root {
+	--ion-color-primary: #0054e9;
+	--ion-color-primary-rgb: 0,84,233;
+	--ion-color-primary-contrast: #ffffff;
+	--ion-color-primary-contrast-rgb: 255,255,255;
+	--ion-color-primary-shade: #004acd;
+	--ion-color-primary-tint: #1a65eb;
+
+	--ion-color-secondary: #0163aa;
+	--ion-color-secondary-rgb: 1,99,170;
+	--ion-color-secondary-contrast: #ffffff;
+	--ion-color-secondary-contrast-rgb: 255,255,255;
+	--ion-color-secondary-shade: #015796;
+	--ion-color-secondary-tint: #1a73b3;
+
+	--ion-color-tertiary: #6030ff;
+	--ion-color-tertiary-rgb: 96,48,255;
+	--ion-color-tertiary-contrast: #ffffff;
+	--ion-color-tertiary-contrast-rgb: 255,255,255;
+	--ion-color-tertiary-shade: #542ae0;
+	--ion-color-tertiary-tint: #7045ff;
+
+	--ion-color-success: #2DD55B;
+	--ion-color-success-rgb: 45,213,91;
+	--ion-color-success-contrast: #000000;
+	--ion-color-success-contrast-rgb: 0,0,0;
+	--ion-color-success-shade: #28bb50;
+	--ion-color-success-tint: #42d96b;
+
+	--ion-color-warning: #ffc409;
+	--ion-color-warning-rgb: 255,196,9;
+	--ion-color-warning-contrast: #000000;
+	--ion-color-warning-contrast-rgb: 0,0,0;
+	--ion-color-warning-shade: #e0ac08;
+	--ion-color-warning-tint: #ffca22;
+
+	--ion-color-danger: #EB4447;
+	--ion-color-danger-rgb: 235,68,71;
+	--ion-color-danger-contrast: #000000;
+	--ion-color-danger-contrast-rgb: 0,0,0;
+	--ion-color-danger-shade: #cf3c3e;
+	--ion-color-danger-tint: #ed5759;
+
+	--ion-color-light: #E5E5E5;
+	--ion-color-light-rgb: 229,229,229;
+	--ion-color-light-contrast: #000000;
+	--ion-color-light-contrast-rgb: 0,0,0;
+	--ion-color-light-shade: #cacaca;
+	--ion-color-light-tint: #e8e8e8;
+
+	--ion-color-medium: #6E6E6E;
+	--ion-color-medium-rgb: 110,110,110;
+	--ion-color-medium-contrast: #ffffff;
+	--ion-color-medium-contrast-rgb: 255,255,255;
+	--ion-color-medium-shade: #616161;
+	--ion-color-medium-tint: #7d7d7d;
+
+	--ion-color-dark: #1a1a1a;
+	--ion-color-dark-rgb: 26,26,26;
+	--ion-color-dark-contrast: #ffffff;
+	--ion-color-dark-contrast-rgb: 255,255,255;
+	--ion-color-dark-shade: #171717;
+	--ion-color-dark-tint: #313131;
+
+	
+	/* Background and text colors */
+	--ion-background-color: var(--ion-color-dark);
+	--ion-background-color-rgb: var(--ion-color-dark-rgb);
+
+	--ion-text-color: var(--ion-color-light);
+	--ion-text-color-rgb: var(--ion-color-light-rgb);
+
+	--ion-text-color-step-50: #dbdbdb;
+	--ion-text-color-step-100: #d1d1d1;
+	--ion-text-color-step-150: #c7c7c7;
+	--ion-text-color-step-200: #bcbcbc;
+	--ion-text-color-step-250: #b2b2b2;
+	--ion-text-color-step-300: #a8a8a8;
+	--ion-text-color-step-350: #9e9e9e;
+	--ion-text-color-step-400: #949494;
+	--ion-text-color-step-450: #8a8a8a;
+	--ion-text-color-step-500: #808080;
+	--ion-text-color-step-550: #757575;
+	--ion-text-color-step-600: #6b6b6b;
+	--ion-text-color-step-650: #616161;
+	--ion-text-color-step-700: #575757;
+	--ion-text-color-step-750: #4d4d4d;
+	--ion-text-color-step-800: #434343;
+	--ion-text-color-step-850: #383838;
+	--ion-text-color-step-900: #2e2e2e;
+	--ion-text-color-step-950: #242424;
+
+	--ion-background-color-step-50: #242424;
+	--ion-background-color-step-100: #2e2e2e;
+	--ion-background-color-step-150: #383838;
+	--ion-background-color-step-200: #434343;
+	--ion-background-color-step-250: #4d4d4d;
+	--ion-background-color-step-300: #575757;
+	--ion-background-color-step-350: #616161;
+	--ion-background-color-step-400: #6b6b6b;
+	--ion-background-color-step-450: #757575;
+	--ion-background-color-step-500: #808080;
+	--ion-background-color-step-550: #8a8a8a;
+	--ion-background-color-step-600: #949494;
+	--ion-background-color-step-650: #9e9e9e;
+	--ion-background-color-step-700: #a8a8a8;
+	--ion-background-color-step-750: #b2b2b2;
+	--ion-background-color-step-800: #bcbcbc;
+	--ion-background-color-step-850: #c7c7c7;
+	--ion-background-color-step-900: #d1d1d1;
+	--ion-background-color-step-950: #dbdbdb;
+
+
+	/* Custom button styling */
+  /* --ion-button-border-radius: 56px;
+  --ion-button-padding-start: 16px;
+  --ion-button-padding-end: 16px;
+  --ion-button-font-weight: 600; */
+}
