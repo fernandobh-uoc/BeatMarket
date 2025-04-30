@@ -5,7 +5,8 @@ import { environment } from 'src/environments/environment.dev';
 import { Observable } from 'rxjs/internal/Observable';
 import { ActivePostConverter, UserConverter } from '../../services/storage/adapters/converters/user.converter'; 
 import { Post } from '../models/post.model';
-import { combineLatestWith, map, of } from 'rxjs';
+import { combineLatestWith, map, of, switchMap } from 'rxjs';
+import { collection } from 'firebase/firestore';
 
 @Injectable({ providedIn: 'root' })
 export class UserRepository {
@@ -21,17 +22,16 @@ export class UserRepository {
   async getUserById(id: string, includeActivePosts: boolean = true): Promise<User | null> {
     try {
       const user = await this.storage.getById(id, { collection: 'users', converter: this.userConverter });
+      if (!user) return null;
+
       if (!includeActivePosts || !this.storage.getCollection) {
         return user;
       }
 
       const activePosts = await this.storage.getCollection({ collection: `users/${id}/activePosts`, converter: this.activePostConverter });
-      if (user) {
-        user.activePosts = activePosts ?? []; 
-      }
+      user.activePosts = activePosts ?? []; 
       return user;
 
-      //return await this.storage.getById(id, { collection: 'users', converter: this.converter });
     } catch (storageError) {
       console.error(storageError);
     }
@@ -54,7 +54,7 @@ export class UserRepository {
             }
             return null;
           })
-        )
+        );
       }
     }
     return null;
@@ -62,23 +62,53 @@ export class UserRepository {
 
   async getUserByEmail(email: string, includeActivePosts: boolean = true): Promise<User | null> {
     try {
+      let user: User | null = null;
       const users: User[] | null = await this.storage.getByField('email', email, { collection: 'users', converter: this.userConverter });
       if (users && users.length > 0) {
-        return users[0];
+        user = users[0];
       }
-      return null;
+      if (!includeActivePosts || !this.storage.getCollection) {
+        return user;
+      }
+
+      const activePosts = await this.storage.getCollection({ collection: `users/${user?._id}/activePosts`, converter: this.activePostConverter });
+      if (user) {
+        user.activePosts = activePosts ?? [];
+      }
+      return user;
     } catch (storageError) {
       console.error(storageError);
     }
     return null;
   }
   
-  getUserByEmail$(email: string): Observable<User | null> {
+  getUserByEmail$(email: string, includeActivePosts: boolean = true): Observable<User | null> {
     try {
       if (this.storage.getByField$) {
-        return this.storage.getByField$('email', email, { collection: 'users' }).pipe(
-          map(users => users && users.length > 0 ? users[0] : null)
-        );
+        const user$: Observable<User | null> = 
+          this.storage.getByField$('email', email, { collection: 'users', converter: this.userConverter }).pipe(
+            map(users => users && users.length > 0 ? users[0] : null)
+          );
+        
+        if (!includeActivePosts || !this.storage.getCollection$) {
+          return user$;
+        }
+
+        return user$.pipe(
+          switchMap(user => {
+            if (!user || !this.storage.getCollection$) return of(null);
+            
+            return this.storage.getCollection$({
+              collection: `users/${user._id}/activePosts`,
+              converter: this.activePostConverter
+            }).pipe(
+              map(activePosts => {
+                user.activePosts = activePosts ?? [];
+                return user;
+              })
+            )
+          })
+        )
       }
     } catch (storageError) {
       console.error(storageError);
@@ -137,7 +167,6 @@ export class UserRepository {
   async saveUser(userData: Partial<User>): Promise<User | null> {
     try {
       const user: User = User.Build(userData);
-      console.dir(`Saving user: ${{...user}}`);
       await this.storage.create(user, { collection: 'users', converter: this.userConverter });
     } catch (storageError) {
       console.error(storageError);
