@@ -44,7 +44,11 @@ export class UserRepository {
       if (!includeActivePosts) return user$;
 
       if (this.storage.getCollection$) {
-        const activePosts$: Observable<Partial<Post>[] | null> = this.storage.getCollection$({ collection: `users/${id}/activePosts`, converter: this.activePostConverter });
+        const activePosts$: Observable<Partial<Post>[] | null> = 
+          this.storage.getCollection$({ 
+            collection: `users/${id}/activePosts`, 
+            converter: this.activePostConverter 
+          });
         return user$.pipe(
           combineLatestWith(activePosts$),
           map(([user, activePosts]) => {
@@ -118,7 +122,7 @@ export class UserRepository {
 
   async getUserByUsername(username: string): Promise<User | null> {
     try {
-      const users: User[] | null = await this.storage.getByField('username', username, { collection: 'users' });
+      const users: User[] | null = await this.storage.getByField('username', username, { collection: 'users', converter: this.userConverter });
       if (users && users.length > 0) {
         return users[0];
       }
@@ -177,23 +181,4 @@ export class UserRepository {
   async userExists(uid: string): Promise<boolean> {
     return await this.storage.exists(uid);
   }
-
-  /* async getUpdatedUser(): Promise<User | null> {
-    return new Promise((resolve) => {
-      if (this.#user$()) {
-        resolve(this.#user$());
-        return;
-      }
-      // Create a reactive effect that waits for user to be updated
-      const watcher: EffectRef = effect((onCleanup) => {
-        const user = this.#user$();
-        if (user) {
-          watcher.destroy();
-          resolve(user);
-        }
-
-        onCleanup(() => watcher.destroy());
-      });
-    });
-  } */
 }
