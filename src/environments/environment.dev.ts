@@ -1,10 +1,10 @@
-//import { FIREBASE_AUTH_TOKEN } from "src/app/core/services/auth/adapters/firebase-auth.adapter";
-//import { FIREBASE_FIRESTORE_TOKENS } from "src/app/core/services/storage/adapters/firebase-firestore.adapter";
+import { FIREBASE_AUTH_TOKEN } from "src/app/core/services/auth/adapters/firebase-auth.adapter";
+import { FIREBASE_FIRESTORE_TOKENS } from "src/app/core/services/storage/adapters/firebase-firestore.adapter";
 
 export const environment = {
   production: false,
-  //authToken: FIREBASE_AUTH_TOKEN,
-  //storageTokens: FIREBASE_FIRESTORE_TOKENS,
+  authToken: FIREBASE_AUTH_TOKEN,
+  storageTokens: FIREBASE_FIRESTORE_TOKENS,
   firebase: {
     apiKey: "AIzaSyAVCQrk9BinjVxO-eEHD4gKwb6UMOahJso",
     authDomain: "beatmarket-uoc.firebaseapp.com",

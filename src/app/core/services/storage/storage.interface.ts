@@ -1,0 +1,19 @@
+import { Observable } from "rxjs";
+import { AppModel } from "src/app/core/domain/models/appModel.type";
+
+export interface Storage<T extends { _id: string } & AppModel> {
+  getById(id: string, params?: any): Promise<T | null>;
+  getById$?(id: string, params?: any): Observable<T | null>;
+
+  getByField(field: string, value: string, params?: any): Promise<T[] | null>;
+  getByField$?(field: string, value: string, params?: any): Observable<T[] | null>;
+
+  getCollection?(params?: any): Promise<any[]>;
+  getCollection$?(params?: any): Observable<any[]>;
+
+  create(obj: T, params?: any): Promise<T | null>;
+  remove(id: string, params?: any): Promise<T | null>;
+  exists(id: string, params?: any): Promise<boolean>;
+
+  query(params?: any): Promise<T[]>;
+}
