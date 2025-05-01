@@ -1,0 +1,42 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100%;
+  gap: 1rem;
+}
+
+.form-container {
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+.page-title-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.buttons-container {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
+.button-subtitle-container {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 0.5rem;
+}
+
+ion-icon {
+	color: var(--ion-color-light);
+}
+
+ion-progress-bar {
+  --background: var(--ion-color-dark-shade);
+  --progress-background: var(--ion-color-light);
+}

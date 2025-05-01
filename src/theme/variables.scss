@@ -114,84 +114,85 @@
 	/* Layout and spacing */
   --min-viewport-width: 320px;
 	--min-viewport-height: 640px;
-	--horizontal-margin: 1.5rem;
-	--bottom-content-padding: 3rem;
+	--horizontal-margin: 24px;
+	--top-content-padding: 16px;
+	--bottom-content-padding: 48px;
 
 	/* Text styles */
 	--title-large-size: 1.375rem;
 	--title-large-line-height: 1.75rem;
 	--title-large-tracking: 0rem; 
-	--title-large-font-weight: 400;
+	--title-large-weight: 400;
 
 	--title-medium-size: 1rem;
 	--title-medium-line-height: 1.5rem;
 	--title-medium-tracking: 0.00938rem;
-	--title-medium-font-weight: 500;
+	--title-medium-weight: 500;
 
 	--title-small-size: 0.875rem;
 	--title-small-line-height: 1.25rem;
 	--title-small-tracking: 0.00625rem;
-	--title-small-font-weight: 500;
+	--title-small-weight: 500;
 
 	--headline-large-size: 2rem;
 	--headline-large-line-height: 2.5rem;
 	--headline-large-tracking: 0rem;
-	--headline-large-font-weight: 400;
+	--headline-large-weight: 400;
 
 	--headline-medium-size: 1.75rem;
 	--headline-medium-line-height: 2.25rem;
 	--headline-medium-tracking: 0rem;
-	--headline-medium-font-weight: 400;
+	--headline-medium-weight: 400;
 
 	--headline-small-size: 1.5rem;
 	--headline-small-line-height: 2rem;
 	--headline-small-tracking: 0rem;
-	--headline-small-font-weight: 400;
+	--headline-small-weight: 400;
 
 	--body-large-size: 1rem;
 	--body-large-line-height: 1.5rem;
 	--body-large-tracking: 0.03125rem;
-	--body-large-font-weight: 400;
-	--body-large-font-weight-prominent: 600;
+	--body-large-weight: 400;
+	--body-large-weight-prominent: 600;
 
 	--body-medium-size: 0.875rem;
 	--body-medium-line-height: 1.25rem;
 	--body-medium-tracking: 0.01563rem;
-	--body-medium-font-weight: 400;
-	--body-medium-font-weight-prominent: 600;
+	--body-medium-weight: 400;
+	--body-medium-weight-prominent: 600;
 
 	--body-small-size: 0.75rem;
 	--body-small-line-height: 1rem;
 	--body-small-tracking: 0.025rem;
-	--body-small-font-weight: 400;
+	--body-small-weight: 400;
 
 	--label-huge-size: 1.5rem;
 	--label-huge-line-height: 2rem;
 	--label-huge-tracking: 0rem;
-	--label-huge-font-weight: 400;
-	--label-huge-font-weight-prominent: 600;
+	--label-huge-weight: 400;
+	--label-huge-weight-prominent: 600;
 
 	--label-larger-size: 1.25rem;
 	--label-larger-line-height: 1.625rem;
 	--label-larger-tracking: 0rem;
-	--label-larger-font-weight: 400;
-	--label-larger-font-weight-prominent: 600;
+	--label-larger-weight: 400;
+	--label-larger-weight-prominent: 600;
 
 	--label-large-size: 0.875rem;
 	--label-large-line-height: 1.25rem;
 	--label-large-tracking: 0.00625rem;
-	--label-large-font-weight: 500;
-	--label-large-font-weight-prominent: 600;
+	--label-large-weight: 500;
+	--label-large-weight-prominent: 600;
 
 	--label-medium-size: 0.75rem;
 	--label-medium-line-height: 1rem;
 	--label-medium-tracking: 0.03125rem;
-	--label-medium-font-weight: 500;
-	--label-medium-font-weight-prominent: 600;
+	--label-medium-weight: 500;
+	--label-medium-weight-prominent: 600;
 
 	--label-small-size: 0.6875rem;
 	--label-small-line-height: 1rem;
 	--label-small-tracking: 0.03125rem;
-	--label-small-font-weight: 500;
-	--label-small-font-weight-prominent: 600;
+	--label-small-weight: 500;
+	--label-small-weight-prominent: 600;
 }

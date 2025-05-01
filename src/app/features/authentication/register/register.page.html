@@ -1,13 +1,71 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>register</ion-title>
+
+<ion-header>
+  <ion-toolbar color="dark">
+    <ion-buttons slot="start">
+      @if (step() > 1) {
+        <ion-button (click)="prevStep()">
+          <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
+        </ion-button>
+      }
+      @if (step() <= 1) {
+        <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button>
+      }
+    </ion-buttons>
+    <ion-title size="large">Registro</ion-title>
+    <ion-progress-bar [value]="progress()"></ion-progress-bar>
   </ion-toolbar>
 </ion-header>
-
+      
 <ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">register</ion-title>
-    </ion-toolbar>
-  </ion-header>
+  <div class="container">
+    <div class="form-container">
+      <div class="page-title-container">
+        @switch(step()) {
+          @case (1) {
+            <h1>¿Cuál es tu email?</h1>
+            <h4>Introduce el email con el que quieres iniciar sesión en BeatMarket</h4> 
+          }
+          @case (2) {
+            <h1>Rellena tus datos de usuario</h1>
+          }
+          @case (3) {
+            <h1>Rellena tus datos personales</h1>
+          }
+          @case (4) {
+            <h1>Cuéntanos sobre ti</h1>
+          }
+        }
+      </div>
+
+      <app-register-form 
+        [errorMessages]="errorMessages"
+        [step]="step()"
+        [submitAttempts]="this.submitAttempts"
+        (controlFocus)="onControlFocus($event)"
+        (uploadAvatar)="uploadAvatar()"> 
+      </app-register-form>
+    </div>
+
+    <div class="buttons-container">
+      @switch(step()) {
+        @case (1) {
+          <!-- <ion-button type="button" [disabled]="!emailValid()" (click)="nextStep()">Next</ion-button> -->  
+          <!-- <ion-button [disabled]="registerFormComponent()?.registerForm?.get('emailData')?.pending" type="button" (click)="nextStep()">Next</ion-button> -->  
+          <div class="button-subtitle-container">
+            <ion-button (click)="nextStep()" [disabled]="disabledNextButtons.email()">Continuar</ion-button>
+            <ion-text>¿Ya tienes cuenta? <span class="inline-link" routerLink="['/login']">Ingresar</span></ion-text>
+          </div>
+        }
+        @case (2) {
+          <ion-button [disabled]="disabledNextButtons.userData()" type="button" (click)="nextStep()">Continuar</ion-button>
+        }
+        @case (3) {
+          <ion-button [disabled]="disabledNextButtons.personalData()" type="button" (click)="nextStep()">Continuar</ion-button>
+        }
+        @case (4) {
+          <ion-button type="button" (click)="handleRegister()">Submit</ion-button>
+        }
+      }
+    </div>
+  </div>
 </ion-content>

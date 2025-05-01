@@ -1,0 +1,192 @@
+<form (ngSubmit)="formSubmitted.emit()" [formGroup]="registerForm">
+  @switch(step()) {
+
+    <!-- Step 1: Email -->
+    @case (1) {
+      <div formGroupName="emailData" class="inputs-container">
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Email</ion-label>
+          <ion-input formControlName="email" type="email" class="custom" (ionFocus)="controlFocus.emit('email')" (ionBlur)="controlBlur.emit('email')">
+            @if (submitAttempts()['email']()) {
+              @if (!registerForm.get('emailData.email')?.pending && registerForm.get('emailData.email')?.invalid) {
+                <ion-icon slot="end" color="danger" name="close-circle-outline"></ion-icon>
+              }
+            }
+          </ion-input>
+          @if (submitAttempts()['email']() && registerForm.get('emailData.email')?.errors) {  
+            @if (registerForm.get('emailData.email')?.errors?.['required']) {
+              <ion-text color="danger">El email es obligatorio</ion-text>
+            }
+            @if (registerForm.get('emailData.email')?.errors?.['email']) {
+              <ion-text color="danger">El email es inválido</ion-text>
+            }
+            @if (registerForm.get('emailData.email')?.errors?.['emailExists']) {
+              <ion-text color="danger">El email ya está en uso</ion-text>
+            }
+          }
+          <!-- @if (registerForm.controls['email'].pending) {
+            <ion-text color="success">Checking availability...</ion-text>
+          } -->
+          <!-- @if (registerForm.controls['email'].touched) {
+            <ion-text color="danger">{{ errorMessages().email() }}</ion-text>
+          } -->
+        </div>
+      </div>
+    }
+    
+    <!-- Step 2: User data -->
+    @case (2) {
+      <div formGroupName="userData" class="inputs-container">
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Nombre de usuario</ion-label>
+          <ion-input formControlName="username" type="text" class="custom" (ionFocus)="controlFocus.emit('userData')"></ion-input>
+          @if (submitAttempts()['userData']() && registerForm.get('userData.username')?.errors) {  
+            @if (registerForm.get('userData.username')?.errors?.['required']) {
+              <ion-text color="danger">El nombre de usuario es obligatorio</ion-text>
+            }
+            @if (registerForm.get('userData.username')?.errors?.['minlength']) {
+              <ion-text color="danger">El nombre de usuario es demasiado corto</ion-text>
+            }
+            @if (registerForm.get('userData.username')?.errors?.['usernameExists']) {
+              <ion-text color="danger">Ese nombre de usuario ya está en uso</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Contraseña</ion-label>
+          <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('userData')">
+            <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
+          </ion-input>
+          @if (submitAttempts()['userData']() && registerForm.get('userData.password')?.errors) {  
+            @if (registerForm.get('userData.password')?.errors?.['required']) {
+              <ion-text color="danger">La contraseña es obligatoria</ion-text>
+            }
+            @if (registerForm.get('userData.password')?.errors?.['pattern']) {
+              <ion-text color="danger">La contraseña debe tener al menos 6 caracteres, una letra y un número</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Avatar (opcional)</ion-label>
+          <ion-avatar slot="start" (click)="uploadAvatar.emit()">
+            <img alt="Avatar de usuario por defecto" src="../../../../../../assets/user-avatar-default-shade.svg" />
+          </ion-avatar>
+        </div>
+      </div>
+    }
+
+    <!-- Step 3: Personal info -->
+    @case (3) {
+      <div formGroupName="personalData" class="inputs-container">
+        <div class="input-wrapper">
+          <ion-label class="custom">Nombre</ion-label>
+          <ion-input formControlName="firstName" type="text" class="custom" (ionFocus)="controlFocus.emit('personalData')"></ion-input>
+          @if (submitAttempts()['personalData']() && registerForm.get('personalData.firstName')?.errors) {  
+            @if (registerForm.get('personalData.firstName')?.errors?.['required']) {
+              <ion-text color="danger">El nombre es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Apellidos</ion-label>
+          <ion-input formControlName="lastName" type="text" class="custom" (ionFocus)="controlFocus.emit('personalData')"></ion-input>
+          @if (submitAttempts()['personalData']() && registerForm.get('personalData.lastName')?.errors) {  
+            @if (registerForm.get('personalData.lastName')?.errors?.['required']) {
+              <ion-text color="danger">Los apellidos son obligatorios</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Fecha de nacimiento</ion-label>
+          <ion-datetime-button datetime="datetime" color="dark" class="custom">
+            <ion-icon slot="date-target" name="calendar-outline"></ion-icon>
+            <ion-label slot="date-target">{{ formattedDate() }}</ion-label>
+          </ion-datetime-button>
+          <ion-modal [keepContentsMounted]="true">
+            <ng-template>
+              <ion-datetime formControlName="dob" id="datetime" presentation="date" color="light" (ionChange)="onDateChange($event)" (ionFocus)="controlFocus.emit('personalData')"></ion-datetime>
+            </ng-template>
+          </ion-modal>
+          @if (submitAttempts()['personalData']() && registerForm.get('personalData.dob')?.errors) {  
+            @if (registerForm.get('personalData.dob')?.errors?.['required']) {
+              <ion-text color="danger">La fecha de nacimiento es obligatoria</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Dirección</ion-label>
+          <ion-input formControlName="address" type="text" class="custom" (ionFocus)="controlFocus.emit('personalData')"></ion-input>
+          @if (submitAttempts()['personalData']() && registerForm.get('personalData.address')?.errors) {  
+            @if (registerForm.get('personalData.address')?.errors?.['required']) {
+              <ion-text color="danger">La dirección es obligatoria</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="country-zipcode-container">
+          <div class="input-wrapper zipcode-input">
+            <ion-label class="custom" color="light">Código postal</ion-label>
+            <ion-input 
+              formControlName="zipcode" 
+              type="text"
+              maxlength="5"
+              inputmode="numeric"
+              pattern="^[0-9]{5}$"
+              class="custom" 
+              (ionFocus)="controlFocus.emit('personalData')">
+            </ion-input>
+            @if (submitAttempts()['personalData']() && registerForm.get('personalData.zipcode')?.errors) {  
+              @if (registerForm.get('personalData.zipcode')?.errors?.['required']) {
+                <ion-text color="danger">El código postal es obligatorio</ion-text>
+              }
+              @if (registerForm.get('personalData.zipcode')?.errors?.['minlength']) {
+                <ion-text color="danger">El código postal es demasiado corto</ion-text>
+              }
+            }
+          </div>
+          
+          <div class="input-wrapper country-input-wrapper">
+            <ion-label class="custom" color="light">País</ion-label>
+            <ion-select formControlName="country" aria-label="Country" interface="action-sheet" color="light" class="custom select-input">
+              <ion-icon slot="start" name="globe-outline"></ion-icon>
+              @for (country of countries; track country.iso2) {
+                <ion-select-option [value]="country.iso2">{{ country.nameES }}</ion-select-option>
+              }
+            </ion-select>
+          </div>
+        </div>
+      </div>
+    }
+
+    @case (4) {
+      <div formGroupName="otherData" class="inputs-container">
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Roles (opcional)</ion-label>
+          <ion-text class="roles-subtitle">Elige los roles que más se identifiquen con tu actividad musical</ion-text>
+          @for (role of roles; track role) {
+            <ion-checkbox labelPlacement="end" [value]="role" color="light" (ionChange)="onRoleChange($event)">
+              {{ role }}
+            </ion-checkbox>
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Bio (optional)</ion-label>
+          <ion-input formControlName="bio" type="text" class="custom" (ionFocus)="controlFocus.emit('personalData')"></ion-input>
+        </div>
+      </div>
+      <!-- <ion-label class="custom" color="light">Role (optional)</ion-label>
+      <ion-checkbox labelPlacement="end">Label at the End</ion-checkbox>
+      <ion-checkbox labelPlacement="end">Label at the End</ion-checkbox>
+      <ion-checkbox labelPlacement="end">Label at the End</ion-checkbox>
+      <ion-checkbox labelPlacement="end">Label at the End</ion-checkbox> -->
+    }
+  }
+</form>
+
+<div class="test"></div>

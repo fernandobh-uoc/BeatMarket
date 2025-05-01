@@ -56,16 +56,24 @@ html {
 	--ion-dynamic-font: var(--ion-default-dynamic-font);
 }
 
-h1, h2, h3, h4 {
+h1, h2, h3 {
 	font-family: "Montserrat", sans-serif;
 }
 
 h1 {
-	font-size: 1.75rem;
+	font-size: var(--headline-medium-size, 1.75rem);
 	font-style: normal;
-	font-weight: 400;
-	line-height: 2.25rem;
-	letter-spacing: 0rem;
+	font-weight: var(--headline-medium-weight, 400);
+	line-height: var(--headline-medium-line-height, 2.25rem);
+	letter-spacing: var(--headline-medium-tracking, 0rem);
+}
+
+h4 {
+	font-size: var(--body-large-size, 1rem);
+	font-style: normal;
+	font-weight: var(--body-large-weight, 400);
+	line-height: var(--body-large-line-height, 1.5rem);
+	letter-spacing: var(--body-large-tracking, 0.03125rem);
 }
 
 ion-toolbar {
@@ -76,12 +84,12 @@ ion-toolbar {
 
 ion-toolbar ion-title {
 	font-family: "Montserrat";
-	font-size: var(--Title-Large-Size, 1.375rem);
+	font-size: var(--title-large-size, 1.375rem);
 	font-style: normal;
 	font-weight: 400;
-	line-height: var(--Title-Large-Line-Height, 1.75rem); /* 127.273% */
+	line-height: var(title-large-line-height, 1.75rem);
 	font-variant: small-caps;
-	letter-spacing: var(--Title-Large-Tracking, 0rem);
+	letter-spacing: var(--title-large-tracking, 0rem);
 
 	padding-inline: 0px;
 }
@@ -105,15 +113,16 @@ ion-toolbar ion-button::part(native) {
 }
 
 ion-content {
-	--padding-top: 0px;
-	--padding-bottom: 48px;
-	--padding-start: 24px;
-	--padding-end: 24px;
+	--padding-top: var(--top-content-padding, 16px);
+	--padding-bottom: var(--bottom-content-padding, 32px);
+	--padding-start: var(--horizontal-margin, 24px);
+	--padding-end: var(--horizontal-margin, 24px);
 }
 
 ion-button {
 	--border-radius: 8px;
 	display: block;
+	width: 100%;
 	min-height: 3rem;
 	text-transform: none;
 
@@ -147,11 +156,11 @@ ion-label.custom {
 	gap: 0.5rem;
 	align-self: stretch;
 
-	font-size: var(--Body-Large-Size, 1rem);
+	font-size: var(--body-large-size, 1rem);
 	font-style: normal;
 	font-weight: 600;
-	line-height: var(--Body-Large-Line-Height, 1.5rem); /* 150% */
-	letter-spacing: var(--Body-Large-Tracking, 0.03125rem);
+	line-height: var(--body-large-line-height, 1.5rem); /* 150% */
+	letter-spacing: var(--body-large-tracking, 0.03125rem);
 }
 
 ion-input.custom,
@@ -167,8 +176,8 @@ ion-select.custom {
 	--highlight-color-valid: none;
 	--highlight-height: 0px;
 
-	--padding-start: 16px;
-	--padding-end: 16px;
+	--padding-start: 1rem;
+	--padding-end: 1rem;
 }
 
 ion-input .input-bottom {
@@ -191,6 +200,11 @@ ion-icon {
 	width: 24px;
 }
 
+ion-avatar {
+	width: 3rem;
+	height: 3rem;
+}
+
 .input-wrapper {
 	display: flex;
   min-height: 7rem;
@@ -198,7 +212,29 @@ ion-icon {
   align-items: flex-start;
 }
 
-.inline.link {
+form ion-text[color="danger"] {
+	margin-top: 0.25rem;
+	font-size: var(--label-large-size, 0.875rem);
+	font-style: normal;
+	font-weight: var(--label-large-weight-prominent, 600);
+	line-height: var(--label-large-line-height, 1.25rem);
+	letter-spacing: var(--label-large-tracking, 0.00625rem);
+}
+
+/* *:has(.inline-link) {
+	min-height: 2rem;
+} */
+
+ion-text:has(.inline-link) {
+	min-height: 2rem;
+	width: 100%;
+	display: flex;
+	align-items: center;
+}
+
+.inline-link {
+	margin-left: 0.5rem;
+
 	color: var(--ion-color-light);
   font-weight: 600;
   text-decoration: underline;
