@@ -1,9 +1,10 @@
 import { EnvironmentInjector, Inject, Injectable, InjectionToken, Provider, Type, WritableSignal, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
 import { UserRepository } from '../../domain/repositories/user.repository'; 
 import { Role, User, UserModel } from 'src/app/core/domain/models/user.model';
-import { Auth, AuthProvider, UserData } from './adapters/auth.interface';
+import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './adapters/auth.interface';
 import { environment } from 'src/environments/environment.dev';
 import { LocalStorageService } from '../storage/local-storage.service';
+import { user } from '@angular/fire/auth';
 
 interface AuthStatus {
   isAuthenticated: boolean,
@@ -50,24 +51,67 @@ export class AuthService {
     return this.#errorMessage.asReadonly();
   }
 
-  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserData }): Promise<User | null> {
+  #isUidObject(value: any): value is { uid: string } {
+    return value && typeof value === 'object' && value.uid && typeof value.uid === 'string';
+  }
+
+  #uploadProfilePicture = async (profilePictureDataUrl: string): Promise<string | void> => {
+    try {
+      // TODO: Implement upload profile picture
+      return "profilePictureURLTest";
+    } catch (error) {
+      console.error(`Error al seleccionar avatar: ${error}`);
+    }
+  }
+
+  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | null | void> {
     this.#setAuthMethod(method);
     
-    let user: User | null = null;
     try {
-      user = await this.#authMethod.register(userData);
-      if (user) {
-        this.#userRepository.saveUser(user);
-        this.#currentUser.set(user);
-        this.#updateAuthStatus(user);
+      // Upload profile picture
+      if (userData.profilePictureDataURL) {
+        userData.profilePictureURL = await this.#uploadProfilePicture(userData.profilePictureDataURL) ?? '';
+        delete userData.profilePictureDataURL;
+      } else {
+        userData.profilePictureURL = '';
       }
+      
+      console.log({ method, userData });
+      
+      // Register with auth provider
+      //const result = await this.#authMethod.register(userData);
+      const result = await this.#authMethod.register({
+        email: userData.email,
+        password: userData.password,
+        username: userData.username,
+        profilePictureURL: userData.profilePictureURL,
+      });
+      console.log(result);
+
+      if (this.#isUidObject(result)) {
+        userData._id = result.uid;
+      }
+
+      let { password, ...userDataWithoutPassword } = userData;
+      console.log({ userDataWithoutPassword });
+      
+      // Save to storage
+      let user = await this.#userRepository.saveUser(userDataWithoutPassword);
+      console.log({ user });
+
+      //let user: User | boolean | null = null;
+      //if (user = await this.#userRepository.saveUser(userDataWithoutPassword) && user) {
+      //  this.#currentUser.set(user);
+      //  this.#updateAuthStatus(user);
+      //};
+      
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
     }
-    return this.#currentUser();
+    //return this.#currentUser();
   }
 
-  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null> {
+  /* async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null> {
     this.#setAuthMethod(method);
     let user: User | null = null;
 
@@ -81,7 +125,7 @@ export class AuthService {
       this.#errorMessage.set(errorMessage);
     }
     return this.#currentUser();
-  }
+  } */
 
   async logout(): Promise<void> {
     await this.#authMethod.logout();
@@ -124,14 +168,14 @@ export class AuthService {
 }
 
 export interface AuthMethod {
-  register(userData: UserData): Promise<User | null>;
-  login(email?: string, password?: string): Promise<User | null>;
+  register(userData: UserAuthData): Promise<AuthReturnType>;
+  login(email?: string, password?: string): Promise<AuthReturnType>;
   logout(): Promise<void>;
 }
 
 /* @Injectable({ providedIn: 'root' })
 export abstract class AuthMethod {
-  constructor(@Inject(environment.authToken) protected auth: Auth) {};
+  constructor(@Inject(environment.authToken) protected auth: Aut?.emah) {};
   abstract register(userData: UserData): Promise<User | null>;
   abstract login(email?: string, password?: string): Promise<User | null>;
   abstract logout(): Promise<void>;
@@ -142,7 +186,7 @@ export class EmailAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
   constructor(@Inject(environment.authToken) private auth: Auth) { }
 
-  async register(userData: UserData): Promise<User | null> {
+  async register(userData: UserAuthData): Promise<AuthReturnType> {
     //return new Promise(res => res(null));
     try {
       return await this.auth.registerWithEmail(userData);
@@ -151,7 +195,7 @@ export class EmailAuth implements AuthMethod {
     }
   }
 
-  async login(email: string, password: string): Promise<User | null> {
+  async login(email: string, password: string): Promise<AuthReturnType> {
     //return new Promise(res => res(null));
     try {
       return await this.auth.loginWithEmail(email, password);
@@ -175,7 +219,7 @@ export class GoogleAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
   constructor(@Inject(environment.authToken) private auth: Auth) { }
 
-  async register(): Promise<User | null> {
+  async register(): Promise<AuthReturnType> {
     try {
       return await this.auth.registerWithProvider('google');
     } catch (authError: any) {
@@ -183,7 +227,7 @@ export class GoogleAuth implements AuthMethod {
     }
   }
 
-  async login(): Promise<User | null> {
+  async login(): Promise<AuthReturnType> {
     try {
       return await this.auth.loginWithProvider('google');
     } catch (authError: any) {
@@ -205,7 +249,7 @@ export class AppleAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
   constructor(@Inject(environment.authToken) private auth: Auth) { }
 
-  async register(): Promise<User | null> {
+  async register(): Promise<AuthReturnType> {
     try {
       return await this.auth.loginWithProvider('apple');
     } catch (authError: any) {
@@ -213,7 +257,7 @@ export class AppleAuth implements AuthMethod {
     }
   }
 
-  async login(): Promise<User | null> {
+  async login(): Promise<AuthReturnType> {
     try {
       return await this.auth.loginWithProvider('apple');
     } catch (authError: any) {

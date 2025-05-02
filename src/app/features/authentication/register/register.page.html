@@ -18,8 +18,8 @@
       
 <ion-content [fullscreen]="true">
   <div class="container">
-    <div class="form-container">
-      <div class="page-title-container">
+    <div class="title-form-container">
+      <div class="title-container">
         @switch(step()) {
           @case (1) {
             <h1>¿Cuál es tu email?</h1>
@@ -42,7 +42,7 @@
         [step]="step()"
         [submitAttempts]="this.submitAttempts"
         (controlFocus)="onControlFocus($event)"
-        (uploadAvatar)="uploadAvatar()"> 
+        (uploadAvatar)="onAvatarUpload()"> 
       </app-register-form>
     </div>
 
@@ -63,7 +63,7 @@
           <ion-button [disabled]="disabledNextButtons.personalData()" type="button" (click)="nextStep()">Continuar</ion-button>
         }
         @case (4) {
-          <ion-button type="button" (click)="handleRegister()">Submit</ion-button>
+          <ion-button type="button" (click)="handleRegister()">Finalizar</ion-button>
         }
       }
     </div>

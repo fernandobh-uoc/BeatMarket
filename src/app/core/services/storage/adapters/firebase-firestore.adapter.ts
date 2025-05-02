@@ -354,20 +354,32 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
 
   async create(obj: T, params?: FirestoreParams): Promise<T | null> {
     if (!params?.collection) throw new Error("You must provide the collection.");
+
+    console.log({ _id: obj._id });
     try {
-      const docRef = await addDoc(
-        params.converter ?
-          collection(this.firestore, params.collection).withConverter(params.converter) :
-          collection(this.firestore, params.collection),
-        obj
-      );
-      return { ...obj, _id: docRef.id };
+      if (obj._id) {
+        const docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
+        const targetDoc = params.converter ? 
+          docRef.withConverter(params.converter) : 
+          docRef;
+
+        await setDoc(targetDoc, obj);
+        return { ...obj, _id: docRef.id };
+      } else {
+        const baseCollection = collection(this.firestore, params.collection);
+        const targetCollection = params.converter ? 
+          baseCollection.withConverter(params.converter) : 
+          baseCollection;
+
+        const docRef = await addDoc(targetCollection, obj);
+        return { ...obj, _id: docRef.id };
+      }
     } catch (firestoreError) {
       throw firestoreError;
     }
   };
 
-  async update(obj: T, params?: FirestoreParams): Promise<T | null> {
+  /* async update(obj: T, params?: FirestoreParams): Promise<T | null> {
     if (!params?.collection) throw new Error("You must provide the collection.");
     if (!obj._id) throw new Error("You must provide the id of the object to update.");
 
@@ -382,7 +394,32 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     } catch (firestoreError) {
       throw firestoreError;
     }
-  };
+  }; */
+
+  async update(obj: Partial<T> & { _id: string }, params?: FirestoreParams): Promise<T | null> {
+    if (!params?.collection) {
+      throw new Error("You must provide the collection.");
+    }
+  
+    if (!obj._id) {
+      throw new Error("You must provide the id of the object to update.");
+    }
+  
+    try {
+      const docRef = doc(this.firestore, params.collection, obj._id);
+      const targetDoc = params.converter ? 
+        docRef.withConverter(params.converter) : 
+        docRef;
+  
+      const { _id, ...fieldsToUpdate } = obj;
+  
+      await updateDoc(targetDoc, fieldsToUpdate);
+  
+      return obj as T;
+    } catch (firestoreError) {
+      throw firestoreError;
+    }
+  }
 
   async remove(id: string, params?: FirestoreParams): Promise<T | null> {
     if (params && !params.collection) throw new Error("You must provide the collection.");

@@ -1,8 +1,7 @@
 import { Component, signal, input, output, computed, Signal, WritableSignal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
-import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonItem, IonList, IonLabel, IonAvatar, IonText, IonIcon, IonDatetime, IonModal, IonDatetimeButton, IonCheckbox } from '@ionic/angular/standalone';
-import { UserData } from 'src/app/core/services/auth/adapters/auth.interface';
+import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonItem, IonList, IonLabel, IonAvatar, IonText, IonIcon, IonDatetime, IonModal, IonDatetimeButton, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
 
 import { EmailValidator } from '../../utils/validators/email.validator';
 import { UsernameValidator } from '../../utils/validators/username.validator';
@@ -16,7 +15,7 @@ import { Role } from 'src/app/core/domain/models/user.model';
   selector: 'app-register-form',
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
-  imports: [IonCheckbox, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
+  imports: [IonTextarea, IonCheckbox, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent {
   registerForm: FormGroup;
@@ -68,7 +67,7 @@ export class RegisterFormComponent {
       personalData: this.fb.group({
         firstName: this.fb.control('', [Validators.required]),
         lastName: this.fb.control('', [Validators.required]),
-        dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES')), [Validators.required]),
+        dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES'))),
         address: this.fb.control('', [Validators.required]),
         zipcode: this.fb.control('', [Validators.required, Validators.minLength(4)]),
         country: this.fb.control('', [Validators.required]),
@@ -78,44 +77,7 @@ export class RegisterFormComponent {
         bio: this.fb.control('', [Validators.minLength(4)])
       })
     });
-
-    /* this.registerForm = this.formBuilder.group({
-      email: [
-        '', 
-        Validators.compose([Validators.required, Validators.email]), 
-        EmailValidator.validate()
-      ],
-      username: [
-        '', 
-        Validators.compose([Validators.required, Validators.minLength(4)]),
-        UsernameValidator.validate()
-      ],
-      password: [
-        '', 
-        Validators.compose([
-          Validators.required,
-          Validators.pattern('^(?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[!@#$%^&*])[A-Za-z0-9!@#$%^&*]{8,}$')
-        ])
-      ], 
-      firstName: ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      lastName: ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      dob: ['', [Validators.required]],
-      address: ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      zipcode: ['', Validators.compose([Validators.required, Validators.minLength(4)])],
-      country: ['', Validators.compose([Validators.required, Validators.minLength(4)])],  
-      role: [[]],
-      bio: ['', Validators.minLength(4)]
-    }); */
-
-    /* this.registerForm.get('email')?.statusChanges.subscribe(status => {
-      if (status === 'INVALID') {
-        this.localErrorMessage.set('Email is invalid');
-      } else {
-        this.localErrorMessage.set('');
-      }
-    }); */
   }
-
 
   /* onEmailFocus() {
     this.emailFocused.emit();
@@ -140,9 +102,7 @@ export class RegisterFormComponent {
       roles.push(this.fb.control(event.detail.value));
     } else {
       const index = roles.controls.findIndex(control => control.value === event.detail.value);
-      if (index >= 0) {
-        roles.removeAt(index);
-      }
+      if (index >= 0) roles.removeAt(index);
     }
   }
 

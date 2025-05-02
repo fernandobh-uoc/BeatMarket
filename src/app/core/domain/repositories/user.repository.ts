@@ -1,5 +1,5 @@
 import { inject, Injectable } from '@angular/core';
-import { User } from '../models/user.model';
+import { User, UserModel } from '../models/user.model';
 import { Storage } from '../../services/storage/storage.interface';
 import { environment } from 'src/environments/environment.dev';
 import { Observable } from 'rxjs/internal/Observable';
@@ -168,14 +168,16 @@ export class UserRepository {
     return of([]);
   }
 
-  async saveUser(userData: Partial<User>): Promise<User | null> {
+  async saveUser(userData: Partial<UserModel>): Promise<User | boolean | null> {
     try {
       const user: User = User.Build(userData);
-      await this.storage.create(user, { collection: 'users', converter: this.userConverter });
+      if (await this.storage.create(user, { collection: 'users', converter: this.userConverter })) {
+        return user;
+      }
+      return false;
     } catch (storageError) {
-      console.error(storageError);
+      throw storageError;
     }
-    return null;
   }
 
   async userExists(uid: string): Promise<boolean> {

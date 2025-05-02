@@ -11,17 +11,10 @@ ion-datetime-button::part(native) {
   gap: 0.5rem;
 }
 
-form > .inputs-container {
-  display: flex;
-  flex-direction: column;
-  gap: 1rem;
-}
-
 .country-zipcode-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
-  
 }
 
 .zipcode-input {
@@ -50,6 +43,32 @@ ion-select::part(container) {
 ion-select::part(icon) {
   position: absolute;
   right: var(--padding-end);
+}
+
+.roles-subtitle {
+  margin-bottom: 1rem;
+  color: var(--ion-color-light-shade);
+  font-size: var(--body-medium-size, 0.875rem);
+  font-style: normal;
+  font-weight: var(--body-medium-weight, 400);
+  line-height: var(--body-medium-line-height, 1.25rem);
+  letter-spacing: var(--body-medium-tracking, 0.01563rem);
+}
+
+.checkboxes-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+
+.checkbox-wrapper {
+  display: flex;
+  width: 8rem;
+}
+
+.bio-wrapper {
+  margin-top: 1rem;
 }
 
 /* ion-select::part(placeholder) {

@@ -12,7 +12,7 @@ import {
   signOut,
   updateProfile, 
 } from '@angular/fire/auth';
-import { Auth, AuthProvider, UserData } from './auth.interface';
+import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './auth.interface';
 import { User, UserModel } from "../../../domain/models/user.model";
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 
@@ -42,30 +42,31 @@ export class FirebaseAuthAdapter implements Auth {
     return this.#firebaseUser.asReadonly();
   }
 
-  async registerWithEmail(userData: UserData): Promise<User | null> {
+  async registerWithEmail(userData: UserAuthData): Promise<AuthReturnType> {
     try {
-      const firebaseUser: FirebaseUser = await createUserWithEmailAndPassword(this.authInstance, userData.email, userData.password).then(userCred => userCred.user);
+      const firebaseUser: FirebaseUser = await createUserWithEmailAndPassword(
+        this.authInstance, 
+        userData.email, 
+        userData.password
+      ).then(userCred => userCred.user);
+
       await updateProfile(firebaseUser, {
         displayName: userData.username,
         photoURL: userData.profilePictureURL
       });
 
-      return User.Build({
-        _id: firebaseUser.uid,
-        ...userData
-      });
-      // return await this.userService.getUpdatedUser();
+      return { uid: firebaseUser.uid };
     } catch (authError: any) {
       throw this.getErrorMessage(authError.code || authError.message);
     }
   }
 
-  async registerWithProvider(provider: AuthProvider): Promise<User | null> {
+  async registerWithProvider(provider: AuthProvider): Promise<AuthReturnType> {
     // In Firebase, this is the same as logging in for the first time
     return await this.loginWithProvider(provider);
   }
 
-  async loginWithEmail(email: string, password: string): Promise<User | null> {
+  async loginWithEmail(email: string, password: string): Promise<AuthReturnType> {
     /* const test = await this.userService.getUser("123");
     console.log(test);
     return new Promise(res => res(null)); */
@@ -80,7 +81,7 @@ export class FirebaseAuthAdapter implements Auth {
     }
   }
 
-  async loginWithProvider(provider: AuthProvider): Promise<User | null> {
+  async loginWithProvider(provider: AuthProvider): Promise<AuthReturnType> {
     console.log("test");
     try {
       const authProvider = provider === 'google' ?

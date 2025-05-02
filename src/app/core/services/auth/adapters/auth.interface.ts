@@ -1,13 +1,14 @@
-import { User, UserModel } from "../../../domain/models/user.model";
+import { UserModel } from "../../../domain/models/user.model";
 
 export type AuthProvider = 'google' | 'apple';
 
-export type UserData = { email: string, password: string } & Partial<Omit<UserModel, 'email' | 'password'>>;
+export type UserAuthData = { email: string, password: string, profilePictureDataURL?: string } & Partial<Omit<UserModel, 'email' | 'password'>>;
+export type AuthReturnType = UserModel | { uid: string } | boolean | null | void;
 
 export interface Auth {
-  registerWithEmail(userData: UserData): Promise<User | null>;
-  registerWithProvider(provider: AuthProvider): Promise<User | null>;
-  loginWithEmail(email: string, password: string): Promise<User | null>;
-  loginWithProvider(provider: AuthProvider): Promise<User | null>;
+  registerWithEmail(userData: UserAuthData): Promise<AuthReturnType>;
+  registerWithProvider(provider: AuthProvider): Promise<AuthReturnType>;
+  loginWithEmail(email: string, password: string): Promise<AuthReturnType>;
+  loginWithProvider(provider: AuthProvider): Promise<AuthReturnType>;
   logout(): Promise<void>;
 }

@@ -163,6 +163,19 @@ ion-label.custom {
 	letter-spacing: var(--body-large-tracking, 0.03125rem);
 }
 
+form .inputs-container {
+	display: flex;
+	flex-direction: column;
+	gap: 0.5rem;
+}
+
+form .input-wrapper {
+	display: flex;
+  min-height: 7rem;
+  flex-direction: column;
+  align-items: flex-start;
+}
+
 ion-input.custom,
 ion-select.custom {
 	--background: var(--ion-color-dark-tint);
@@ -185,12 +198,40 @@ ion-input .input-bottom {
 	justify-content: left; 
 }
 
-ion-input .error-text {
-	font-size: 0.875rem;
+ion-text.error-text {
+	font-size: var(--label-large-size, 0.875rem);
+	font-style: normal;
+	font-weight: var(--label-large-weight-prominent, 600);
+	line-height: var(--label-large-line-height, 1.25rem);
+	letter-spacing: var(--label-large-tracking, 0.00625rem);
+}
+
+form ion-text.error-text {
+	margin-top: 0.25rem;
 }
 
 ion-input .button-inner {
 	color: var(--ion-color-light);
+}
+
+ion-textarea.custom {
+	--background: var(--ion-color-dark-tint);
+  --color: var(--ion-color-light);
+  --placeholder-opacity: 0.8;
+
+  min-height: 6rem;
+  --border-style: none;
+  --border-radius: 8px;
+  --highlight-color-focused: none;
+  --highlight-color-valid: none;
+  --highlight-height: 0px;
+
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.75rem;
+  --padding-bottom: 0.75rem;
+
+  resize: none;
 }
 
 ion-icon {
@@ -205,21 +246,7 @@ ion-avatar {
 	height: 3rem;
 }
 
-.input-wrapper {
-	display: flex;
-  min-height: 7rem;
-  flex-direction: column;
-  align-items: flex-start;
-}
 
-form ion-text[color="danger"] {
-	margin-top: 0.25rem;
-	font-size: var(--label-large-size, 0.875rem);
-	font-style: normal;
-	font-weight: var(--label-large-weight-prominent, 600);
-	line-height: var(--label-large-line-height, 1.25rem);
-	letter-spacing: var(--label-large-tracking, 0.00625rem);
-}
 
 /* *:has(.inline-link) {
 	min-height: 2rem;
