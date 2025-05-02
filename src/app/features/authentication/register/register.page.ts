@@ -1,4 +1,4 @@
-import { Component, computed, inject, signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, ViewChild, viewChild, WritableSignal } from '@angular/core';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { filter, last } from 'rxjs/operators';
 
@@ -8,11 +8,12 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { HeaderComponent } from 'src/app/shared/components/header/header.component';
+import { HeaderComponent } from 'src/app/shared/ui/components/header/header.component';
 import { RegisterFormComponent } from './ui/register-form/register-form.component';
 import { FormGroup } from '@angular/forms';
 import { RegisterService } from './data-access/register.service';
 import { UserModel } from 'src/app/core/domain/models/user.model';
+import { Capacitor } from '@capacitor/core';
 
 @Component({
   selector: 'app-register',
@@ -23,11 +24,13 @@ import { UserModel } from 'src/app/core/domain/models/user.model';
 export class RegisterPage {
   #registerService = inject(RegisterService);
 
+  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  
   constructor() {
     addIcons({ arrowBackOutline });
   }
 
-  step = signal<number>(4);
+  step = signal<number>(2);
   totalSteps = 4;
   progress = computed(() => (this.step() / this.totalSteps));
 
@@ -77,7 +80,17 @@ export class RegisterPage {
   }
 
   onAvatarUpload = () => {
-    this.#registerService.getAvatarData();
+    if (Capacitor.isNativePlatform()) {
+      this.#registerService.getAvatarData();
+    } else {
+      // Activate hidden file input
+      this.fileInput.nativeElement.click();
+    }
+  }
+
+  // Not native platform only
+  handleFileInput = (event: any) => {
+    this.#registerService.setAvatarDataNotNative(event);
   }
 
   errorMessages = {
@@ -167,7 +180,7 @@ export class RegisterPage {
 
   async handleRegister(): Promise<void> {
     const dummyUserData = {
-      email: 'fernando2@gmail.com',
+      email: 'fernando@gmail.com',
       username: 'fernando',
       password: '123456',
       firstName: 'Fernando',

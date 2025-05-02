@@ -4,7 +4,10 @@ import { Role, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './adapters/auth.interface';
 import { environment } from 'src/environments/environment.dev';
 import { LocalStorageService } from '../storage/local-storage.service';
+import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
 import { user } from '@angular/fire/auth';
+
+import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
 
 interface AuthStatus {
   isAuthenticated: boolean,
@@ -27,6 +30,7 @@ export class AuthService {
   #errorMessage = signal<string | null>(null);
 
   #userRepository = inject(UserRepository);
+  #cloudStorage = inject(environment.cloudStorageToken);
   #cache = inject(LocalStorageService);
 
   constructor(
@@ -55,12 +59,19 @@ export class AuthService {
     return value && typeof value === 'object' && value.uid && typeof value.uid === 'string';
   }
 
-  #uploadProfilePicture = async (profilePictureDataUrl: string): Promise<string | void> => {
+  #uploadProfilePicture = async ({ profilePictureDataUrl, uid }: { profilePictureDataUrl: string, uid: string }): Promise<string | void> => {
     try {
-      // TODO: Implement upload profile picture
-      return "profilePictureURLTest";
+      return await this.#cloudStorage.upload(`profilePictures/${uid}/avatar`, dataUrlToBlob(profilePictureDataUrl));
     } catch (error) {
-      console.error(`Error al seleccionar avatar: ${error}`);
+      throw error;
+    }
+  }
+
+  #getDefaultProfilePictureURL = async (): Promise<string | void> => {
+    try {
+      return await this.#cloudStorage.getDownloadURL(`profilePictures/default.webp`);
+    } catch (error) {
+      throw error;
     }
   }
 
@@ -68,36 +79,32 @@ export class AuthService {
     this.#setAuthMethod(method);
     
     try {
-      // Upload profile picture
-      if (userData.profilePictureDataURL) {
-        userData.profilePictureURL = await this.#uploadProfilePicture(userData.profilePictureDataURL) ?? '';
-        delete userData.profilePictureDataURL;
-      } else {
-        userData.profilePictureURL = '';
-      }
-      
-      console.log({ method, userData });
-      
       // Register with auth provider
-      //const result = await this.#authMethod.register(userData);
       const result = await this.#authMethod.register({
         email: userData.email,
         password: userData.password,
-        username: userData.username,
-        profilePictureURL: userData.profilePictureURL,
+        username: userData.username
       });
-      console.log(result);
 
       if (this.#isUidObject(result)) {
         userData._id = result.uid;
       }
+      
+      // Upload profile picture
+      if (userData.profilePictureDataURL && userData._id) {
+        userData.profilePictureURL = await this.#uploadProfilePicture({
+            profilePictureDataUrl: userData.profilePictureDataURL,
+            uid: userData._id 
+        }) ?? '';
+        delete userData.profilePictureDataURL;
+      } else {
+        userData.profilePictureURL = await this.#getDefaultProfilePictureURL() ?? '';
+      }
 
       let { password, ...userDataWithoutPassword } = userData;
-      console.log({ userDataWithoutPassword });
       
       // Save to storage
-      let user = await this.#userRepository.saveUser(userDataWithoutPassword);
-      console.log({ user });
+      await this.#userRepository.saveUser(userDataWithoutPassword);
 
       //let user: User | boolean | null = null;
       //if (user = await this.#userRepository.saveUser(userDataWithoutPassword) && user) {
@@ -106,6 +113,7 @@ export class AuthService {
       //};
       
     } catch (errorMessage: any) {
+      console.error(errorMessage);
       this.#errorMessage.set(errorMessage);
     }
     //return this.#currentUser();

@@ -58,23 +58,23 @@ export class RegisterFormComponent {
 
     this.registerForm = this.fb.group({
       emailData: this.fb.group({
-        email: this.fb.control('', [Validators.required, Validators.email], [EmailValidator.validate()]),
+        email: this.fb.control('', /* [Validators.required, Validators.email], [EmailValidator.validate()] */),
       }),
       userData: this.fb.group({
-        username: this.fb.control('', [Validators.required, Validators.minLength(4)], [UsernameValidator.validate()]),
-        password: this.fb.control('', [Validators.required, Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)]),
+        username: this.fb.control('', /* [Validators.required, Validators.minLength(4)], [UsernameValidator.validate()] */),
+        password: this.fb.control('', /* [Validators.required, Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)] */),
       }),
       personalData: this.fb.group({
-        firstName: this.fb.control('', [Validators.required]),
-        lastName: this.fb.control('', [Validators.required]),
+        firstName: this.fb.control('', /* [Validators.required] */),
+        lastName: this.fb.control('', /* [Validators.required] */),
         dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES'))),
-        address: this.fb.control('', [Validators.required]),
-        zipcode: this.fb.control('', [Validators.required, Validators.minLength(4)]),
-        country: this.fb.control('', [Validators.required]),
+        address: this.fb.control('', /* [Validators.required] */),
+        zipcode: this.fb.control('', /* [Validators.required, Validators.minLength(4)] */),
+        country: this.fb.control('', /* [Validators.required] */),
       }),
       otherData: this.fb.group({
         roles: this.fb.array([]),
-        bio: this.fb.control('', [Validators.minLength(4)])
+        bio: this.fb.control('', /* [Validators.minLength(4)] */)
       })
     });
   }

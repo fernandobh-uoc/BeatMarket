@@ -51,8 +51,7 @@ export class FirebaseAuthAdapter implements Auth {
       ).then(userCred => userCred.user);
 
       await updateProfile(firebaseUser, {
-        displayName: userData.username,
-        photoURL: userData.profilePictureURL
+        displayName: userData.username
       });
 
       return { uid: firebaseUser.uid };

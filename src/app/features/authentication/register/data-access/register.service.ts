@@ -1,5 +1,6 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { ElementRef, inject, Injectable, Signal, signal, ViewChild, viewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
+import { Capacitor } from '@capacitor/core';
 import { UserModel } from 'src/app/core/domain/models/user.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 
@@ -8,7 +9,7 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 })
 export class RegisterService {
   #authService = inject(AuthService);
-  avatarDataUrl: string | undefined | null = null;
+  profilePictureDataURL: string | undefined | null = null;
 
   getAvatarData = async () => {
     try {
@@ -18,10 +19,25 @@ export class RegisterService {
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Prompt
       });
-      this.avatarDataUrl = image.dataUrl;
+      this.profilePictureDataURL = image.dataUrl;
     } catch (error) {
       console.error(`Error al seleccionar avatar: ${error}`);
     }
+  }
+
+  setAvatarDataNotNative = (event: any) => {
+    const input = event.target as HTMLInputElement;
+    if (!input.files?.length) return;
+
+    const file = input.files[0];
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      const dataUrl = reader.result as string;
+      this.profilePictureDataURL = dataUrl;
+    };
+
+    reader.readAsDataURL(file);
   }
 
   registerUser = (userFormData: any) => {
@@ -45,7 +61,7 @@ export class RegisterService {
         },
         roles: userFormData.roles ?? [],
         bio: userFormData.bio ?? '',
-        profilePictureDataURL: this.avatarDataUrl ?? 'default',
+        profilePictureDataURL: this.profilePictureDataURL ?? '',
       }
     })
   }

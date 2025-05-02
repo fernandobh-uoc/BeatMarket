@@ -10,7 +10,7 @@ export const routes: Routes = [
   },
   {
     path: '',
-    loadComponent: () => import('./shared/tabs/tabs.page').then(m => m.TabsPage),
+    loadComponent: () => import('./shared/ui/tabs/tabs.page').then(m => m.TabsPage),
     canMatch: [authGuard],
     data: { authStatusMustBe: true }
   },
