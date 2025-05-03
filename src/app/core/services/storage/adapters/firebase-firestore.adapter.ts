@@ -171,9 +171,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     });
   }
 
-  getCollection$(params?: FirestoreParams): Observable<any[]> {   // any because we might be querying a subcollection of type other than T
-    console.log(`getCollection$ params: ${JSON.stringify(params)}`);
-    
+  getCollection$(params?: FirestoreParams): Observable<any[]> {   // any because we might be querying a subcollection of type other than T    
     return runInInjectionContext(this.injector, () => {
       if (!params?.collection) throw new Error("You must provide the collection.");
 

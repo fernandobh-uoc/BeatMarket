@@ -23,7 +23,6 @@ export class LoginService {
     try {
       if (!emailOrUsername.includes('@') || !this.#isEmail(emailOrUsername)) {
         user = await this.#userRepository.getUserByUsername(emailOrUsername);
-        console.log({ user });
         if (!user) {
           this.errorMessage.set('Ese usuario no existe.');
           return;
@@ -32,6 +31,8 @@ export class LoginService {
       }
 
       await this.#authService.login({ method: 'email', credentials: { email, password }});
+
+      console.log({ currentUser: this.#authService.currentUser() });
     } catch (loginError: any) {
       this.errorMessage.set(loginError);
     } 

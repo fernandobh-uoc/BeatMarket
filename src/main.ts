@@ -1,3 +1,4 @@
+import { APP_INITIALIZER, inject, provideAppInitializer } from '@angular/core';
 import { bootstrapApplication } from '@angular/platform-browser';
 import { RouteReuseStrategy, provideRouter, withPreloading, PreloadAllModules } from '@angular/router';
 import { IonicRouteStrategy, provideIonicAngular } from '@ionic/angular/standalone';
@@ -13,6 +14,7 @@ import { environment } from './environments/environment.dev';
 import { importProvidersFrom } from '@angular/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
+import { AuthService } from './app/core/services/auth/auth.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -35,6 +37,11 @@ bootstrapApplication(AppComponent, {
     provideFirestore(() => getFirestore()),
     provideStorage(() => getStorage()),
 
-    importProvidersFrom(IonicStorageModule.forRoot())
+    importProvidersFrom(IonicStorageModule.forRoot()),
+
+    provideAppInitializer(() => {
+      const authService = inject(AuthService);
+      return authService.init();
+    })
   ],
 });

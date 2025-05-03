@@ -53,8 +53,9 @@ export class LocalStorageService {
     if (this.#storage instanceof Storage) {
       if (typeof value === 'string') {
         this.#storage.setItem(key, value);
+      } else {
+        this.#storage.setItem(key, JSON.stringify(value));
       }
-      this.#storage.setItem(key, JSON.stringify(value));
     }
   }
 

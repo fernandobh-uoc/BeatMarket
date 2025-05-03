@@ -8,7 +8,7 @@ import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
 import { user } from '@angular/fire/auth';
 
 import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
-import { Observable, of } from 'rxjs';
+import { firstValueFrom, Observable, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
 interface AuthStatus {
@@ -25,8 +25,7 @@ const defaultAuthStatus: AuthStatus = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  public currentUser: Signal<User | null | undefined> = signal<User | null>(null);
-
+  #currentUser = signal<User | null>(null);
   #authStatus = signal<AuthStatus>(defaultAuthStatus);
 
   #authMethod!: AuthMethod;
@@ -40,10 +39,11 @@ export class AuthService {
     private injector: EnvironmentInjector,
     /* private userRepository: UserRepository,
     private cache: LocalStorageService */
-  ) {
-    // Load user from local storage
-    this.#loadUserFromStorage();
-  };
+  ) {};
+
+  get currentUser() {
+    return this.#currentUser.asReadonly();
+  }
 
   get authStatus() {
     return this.#authStatus.asReadonly();
@@ -51,6 +51,14 @@ export class AuthService {
 
   get errorMessage() {
     return this.#errorMessage.asReadonly();
+  }
+
+  init = async (): Promise<void> => {
+    try {
+      await this.#loadUserFromStorage();
+    } catch (error) {
+      console.error(error);
+    }
   }
 
   #setAuthMethod(method: 'email' | 'google' | 'apple') {
@@ -148,8 +156,15 @@ export class AuthService {
       }
 
       if (user$) {
-        this.currentUser = toSignal(user$);
-        this.#updateAuthStatus(this.currentUser() ?? null);
+        /* runInInjectionContext(this.injector, () => {
+          this.currentUser = toSignal(user$!);
+          console.log({ currentUser: this.currentUser() });
+          this.#updateAuthStatus(this.currentUser() ?? null);
+        }); */
+        user$.subscribe(user => {
+          this.#currentUser.set(user);
+        });
+        this.#updateAuthStatus(await firstValueFrom(user$));
       }
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
@@ -158,10 +173,16 @@ export class AuthService {
   }
 
   async logout(): Promise<void> {
-    await this.#authMethod.logout();
-    this.currentUser = signal<User | null>(null);
-    this.#authStatus.set(defaultAuthStatus);
-    this.#cache.set('authStatus', this.#authStatus());
+    this.#setAuthMethod('email');
+    try {
+      await this.#authMethod.logout();
+      this.#currentUser.set(null);
+      this.#authStatus.set(defaultAuthStatus);
+      await this.#cache.set('authStatus', this.#authStatus());
+    } catch (errorMessage: any) {
+      this.#errorMessage.set(errorMessage);
+      throw errorMessage;
+    }
   }
 
   async #updateAuthStatus(user: User | null): Promise<void> {
@@ -171,7 +192,7 @@ export class AuthService {
         userId: user._id,
         userRoles: user.roles
       });
-      this.#cache.set('authStatus', this.#authStatus());
+      await this.#cache.set('authStatus', this.#authStatus());
     }
   }
 
@@ -181,7 +202,11 @@ export class AuthService {
       const id: string = authStatus.userId;
       const user$ = this.#userRepository.getUserById$(id);
       if (user$) {
-        this.currentUser = toSignal(user$);
+        user$.subscribe(user => {
+          this.#currentUser.set(user);
+        });
+
+        this.#updateAuthStatus(await firstValueFrom(user$)); // Wait for the user to be loaded before the app starts
       }
     }
   }

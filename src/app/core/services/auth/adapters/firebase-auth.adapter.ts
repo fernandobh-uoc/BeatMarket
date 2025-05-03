@@ -67,7 +67,6 @@ export class FirebaseAuthAdapter implements Auth {
 
   async loginWithEmail(email: string, password: string): Promise<AuthReturnType> {
     /* const test = await this.userService.getUser("123");
-    console.log(test);
     return new Promise(res => res(null)); */
     try {
       const firebaseUser: FirebaseUser = await signInWithEmailAndPassword(this.authInstance, email, password)
@@ -83,7 +82,6 @@ export class FirebaseAuthAdapter implements Auth {
   }
 
   async loginWithProvider(provider: AuthProvider): Promise<AuthReturnType> {
-    console.log("test");
     try {
       const authProvider = provider === 'google' ?
         new GoogleAuthProvider() :

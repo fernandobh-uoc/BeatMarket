@@ -1,13 +1,23 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>tabs</ion-title>
-  </ion-toolbar>
-</ion-header>
+<ion-tabs>
+  <ion-tab-bar slot="bottom" color="dark">
+    <ion-tab-button tab="home">
+      <ion-icon aria-hidden="true" name="home"></ion-icon>
+      <ion-label>Inicio</ion-label>
+    </ion-tab-button>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">tabs</ion-title>
-    </ion-toolbar>
-  </ion-header>
-</ion-content>
+    <ion-tab-button tab="profile">
+      <ion-icon aria-hidden="true" name="person-circle"></ion-icon>
+      <ion-label>Mi Perfil</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="profile">
+      <ion-icon aria-hidden="true" name="musical-notes"></ion-icon>
+      <ion-label>Vender</ion-label>
+    </ion-tab-button>
+
+    <ion-tab-button tab="profile">
+      <ion-icon aria-hidden="true" name="chatbox-ellipses"></ion-icon>
+      <ion-label>Mensajes</ion-label>
+    </ion-tab-button>
+  </ion-tab-bar>
+</ion-tabs>

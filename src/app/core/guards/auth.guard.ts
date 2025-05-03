@@ -12,7 +12,7 @@ export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
   if (requiresAuth && isAuthenticated) return true;
   if (!requiresAuth && !isAuthenticated) return true;
 
-  router.navigate([requiresAuth ? '/auth' : '/tabs']);
+  router.navigate([requiresAuth ? '/auth' : '']);
   return false;
 };
 
