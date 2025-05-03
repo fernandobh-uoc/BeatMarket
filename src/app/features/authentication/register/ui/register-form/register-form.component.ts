@@ -1,4 +1,4 @@
-import { Component, signal, input, output, computed, Signal, WritableSignal } from '@angular/core';
+import { Component, signal, input, output, computed, Signal, WritableSignal, inject } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonItem, IonList, IonLabel, IonAvatar, IonText, IonIcon, IonDatetime, IonModal, IonDatetimeButton, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
@@ -10,16 +10,22 @@ import { calendarOutline, checkmarkCircleOutline, closeCircleOutline, globeOutli
 
 import countries from "../../utils/countries" ;
 import { Role } from 'src/app/core/domain/models/user.model';
+import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 
 @Component({
   selector: 'app-register-form',
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
-  imports: [IonTextarea, IonCheckbox, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
+  imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent {
+  #userRepository = inject(UserRepository);
   registerForm: FormGroup;
   //localErrorMessage = signal<string>('');
+
+  step = input<number>(1);
+  nextStep = output<void>();
+  formSubmit = output<void>();
 
   submitAttempts = input<Record<string, WritableSignal<boolean>>>({ 
     email: signal<boolean>(false),
@@ -27,8 +33,12 @@ export class RegisterFormComponent {
     personalData: signal<boolean>(false),
     otherData: signal<boolean>(false)
   });
-  errorMessages = input({ 
-    email: signal<string>('')
+
+  disabledNextButtons = input<Record<string, WritableSignal<boolean>>>({
+    email: signal<boolean>(false),
+    userData: signal<boolean>(false),
+    personalData: signal<boolean>(false),
+    otherData: signal<boolean>(false)
   });
 
   //controlFocus = output<AbstractControl>();
@@ -36,12 +46,9 @@ export class RegisterFormComponent {
   //controlBlur = output<AbstractControl>();
   controlBlur = output<string>();
 
-  //emailValid = computed(() => this.registerForm.get('email')?.valid ?? false);
-  /* emailFocused = output<void>();
-  emailBlur = output<void>(); */
-
   uploadAvatar = output<void>();
-  formSubmitted = output<void>();
+
+  authProviderErrorMessage = input<string>('');
 
   formattedDate = signal<string>(new Date().toLocaleDateString('es-ES'));
 
@@ -58,19 +65,47 @@ export class RegisterFormComponent {
 
     this.registerForm = this.fb.group({
       emailData: this.fb.group({
-        email: this.fb.control('', /* [Validators.required, Validators.email], [EmailValidator.validate()] */),
+        email: this.fb.control('', {
+          validators: [Validators.required, Validators.email],
+          asyncValidators: [EmailValidator.validate(this.#userRepository)],
+          updateOn: 'blur'
+        }),
       }),
       userData: this.fb.group({
-        username: this.fb.control('', /* [Validators.required, Validators.minLength(4)], [UsernameValidator.validate()] */),
-        password: this.fb.control('', /* [Validators.required, Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)] */),
+        username: this.fb.control('', {
+          validators: [Validators.required, Validators.minLength(4)],
+          asyncValidators: [UsernameValidator.validate(this.#userRepository)],
+          updateOn: 'blur'
+        }),
+        password: this.fb.control('', {
+          validators: [Validators.required, Validators.pattern(/^(?=.*[A-Za-z])(?=.*\d)[A-Za-z\d]{6,}$/)],
+          updateOn: 'blur'
+        }),
       }),
       personalData: this.fb.group({
-        firstName: this.fb.control('', /* [Validators.required] */),
-        lastName: this.fb.control('', /* [Validators.required] */),
-        dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES'))),
-        address: this.fb.control('', /* [Validators.required] */),
-        zipcode: this.fb.control('', /* [Validators.required, Validators.minLength(4)] */),
-        country: this.fb.control('', /* [Validators.required] */),
+        firstName: this.fb.control('', { 
+          validators: [Validators.required], 
+          updateOn: 'blur' 
+        }),
+        lastName: this.fb.control('', { 
+          validators: [Validators.required], 
+          updateOn: 'blur' 
+        }),
+        dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES')), { 
+          updateOn: 'change' 
+        }),
+        address: this.fb.control('', { 
+          validators: [Validators.required], 
+          updateOn: 'blur' 
+        }),
+        zipcode: this.fb.control('', { 
+          validators: [Validators.required, Validators.minLength(4)], 
+          updateOn: 'blur' 
+        }),
+        country: this.fb.control('', { 
+          validators: [Validators.required], 
+          updateOn: 'blur' 
+        }),
       }),
       otherData: this.fb.group({
         roles: this.fb.array([]),
@@ -105,7 +140,4 @@ export class RegisterFormComponent {
       if (index >= 0) roles.removeAt(index);
     }
   }
-
-  errorMessage = input<string>('');
-  step = input<number>(1);
 }

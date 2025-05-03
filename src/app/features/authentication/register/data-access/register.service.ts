@@ -11,6 +11,12 @@ export class RegisterService {
   #authService = inject(AuthService);
   profilePictureDataURL: string | undefined | null = null;
 
+  #errorMessage = signal<string>('');
+
+  get errorMessage() {
+    return this.#errorMessage.asReadonly();
+  }
+
   getAvatarData = async () => {
     try {
       const image: Photo = await Camera.getPhoto({
@@ -40,30 +46,35 @@ export class RegisterService {
     reader.readAsDataURL(file);
   }
 
-  registerUser = (userFormData: any) => {
+  registerUser = async (userFormData: any) => {
     //console.log(userFormData);
-    this.#authService.register({
-      method: 'email',
-      userData: {
-        email: userFormData.email ?? '',
-        username: userFormData.username ?? '',
-        password: userFormData.password ?? '',
-        name: {
-          first: userFormData.firstName ?? '',
-          last: userFormData.lastName ?? ''
-        },
-        dateOfBirth: userFormData.dob ?? '',
-        address: {
-          line1: userFormData.address ?? '',
-          city: userFormData.city ?? '',
-          country: userFormData.country ?? '',
-          zipcode: userFormData.zipcode ?? ''
-        },
-        roles: userFormData.roles ?? [],
-        bio: userFormData.bio ?? '',
-        profilePictureDataURL: this.profilePictureDataURL ?? '',
-      }
-    })
+    try {
+      await this.#authService.register({
+        method: 'email',
+        userData: {
+          email: userFormData.email ?? '',
+          username: userFormData.username ?? '',
+          password: userFormData.password ?? '',
+          name: {
+            first: userFormData.firstName ?? '',
+            last: userFormData.lastName ?? ''
+          },
+          dateOfBirth: userFormData.dob ?? '',
+          address: {
+            line1: userFormData.address ?? '',
+            city: userFormData.city ?? '',
+            country: userFormData.country ?? '',
+            zipcode: userFormData.zipcode ?? ''
+          },
+          roles: userFormData.roles ?? [],
+          bio: userFormData.bio ?? '',
+          profilePictureDataURL: this.profilePictureDataURL ?? '',
+        }
+      })
+    } catch (errorMessage: any) {
+      console.error(errorMessage);
+      this.#errorMessage.set(errorMessage);
+    }
   }
 
   register = () => {

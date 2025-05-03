@@ -9,6 +9,7 @@
 .title-form-container {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: 1.5rem;
 }
 
@@ -16,20 +17,6 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-}
-
-.buttons-container {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-}
-
-.button-subtitle-container {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: flex-start;
-  gap: 0.5rem;
 }
 
 ion-icon {

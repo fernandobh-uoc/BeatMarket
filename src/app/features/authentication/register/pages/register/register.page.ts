@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, signal, ViewChild, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, effect, ViewChild, viewChild, WritableSignal, Signal } from '@angular/core';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { filter, last } from 'rxjs/operators';
 
@@ -9,11 +9,12 @@ import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { HeaderComponent } from 'src/app/shared/ui/components/header/header.component';
-import { RegisterFormComponent } from './ui/register-form/register-form.component';
+import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
 import { FormGroup } from '@angular/forms';
-import { RegisterService } from './data-access/register.service';
+import { RegisterService } from '../../data-access/register.service';
 import { UserModel } from 'src/app/core/domain/models/user.model';
 import { Capacitor } from '@capacitor/core';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-register',
@@ -22,26 +23,30 @@ import { Capacitor } from '@capacitor/core';
   imports: [IonContent, IonHeader, IonProgressBar, IonText, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, HeaderComponent, RegisterFormComponent]
 })
 export class RegisterPage {
+  #router = inject(Router);
   #registerService = inject(RegisterService);
 
-  @ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  //@ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
   
   constructor() {
     addIcons({ arrowBackOutline });
   }
 
-  step = signal<number>(2);
+  registerFormComponent = viewChild(RegisterFormComponent);
+
+  step = signal<number>(1);
   totalSteps = 4;
   progress = computed(() => (this.step() / this.totalSteps));
 
-  registerFormComponent = viewChild(RegisterFormComponent);
+  authProviderErrorMessage = computed(() => this.#registerService.errorMessage() ?? '');
+  
   //registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
 
   submitAttempts: Record<string, WritableSignal<boolean>> = {
-    'email': signal<boolean>(false),
-    'userData': signal<boolean>(false),
-    'personalData': signal<boolean>(false),
-    'otherData': signal<boolean>(false)
+    email: signal<boolean>(false),
+    userData: signal<boolean>(false),
+    personalData: signal<boolean>(false),
+    otherData: signal<boolean>(false)
   };
 
   disabledNextButtons = {
@@ -58,20 +63,23 @@ export class RegisterPage {
     this.submitAttempts['otherData'].set(false);
   }
 
-  nextStep = async () => {
+  nextStep = () => {
     if (this.step() === 1) {
       this.submitAttempts['email'].set(true);
       this.#handleNextStepEmail(this.registerFormComponent()?.registerForm);
+      return;
     }
 
     if (this.step() === 2) {
       this.submitAttempts['userData'].set(true);
       this.#handleNextStepUserData(this.registerFormComponent()?.registerForm);
+      return;
     }
 
     if (this.step() === 3) {
       this.submitAttempts['personalData'].set(true);
       this.#handleNextStepPersonalData(this.registerFormComponent()?.registerForm);
+      return;
     }
   }
 
@@ -79,12 +87,13 @@ export class RegisterPage {
     this.step.set(this.step() - 1);
   }
 
+  fileInput: Signal<HTMLInputElement | undefined> = viewChild('fileInput');
   onAvatarUpload = () => {
     if (Capacitor.isNativePlatform()) {
       this.#registerService.getAvatarData();
     } else {
       // Activate hidden file input
-      this.fileInput.nativeElement.click();
+      this.fileInput()?.click();
     }
   }
 
@@ -93,9 +102,9 @@ export class RegisterPage {
     this.#registerService.setAvatarDataNotNative(event);
   }
 
-  errorMessages = {
+  /* errorMessages = {
     email: signal<string>(''),
-  }
+  } */
 
   #handleNextStepEmail = async (registerForm: FormGroup<any> | undefined) => {
     const emailControl = registerForm?.get('emailData.email');
@@ -179,7 +188,7 @@ export class RegisterPage {
 
 
   async handleRegister(): Promise<void> {
-    const dummyUserData = {
+    /* const dummyUserData = {
       email: 'fernando@gmail.com',
       username: 'fernando',
       password: '123456',
@@ -191,15 +200,22 @@ export class RegisterPage {
       country: 'España',
       roles: ['Student', 'Professional'],
     }
-    this.#registerService.registerUser(dummyUserData);
+    this.#registerService.registerUser(dummyUserData); */
 
-    /*const registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
-    this.#registerService.registerUser({
-      ...this.registerForm?.value.emailData,
-      ...this.registerForm?.value.userData,
-      ...this.registerForm?.value.personalData,
-      ...this.registerForm?.value.otherData
-    }); */
+    this.disabledNextButtons.otherData.set(true);
+
+    const registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
+
+    await this.#registerService.registerUser({
+      ...registerForm?.value.emailData,
+      ...registerForm?.value.userData,
+      ...registerForm?.value.personalData,
+      ...registerForm?.value.otherData
+    });
+
+    if (!this.authProviderErrorMessage()) {
+      this.#router.navigate(['/auth/welcome']);
+    }
   }
 
   /* checkEmailValidity() {

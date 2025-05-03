@@ -3,17 +3,19 @@ import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/fo
 import { UserRepository } from "src/app/core/domain/repositories/user.repository";
 
 export class EmailValidator {
-  static validate(userRepository?: UserRepository): AsyncValidatorFn {
+  static validate(userRepository: UserRepository): AsyncValidatorFn {
     return async (control: AbstractControl): Promise<ValidationErrors | null> => {
-      return new Promise<any>(resolve => {
+      /* return new Promise<any>(resolve => {
         setTimeout(() => {
-          /* resolve({
-            emailExists: "it is taken"
-          }); */ 
-          resolve(null);
+          //resolve({
+          //  emailExists: "it is taken"
+          //}); 
+          //resolve(null);
         }, 1000);
-      });
-      //return { emailExists: await userRepository?.getUserByEmail(control.value.toLowerCase()) == null };
+      }); */
+      return await userRepository?.getUserByEmail(control.value.toLowerCase(), false) ? 
+        { emailExists: true } 
+        : null;
     };
   }
 }

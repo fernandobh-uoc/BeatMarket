@@ -37,36 +37,17 @@
         }
       </div>
 
-      <app-register-form 
-        [errorMessages]="errorMessages"
+      <app-register-form
         [step]="step()"
-        [submitAttempts]="this.submitAttempts"
+        [submitAttempts]="submitAttempts"
+        [disabledNextButtons]="disabledNextButtons"
+        [authProviderErrorMessage]="authProviderErrorMessage()"
         (controlFocus)="onControlFocus($event)"
-        (uploadAvatar)="onAvatarUpload()"> 
+        (uploadAvatar)="onAvatarUpload()"
+        (nextStep)="nextStep()"
+        (formSubmit)="handleRegister()"> 
       </app-register-form>
       <input type="file" accept="image/*" #fileInput hidden (change)="handleFileInput($event)">
-    </div>
-
-    <div class="buttons-container">
-      @switch(step()) {
-        @case (1) {
-          <!-- <ion-button type="button" [disabled]="!emailValid()" (click)="nextStep()">Next</ion-button> -->  
-          <!-- <ion-button [disabled]="registerFormComponent()?.registerForm?.get('emailData')?.pending" type="button" (click)="nextStep()">Next</ion-button> -->  
-          <div class="button-subtitle-container">
-            <ion-button (click)="nextStep()" [disabled]="disabledNextButtons.email()">Continuar</ion-button>
-            <ion-text>¿Ya tienes cuenta? <span class="inline-link" routerLink="['/login']">Ingresar</span></ion-text>
-          </div>
-        }
-        @case (2) {
-          <ion-button [disabled]="disabledNextButtons.userData()" type="button" (click)="nextStep()">Continuar</ion-button>
-        }
-        @case (3) {
-          <ion-button [disabled]="disabledNextButtons.personalData()" type="button" (click)="nextStep()">Continuar</ion-button>
-        }
-        @case (4) {
-          <ion-button type="button" (click)="handleRegister()">Finalizar</ion-button>
-        }
-      }
     </div>
   </div>
 </ion-content>

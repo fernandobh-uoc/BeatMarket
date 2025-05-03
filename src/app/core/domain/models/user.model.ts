@@ -115,3 +115,13 @@ export class User implements UserModel {
     return null;
   }
 }
+
+export function isUserModel(obj: any): obj is UserModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.email === 'string' &&
+    typeof obj.username === 'string' &&
+    typeof obj.profilePictureURL === 'string' &&
+    Array.isArray(obj.roles);
+}

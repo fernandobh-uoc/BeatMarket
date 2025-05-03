@@ -112,6 +112,12 @@ ion-toolbar ion-button::part(native) {
 	padding-inline-start: 0px;
 }
 
+/* ion-toolbar ion-back-button::part(native):hover {
+	--background: transparent !important;
+  --color: inherit !important;
+  filter: none !important;
+} */
+
 ion-content {
 	--padding-top: var(--top-content-padding, 16px);
 	--padding-bottom: var(--bottom-content-padding, 32px);
@@ -176,6 +182,13 @@ form .input-wrapper {
   align-items: flex-start;
 }
 
+form .input-wrapper-row {
+	display: flex;
+  flex-direction: row;
+  align-items: center;
+	gap: 2rem;
+}
+
 ion-input.custom,
 ion-select.custom {
 	--background: var(--ion-color-dark-tint);
@@ -190,7 +203,7 @@ ion-select.custom {
 	--highlight-height: 0px;
 
 	--padding-start: 1rem;
-	--padding-end: 1rem;
+	--padding-end: 0.5rem;
 }
 
 ion-input .input-bottom {

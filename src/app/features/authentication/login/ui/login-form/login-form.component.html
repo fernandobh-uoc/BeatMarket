@@ -1,0 +1,33 @@
+<form [formGroup]="loginForm">
+
+  <div class="input-wrapper">
+    <ion-label class="custom" color="light">Email o nombre de usuario</ion-label>
+    <ion-input formControlName="emailOrUsername" type="email" class="custom" (ionFocus)="controlFocus.emit('emailOrUsername')"></ion-input>
+    @if (submitAttempt() && loginForm.get('emailOrUsername')?.errors?.['required']) {
+      <ion-text class="error-text" color="danger">Introduce un email o un nombre de usuario</ion-text>
+    }
+  </div>
+
+  <div class="input-wrapper">
+    <ion-label class="custom" color="light">Contraseña</ion-label>
+      <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('password')">
+        <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
+      </ion-input>
+      @if (submitAttempt()) {
+        @if (loginForm.get('password')?.errors?.['required']) {  
+          <ion-text class="error-text" color="danger">Introduce una contraseña</ion-text>
+        }
+  
+        @if (authProviderErrorMessage()) {
+          <ion-text class="error-text" color="danger">{{ authProviderErrorMessage() }}</ion-text>
+        }
+      }
+  </div>  
+</form>
+
+<div class="button-subtitle-container">
+  <ion-button (click)="formSubmit.emit(this.loginForm.value)" [disabled]="disabledSubmitButton()">Ingresar</ion-button>
+  <ion-text>¿No tienes cuenta? <a class="inline-link" [routerLink]="['/auth/register']">Regístrate</a></ion-text>
+  <!-- <ion-button class="ion-text-uppercase" (click)="onGoogleLogin()">Google</ion-button>
+  <ion-button (click)="onAppleLogin()">Apple</ion-button> -->  
+</div>

@@ -1,6 +1,6 @@
-import { EnvironmentInjector, Inject, Injectable, InjectionToken, Provider, Type, WritableSignal, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
+import { EnvironmentInjector, Inject, Injectable, InjectionToken, Provider, Signal, Type, WritableSignal, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
 import { UserRepository } from '../../domain/repositories/user.repository'; 
-import { Role, User, UserModel } from 'src/app/core/domain/models/user.model';
+import { Role, User, UserModel, isUserModel } from 'src/app/core/domain/models/user.model';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './adapters/auth.interface';
 import { environment } from 'src/environments/environment.dev';
 import { LocalStorageService } from '../storage/local-storage.service';
@@ -8,6 +8,8 @@ import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
 import { user } from '@angular/fire/auth';
 
 import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
+import { Observable, of } from 'rxjs';
+import { toSignal } from '@angular/core/rxjs-interop';
 
 interface AuthStatus {
   isAuthenticated: boolean,
@@ -23,8 +25,9 @@ const defaultAuthStatus: AuthStatus = {
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
+  public currentUser: Signal<User | null | undefined> = signal<User | null>(null);
+
   #authStatus = signal<AuthStatus>(defaultAuthStatus);
-  #currentUser = signal<User | null>(null);
 
   #authMethod!: AuthMethod;
   #errorMessage = signal<string | null>(null);
@@ -39,13 +42,8 @@ export class AuthService {
     private cache: LocalStorageService */
   ) {
     // Load user from local storage
-    this.#getUserFromStorage()
-      .then((user: User | null) => user != null && this.#currentUser.set(user));
+    this.#loadUserFromStorage();
   };
-
-  get currentUser() {
-    return this.#currentUser.asReadonly();
-  }
 
   get authStatus() {
     return this.#authStatus.asReadonly();
@@ -53,6 +51,20 @@ export class AuthService {
 
   get errorMessage() {
     return this.#errorMessage.asReadonly();
+  }
+
+  #setAuthMethod(method: 'email' | 'google' | 'apple') {
+    runInInjectionContext(this.injector, () => {
+      if (method === 'email' && !(this.#authMethod instanceof EmailAuth)) {
+        this.#authMethod = inject(EmailAuth);
+      }
+      if (method === 'google' && !(this.#authMethod instanceof GoogleAuth)) {
+        this.#authMethod = inject(GoogleAuth);
+      }
+      if (method === 'apple' && !(this.#authMethod instanceof AppleAuth)) {
+        this.#authMethod = inject(AppleAuth);
+      }
+    });
   }
 
   #isUidObject(value: any): value is { uid: string } {
@@ -113,65 +125,65 @@ export class AuthService {
       //};
       
     } catch (errorMessage: any) {
-      console.error(errorMessage);
       this.#errorMessage.set(errorMessage);
+      throw errorMessage;
     }
     //return this.#currentUser();
   }
 
-  /* async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null> {
+  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null | void> {
     this.#setAuthMethod(method);
-    let user: User | null = null;
+    let user$: Observable<User | null> | null = null;
 
     try {
-      user = await this.#authMethod.login(credentials?.email, credentials?.password);
-      if (user) {
-        this.#currentUser.set(user);
-        this.#updateAuthStatus(user);
+      const result = await this.#authMethod.login(credentials?.email, credentials?.password);
+      if (this.#isUidObject(result)) {
+        user$ = this.#userRepository.getUserById$(result.uid);
+      }
+      if (result instanceof Observable) {
+        user$ = result;
+      }
+      if (isUserModel(result)) {
+        // TODO: Handle when provider returns a static user
+      }
+
+      if (user$) {
+        this.currentUser = toSignal(user$);
+        this.#updateAuthStatus(this.currentUser() ?? null);
       }
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
+      throw errorMessage;
     }
-    return this.#currentUser();
-  } */
+  }
 
   async logout(): Promise<void> {
     await this.#authMethod.logout();
-    this.#currentUser.set(null);
+    this.currentUser = signal<User | null>(null);
     this.#authStatus.set(defaultAuthStatus);
-    this.#cache.set('authStatus', this.#authStatus);
+    this.#cache.set('authStatus', this.#authStatus());
   }
 
-  #setAuthMethod(method: 'email' | 'google' | 'apple') {
-    runInInjectionContext(this.injector, () => {
-      if (method === 'email' && !(this.#authMethod instanceof EmailAuth)) {
-        this.#authMethod = inject(EmailAuth);
-      }
-      if (method === 'google' && !(this.#authMethod instanceof GoogleAuth)) {
-        this.#authMethod = inject(GoogleAuth);
-      }
-      if (method === 'apple' && !(this.#authMethod instanceof AppleAuth)) {
-        this.#authMethod = inject(AppleAuth);
-      }
-    });
-  }
-
-  async #getUserFromStorage(): Promise<User | null> {
-    const authStatus: AuthStatus | null = await this.#cache.get('authStatus');
-    if (authStatus != null) {
-      const id: string = authStatus.userId;
-      return await this.#userRepository.getUserById(id);
+  async #updateAuthStatus(user: User | null): Promise<void> {
+    if (user) {
+      this.#authStatus.set({
+        isAuthenticated: true,
+        userId: user._id,
+        userRoles: user.roles
+      });
+      this.#cache.set('authStatus', this.#authStatus());
     }
-    return null;
   }
 
-  async #updateAuthStatus(user: User): Promise<void> {
-    this.#authStatus.set({
-      isAuthenticated: true,
-      userRoles: user.roles,
-      userId: user._id
-    });
-    this.#cache.set('authStatus', this.#authStatus);
+  async #loadUserFromStorage(): Promise<User | null | void> {
+    const authStatus: AuthStatus | null = await this.#cache.get<AuthStatus>('authStatus');
+    if (authStatus != null && authStatus.isAuthenticated) {
+      const id: string = authStatus.userId;
+      const user$ = this.#userRepository.getUserById$(id);
+      if (user$) {
+        this.currentUser = toSignal(user$);
+      }
+    }
   }
 }
 

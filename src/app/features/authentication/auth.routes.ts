@@ -3,8 +3,8 @@ import { authGuard } from "src/app/core/guards/auth.guard";
 
 export const AuthRoutes: Routes = [
   {
-    path: 'welcome',
-    loadComponent: () => import('./welcome/welcome.page').then(m => m.WelcomePage),
+    path: 'landing',
+    loadComponent: () => import('./landing/landing.page').then(m => m.LandingPage),
     canMatch: [authGuard],
     data: { authStatusMustBe: false }
   },
@@ -16,13 +16,19 @@ export const AuthRoutes: Routes = [
   },
   {
     path: 'register',
-    loadComponent: () => import('./register/register.page').then(m => m.RegisterPage),
+    loadComponent: () => import('./register/pages/register/register.page').then(m => m.RegisterPage),
+    canMatch: [authGuard],
+    data: { authStatusMustBe: false }
+  },
+  {
+    path: 'welcome',
+    loadComponent: () => import('./register/pages/welcome/welcome.page').then(m => m.WelcomePage),
     canMatch: [authGuard],
     data: { authStatusMustBe: false }
   },
   {
     path: '',
-    redirectTo: 'welcome',
+    redirectTo: 'landing',
     pathMatch: 'full'
   }
 ]

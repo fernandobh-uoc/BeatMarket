@@ -7,7 +7,7 @@ import {
   signInWithPopup, 
   GoogleAuthProvider, 
   OAuthProvider, 
-  AuthErrorCodes, 
+  AuthErrorCodes,
   onAuthStateChanged,
   signOut,
   updateProfile, 
@@ -70,8 +70,10 @@ export class FirebaseAuthAdapter implements Auth {
     console.log(test);
     return new Promise(res => res(null)); */
     try {
-      const firebaseUser: FirebaseUser = await signInWithEmailAndPassword(this.authInstance, email, password).then(userCred => userCred.user);
-      return this.userRepository.getUserById(firebaseUser.uid);
+      const firebaseUser: FirebaseUser = await signInWithEmailAndPassword(this.authInstance, email, password)
+        .then(userCred => userCred.user);
+      //return this.userRepository.getUserById(firebaseUser.uid);
+      return { uid: firebaseUser.uid };
 
       //return await this.userService.getUpdatedUser();
       //return this.userService.user$();
@@ -102,19 +104,15 @@ export class FirebaseAuthAdapter implements Auth {
   }
 
   private getErrorMessage(errorCode: string): string {
-    const errorMessages: Record<string, string> = {
-      [AuthErrorCodes.USER_DELETED]: 'User not found. Please register first.',
-      [AuthErrorCodes.INVALID_PASSWORD]: 'Incorrect password. Please try again',
-      [AuthErrorCodes.INVALID_EMAIL]: 'Invalid email format.',
-      [AuthErrorCodes.USER_DISABLED]: 'This account has been disabled.',
-      [AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER]: 'Too many failed login attempts. Try again later.'
+    /* const errorMessages: Record<string, string> = {
+      [AuthErrorCodes.USER_DELETED]: 'Usuario no encontrado. Por favor, regístrate primero.',
+      [AuthErrorCodes.INVALID_PASSWORD]: 'Contraseña incorrecta. Inténtalo de nuevo.',
+      [AuthErrorCodes.INVALID_EMAIL]: 'Formato de correo electrónico inválido.',
+      [AuthErrorCodes.USER_DISABLED]: 'Esta cuenta ha sido deshabilitada.',
+      [AuthErrorCodes.TOO_MANY_ATTEMPTS_TRY_LATER]: 'Demasiados intentos fallidos. Inténtalo más tarde.'
     };
 
-    return errorMessages[errorCode] || 'Login failed. Please try again.';
+    return errorMessages[errorCode] || 'Autenticacion fallida. Por favor, inténtalo de nuevo.'; */
+    return 'Las credenciales son incorrectas.';	
   }
 }
-
-/* export const FIREBASE_AUTH_PROVIDER: Provider = {
-  provide: new InjectionToken<Auth>('Firebase Auth'),
-  useFactory: (firebaseAuth: FirebaseAuth, userService: UserService) => { new FirebaseAuthAdapter(firebaseAuth, userService)} 
-} */

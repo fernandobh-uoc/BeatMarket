@@ -1,7 +1,7 @@
 import { EnvironmentInjector, Inject, inject, Injectable, InjectionToken, Injector, runInInjectionContext, Signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { Storage } from '../storage.interface';
-import { Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt } from '@angular/fire/firestore';
+import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt } from '@angular/fire/firestore';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
 import { UserModel } from "src/app/core/domain/models/user.model";
 import { PostModel } from "src/app/core/domain/models/post.model";
@@ -89,8 +89,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           return <T>{ ...objectDoc.data(), _id: objectDoc.id };
         }
         return null;
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -106,8 +106,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           ) as Observable<T>;
         }
         return docData(doc(this.firestore, `${params?.collection}/${id}`), { idField: '_id' }) as Observable<T>;
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -127,8 +127,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           return querySnapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
         }
         return null;
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -147,8 +147,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           q,
           { idField: '_id' }
         ) as Observable<T[]>;
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -165,8 +165,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           collectionRef = collection(this.firestore, params.collection);
         }
         return (await getDocs(collectionRef)).docs.map(doc => ({ ...doc.data() }));
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -200,8 +200,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
         }
 
         return collectionData(q, { idField: '_id' }) as Observable<any[]>;
-      } catch (firestoreError) {
-        throw firestoreError;
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
     });
   }
@@ -228,8 +228,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
         const docRef = await addDoc(targetCollection, obj);
         return { ...obj, _id: docRef.id };
       }
-    } catch (firestoreError) {
-      throw firestoreError;
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
     }
   };
 
@@ -253,8 +253,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       await updateDoc(targetDoc, fieldsToUpdate);
   
       return obj as T;
-    } catch (firestoreError) {
-      throw firestoreError;
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
     }
   }
 
@@ -270,8 +270,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
 
       await deleteDoc(objectDoc);
       return null;  // Return null after successful deletion
-    } catch (firestoreError) {
-      throw firestoreError;
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
     }
   };
 
@@ -281,8 +281,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       const objectDoc = doc(this.firestore, `${params.collection}/${id}`);
       const docSnapshot = await getDoc(objectDoc);
       return docSnapshot.exists();  // Returns true if the document exists, false otherwise
-    } catch (firestoreError) {
-      throw firestoreError;
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
     }
   };
 
@@ -309,8 +309,32 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
 
       const querySnapshot = await getDocs(firestoreQuery);
       return querySnapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
-    } catch (firestoreError) {
-      throw firestoreError;
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
     }
+  }
+
+  private getErrorMessage(errorCode: string): string {
+    /* const errorMessages: Record<string, string> = {
+      'cancelled': 'La operación fue cancelada.',
+      'unknown': 'Ocurrió un error desconocido.',
+      'invalid-argument': 'Se proporcionó un argumento no válido.',
+      'deadline-exceeded': 'El tiempo de espera de la operación expiró.',
+      'not-found': 'Documento no encontrado.',
+      'already-exists': 'El documento ya existe.',
+      'permission-denied': 'No tienes permiso para realizar esta operación.',
+      'resource-exhausted': 'Se han excedido los recursos disponibles.',
+      'failed-precondition': 'La operación no puede realizarse en el estado actual.',
+      'aborted': 'La operación fue abortada.',
+      'out-of-range': 'El valor está fuera del rango permitido.',
+      'unimplemented': 'Esta operación no está implementada.',
+      'internal': 'Error interno del servidor.',
+      'unavailable': 'El servicio no está disponible actualmente.',
+      'data-loss': 'Pérdida de datos no recuperable.',
+      'unauthenticated': 'No estás autenticado para realizar esta operación.'
+    };
+  
+    return errorMessages[errorCode] || 'Error en la base de datos. Por favor, inténtalo de nuevo.'; */
+    return 'Error en la base de datos. Por favor, inténtalo de nuevo.';	
   }
 }
