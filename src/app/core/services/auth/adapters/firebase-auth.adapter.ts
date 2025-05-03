@@ -102,6 +102,7 @@ export class FirebaseAuthAdapter implements Auth {
   }
 
   private getErrorMessage(errorCode: string): string {
+    console.error(errorCode);
     /* const errorMessages: Record<string, string> = {
       [AuthErrorCodes.USER_DELETED]: 'Usuario no encontrado. Por favor, regístrate primero.',
       [AuthErrorCodes.INVALID_PASSWORD]: 'Contraseña incorrecta. Inténtalo de nuevo.',

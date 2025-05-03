@@ -87,13 +87,13 @@ export class RegisterPage {
     this.step.set(this.step() - 1);
   }
 
-  fileInput: Signal<HTMLInputElement | undefined> = viewChild('fileInput');
+  fileInput: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild('fileInput');
   onAvatarUpload = () => {
     if (Capacitor.isNativePlatform()) {
       this.#registerService.getAvatarData();
     } else {
       // Activate hidden file input
-      this.fileInput()?.click();
+      this.fileInput()?.nativeElement.click();
     }
   }
 
@@ -157,16 +157,16 @@ export class RegisterPage {
   #handleNextStepPersonalData = async (registerForm: FormGroup<any> | undefined) => {
     const firstNameControl = registerForm?.get('personalData.firstName');
     const lastNameControl = registerForm?.get('personalData.lastName');
-    const dobControl = registerForm?.get('personalData.dob');
+    //const dobControl = registerForm?.get('personalData.dob');
     const addressControl = registerForm?.get('personalData.address');
     const zipcodeControl = registerForm?.get('personalData.zipcode');
     const countryControl = registerForm?.get('personalData.country');
 
-    if (!firstNameControl || !lastNameControl || !dobControl || !addressControl || !zipcodeControl || !countryControl) return;
+    if (!firstNameControl || !lastNameControl /* || !dobControl */ || !addressControl || !zipcodeControl || !countryControl) return;
 
     firstNameControl?.updateValueAndValidity();
     lastNameControl?.updateValueAndValidity();
-    dobControl?.updateValueAndValidity();
+    //dobControl?.updateValueAndValidity();
     addressControl?.updateValueAndValidity();
     zipcodeControl?.updateValueAndValidity();
     countryControl?.updateValueAndValidity();

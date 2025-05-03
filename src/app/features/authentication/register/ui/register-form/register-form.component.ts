@@ -90,10 +90,10 @@ export class RegisterFormComponent {
         lastName: this.fb.control('', { 
           validators: [Validators.required], 
           updateOn: 'blur' 
-        }),
+        }),/* 
         dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES')), { 
           updateOn: 'change' 
-        }),
+        }), */
         address: this.fb.control('', { 
           validators: [Validators.required], 
           updateOn: 'blur' 
@@ -127,9 +127,9 @@ export class RegisterFormComponent {
     this.controlBlur.emit(control as AbstractControl);
   } */
 
-  onDateChange(event: any) {
+  /* onDateChange(event: any) {
     this.formattedDate.set(new Date(event.detail.value).toLocaleDateString('es-ES'));
-  }
+  } */
 
   onRoleChange(event: any) {
     const roles: FormArray = this.registerForm.get('otherData.roles') as FormArray;

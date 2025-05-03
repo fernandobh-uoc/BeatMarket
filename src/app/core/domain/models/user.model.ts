@@ -36,7 +36,7 @@ export interface UserModel extends JSONSerializable<UserModel> {
   username: string;
   profilePictureURL: string;
   name: FullName;
-  dateOfBirth: Date | number | null;
+  //dateOfBirth: Date | number | null;
   address: Address;
   roles: Role[];
   bio: string;
@@ -66,7 +66,7 @@ export class User implements UserModel {
   public username: string = '';
   public profilePictureURL: string = '';
   public name: FullName = { first: '', middle: '', last: '' };
-  public dateOfBirth: Date | number | null = null;
+  //public dateOfBirth: Date | number | null = null;
   public address: Address = { line1: '', city: '', country: '', zipcode: '' };
   public roles: Role[] = [];
   public bio: string = '';

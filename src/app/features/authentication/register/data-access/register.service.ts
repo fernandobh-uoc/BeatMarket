@@ -59,7 +59,7 @@ export class RegisterService {
             first: userFormData.firstName ?? '',
             last: userFormData.lastName ?? ''
           },
-          dateOfBirth: userFormData.dob ?? '',
+          //dateOfBirth: userFormData.dob ?? '',
           address: {
             line1: userFormData.address ?? '',
             city: userFormData.city ?? '',
@@ -75,13 +75,5 @@ export class RegisterService {
       console.error(errorMessage);
       this.#errorMessage.set(errorMessage);
     }
-  }
-
-  register = () => {
-
-  }
-
-  saveNewUser = () => {
-
   }
 }

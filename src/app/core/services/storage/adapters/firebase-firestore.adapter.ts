@@ -313,6 +313,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   }
 
   private getErrorMessage(errorCode: string): string {
+    console.error(errorCode);
     /* const errorMessages: Record<string, string> = {
       'cancelled': 'La operación fue cancelada.',
       'unknown': 'Ocurrió un error desconocido.',

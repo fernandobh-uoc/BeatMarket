@@ -12,7 +12,7 @@ export interface UserFirestoreModel {
     middle?: string;
     last: string;
   };
-  dateOfBirth: Timestamp | null;
+  //dateOfBirth: Timestamp | null;
   address: {
     line1: string;
     line2?: string;
@@ -47,7 +47,7 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
       username: user.username,
       profilePictureURL: user.profilePictureURL,
       name: user.name,
-      dateOfBirth: isValidDateInput(user.dateOfBirth) ? Timestamp.fromDate(new Date(user.dateOfBirth as string | number | Date)) : null,
+      //dateOfBirth: isValidDateInput(user.dateOfBirth) ? Timestamp.fromDate(new Date(user.dateOfBirth as string | number | Date)) : null,
       address: user.address,
       roles: Array.isArray(user.roles)
         ? user.roles.map(role => role.toString())
@@ -71,7 +71,7 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
       username: data?.username ?? '',
       profilePictureURL: data?.profilePictureURL ?? '',
       name: data?.name ?? { first: '', last: '' },
-      dateOfBirth: data?.dateOfBirth?.toDate() ?? null,
+      //dateOfBirth: data?.dateOfBirth?.toDate() ?? null,
       address: data?.address ?? {
         line1: '',
         city: '',
