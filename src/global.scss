@@ -106,11 +106,11 @@ ion-toolbar ion-button {
 	--icon-padding-start: 0px;
 }
 
-ion-toolbar ion-back-button::part(native),
+/* ion-toolbar ion-back-button::part(native),
 ion-toolbar ion-button::part(native) {
 	justify-content: flex-start;
 	padding-inline-start: 0px;
-}
+} */
 
 /* ion-toolbar ion-back-button::part(native):hover {
 	--background: transparent !important;

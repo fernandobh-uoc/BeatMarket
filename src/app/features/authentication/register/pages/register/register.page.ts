@@ -8,7 +8,6 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { HeaderComponent } from 'src/app/shared/ui/components/header/header.component';
 import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
 import { FormGroup } from '@angular/forms';
 import { RegisterService } from '../../data-access/register.service';
@@ -20,7 +19,7 @@ import { Router } from '@angular/router';
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
-  imports: [IonContent, IonHeader, IonProgressBar, IonText, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, HeaderComponent, RegisterFormComponent]
+  imports: [IonContent, IonHeader, IonProgressBar, IonText, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, RegisterFormComponent]
 })
 export class RegisterPage {
   #router = inject(Router);

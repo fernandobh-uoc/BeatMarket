@@ -4,7 +4,6 @@ import { FormsModule } from '@angular/forms';
 import { Router, RouterLink } from '@angular/router';
 import { IonContent, IonImg, IonButton, IonHeader, IonToolbar, IonButtons, IonIcon, IonTitle, IonProgressBar, IonBackButton } from '@ionic/angular/standalone';
 
-import { HeaderComponent } from 'src/app/shared/ui/components/header/header.component'; 
 import { LoginFormComponent } from './ui/login-form/login-form.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { addIcons } from 'ionicons';
@@ -15,7 +14,7 @@ import { LoginService } from './data-access/login.service';
   selector: 'app-login',
   templateUrl: './login.page.html',
   styleUrls: ['./login.page.scss'],
-  imports: [IonBackButton, IonProgressBar, IonTitle, IonIcon, IonButtons, IonToolbar, IonHeader, IonButton, HeaderComponent, LoginFormComponent, IonContent, IonImg, CommonModule, FormsModule, RouterLink]
+  imports: [IonBackButton, IonProgressBar, IonTitle, IonIcon, IonButtons, IonToolbar, IonHeader, IonButton, LoginFormComponent, IonContent, IonImg, CommonModule, FormsModule, RouterLink]
 })
 export class LoginPage {
   #router = inject(Router);

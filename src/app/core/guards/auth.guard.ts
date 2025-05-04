@@ -7,7 +7,7 @@ export const authGuard: CanMatchFn = (route: Route, segments: UrlSegment[]) => {
   const router = inject(Router);
   const requiresAuth = route.data?.['authStatusMustBe'];
 
-  const isAuthenticated = !!authService.currentUser();
+  const isAuthenticated = authService.authStatus().isAuthenticated;
 
   if (requiresAuth && isAuthenticated) return true;
   if (!requiresAuth && !isAuthenticated) return true;
