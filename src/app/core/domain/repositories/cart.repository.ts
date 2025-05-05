@@ -33,7 +33,6 @@ export class CartRepository {
       console.error(storageError);
       throw storageError;
     }
-    
   }
 
   async getCartByUserId(userId: string): Promise<Cart | null> {

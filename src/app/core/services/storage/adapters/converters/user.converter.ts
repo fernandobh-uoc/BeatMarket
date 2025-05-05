@@ -33,7 +33,6 @@ export interface ActivePostFirestoreModel {
   price: number;
 }
 
-
 export class UserConverter implements FirestoreDataConverter<UserModel, UserFirestoreModel> {
   toFirestore(user: WithFieldValue<UserModel>): WithFieldValue<UserFirestoreModel> {
     return {

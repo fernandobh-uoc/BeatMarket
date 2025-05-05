@@ -1,0 +1,122 @@
+export const users = [
+  {
+    email: 'lucía.gómez1@gmail.com',
+    username: 'lucía.gómez1',
+    password: '123456',
+    firstName: 'Lucía',
+    lastName: 'Gómez',
+    address: 'Gran Vía, 10',
+    zipcode: '28001',
+    country: 'España',
+    roles: ['Estudiante'],
+    bio: 'Apasionado por la música clásica y los instrumentos de cuerda.'
+  },
+  {
+    email: 'carlos.fernández2@gmail.com',
+    username: 'carlos.fernández2',
+    password: '123456',
+    firstName: 'Carlos',
+    lastName: 'Fernández',
+    address: 'Avenida del Sol, 11',
+    zipcode: '28002',
+    country: 'España',
+    roles: ['Profesional'],
+    bio: 'Estudiante de música interesado en el jazz.'
+  },
+  {
+    email: 'maría.lópez3@gmail.com',
+    username: 'maría.lópez3',
+    password: '123456',
+    firstName: 'María',
+    lastName: 'López',
+    address: 'Calle Mayor, 12',
+    zipcode: '28003',
+    country: 'España',
+    roles: ['Coleccionista'],
+    bio: 'Coleccionista de vinilos antiguos.'
+  },
+  {
+    email: 'javier.martínez4@gmail.com',
+    username: 'javier.martínez4',
+    password: '123456',
+    firstName: 'Javier',
+    lastName: 'Martínez',
+    address: 'Paseo de la Castellana, 13',
+    zipcode: '28004',
+    country: 'España',
+    roles: ['Aficionado'],
+    bio: 'Profesional del sonido especializado en grabación.'
+  },
+  {
+    email: 'elena.sánchez5@gmail.com',
+    username: 'elena.sánchez5',
+    password: '123456',
+    firstName: 'Elena',
+    lastName: 'Sánchez',
+    address: 'Calle Alcalá, 14',
+    zipcode: '28005',
+    country: 'España',
+    roles: ['Estudiante', 'Profesional'],
+    bio: 'Aficionado a la guitarra eléctrica y la producción casera.'
+  },
+  {
+    email: 'miguel.díaz6@gmail.com',
+    username: 'miguel.díaz6',
+    password: '123456',
+    firstName: 'Miguel',
+    lastName: 'Díaz',
+    address: 'Gran Vía, 15',
+    zipcode: '28001',
+    country: 'España',
+    roles: ['Estudiante', 'Coleccionista'],
+    bio: 'Estudiante de conservatorio con pasión por la música contemporánea.'
+  },
+  {
+    email: 'sara.romero7@gmail.com',
+    username: 'sara.romero7',
+    password: '123456',
+    firstName: 'Sara',
+    lastName: 'Romero',
+    address: 'Avenida del Sol, 16',
+    zipcode: '28002',
+    country: 'España',
+    roles: ['Profesional', 'Coleccionista'],
+    bio: 'Percusionista en una banda de música experimental.'
+  },
+  {
+    email: 'david.alonso8@gmail.com',
+    username: 'david.alonso8',
+    password: '123456',
+    firstName: 'David',
+    lastName: 'Alonso',
+    address: 'Calle Mayor, 17',
+    zipcode: '28003',
+    country: 'España',
+    roles: ['Estudiante', 'Aficionado'],
+    bio: 'Productor amateur de música electrónica.'
+  },
+  {
+    email: 'laura.rubio9@gmail.com',
+    username: 'laura.rubio9',
+    password: '123456',
+    firstName: 'Laura',
+    lastName: 'Rubio',
+    address: 'Paseo de la Castellana, 18',
+    zipcode: '28004',
+    country: 'España',
+    roles: ['Aficionado', 'Coleccionista'],
+    bio: 'Interesado en libros y partituras raras.'
+  },
+  {
+    email: 'pablo.molina10@gmail.com',
+    username: 'pablo.molina10',
+    password: '123456',
+    firstName: 'Pablo',
+    lastName: 'Molina',
+    address: 'Calle Alcalá, 19',
+    zipcode: '28005',
+    country: 'España',
+    roles: ['Estudiante', 'Profesional', 'Coleccionista'],
+    bio: 'Estudio canto y me interesa el folclore español.'
+  }
+]
