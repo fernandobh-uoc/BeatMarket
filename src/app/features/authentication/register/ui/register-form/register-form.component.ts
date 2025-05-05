@@ -1,4 +1,4 @@
-import { Component, signal, input, output, computed, Signal, WritableSignal, inject } from '@angular/core';
+import { Component, signal, input, output, computed, Signal, WritableSignal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
 import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonItem, IonList, IonLabel, IonAvatar, IonText, IonIcon, IonDatetime, IonModal, IonDatetimeButton, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
@@ -18,11 +18,12 @@ import { UserRepository } from 'src/app/core/domain/repositories/user.repository
   styleUrls: ['./register-form.component.scss'],
   imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
-export class RegisterFormComponent {
+export class RegisterFormComponent implements OnInit {
   //#userRepository = inject(UserRepository);
+  fb: FormBuilder = inject(FormBuilder);
   emailValidator = new EmailValidator();
   usernameValidator = new UsernameValidator();
-  registerForm: FormGroup;
+  registerForm!: FormGroup;
   //localErrorMessage = signal<string>('');
 
   step = input<number>(1);
@@ -62,9 +63,15 @@ export class RegisterFormComponent {
     Role.Student
   ];
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     addIcons({ checkmarkCircleOutline, closeCircleOutline, calendarOutline, globeOutline });
+  }
 
+  ngOnInit(): void {
+    this.#initForm();
+  }
+
+  #initForm() {
     this.registerForm = this.fb.group({
       emailData: this.fb.group({
         email: this.fb.control('', {

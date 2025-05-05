@@ -1,4 +1,4 @@
-import { Component, input, output, signal, WritableSignal } from '@angular/core';
+import { Component, inject, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { IonInput, IonInputPasswordToggle, IonButton, IonIcon, IonLabel, IonText } from '@ionic/angular/standalone';
@@ -11,8 +11,9 @@ import { closeCircleOutline } from 'ionicons/icons';
   styleUrls: ['./login-form.component.scss'],
   imports: [RouterLink, IonText, IonLabel, IonIcon, IonInput, IonInputPasswordToggle, IonButton, FormsModule, ReactiveFormsModule]
 })
-export class LoginFormComponent {
-  loginForm: FormGroup;
+export class LoginFormComponent implements OnInit {
+  fb: FormBuilder = inject(FormBuilder);
+  loginForm!: FormGroup;
 
   submitAttempt = input<boolean>(false);
   disabledSubmitButton = input<boolean>(false);
@@ -21,9 +22,15 @@ export class LoginFormComponent {
 
   controlFocus = output<string>();
 
-  constructor(private fb: FormBuilder) {
+  constructor() {
     addIcons({ closeCircleOutline });
+  }
 
+  ngOnInit(): void {
+    this.#initForm();
+  }
+
+  #initForm() {
     this.loginForm = this.fb.group({
       emailOrUsername: ['', {
         validators: [Validators.required],
