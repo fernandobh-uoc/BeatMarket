@@ -29,6 +29,16 @@ export interface ArticleModel extends JSONSerializable<ArticleModel> {
   characteristics: ArticleCharacteristics;
 }
 
+export function isArticleModel(obj: any): obj is ArticleModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.name === 'string' &&
+    typeof obj.category === 'string' &&
+    typeof obj.condition === 'string' &&
+    typeof obj.characteristics === 'object';
+}
+
 /* class Article implements ArticleModel {
   public _id: string = '';
   public name: string = '';

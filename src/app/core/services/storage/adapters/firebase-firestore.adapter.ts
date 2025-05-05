@@ -77,14 +77,15 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   constructor(private firestore: Firestore) { }
 
   async getById(id: string, params?: FirestoreParams): Promise<T | null> {
-    if (params && !params.collection) throw new Error("You must specify the collection");
-
+    
     return await runAsyncInInjectionContext(this.injector, async () => {
+      if (params && !(params.collection)) throw new Error("You must specify the collection");
       try {
-        if (params?.converter) {
-          return <T>(await getDoc(doc(this.firestore, `${params.collection}/${id}`))).data();
-        }
-        const objectDoc: DocumentSnapshot = await getDoc(doc(this.firestore, `${params?.collection}/${id}`));
+        let docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
+
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+        const objectDoc: DocumentSnapshot = await getDoc(docRef);
+
         if (objectDoc.exists()) {
           return <T>{ ...objectDoc.data(), _id: objectDoc.id };
         }
@@ -96,16 +97,13 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   }
 
   getById$(id: string, params?: FirestoreParams): Observable<T | null> {
-    if (params && !params.collection) throw new Error("You must specify the collection");
-
     return runInInjectionContext(this.injector, () => {
+      if (!params?.collection) throw new Error("You must specify the collection");
+
       try {
-        if (params?.converter) {
-          return docData(
-            doc(this.firestore, `${params.collection}/${id}`).withConverter(params.converter)
-          ) as Observable<T>;
-        }
-        return docData(doc(this.firestore, `${params?.collection}/${id}`), { idField: '_id' }) as Observable<T>;
+        let docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+        return docData(docRef) as Observable<T>;
       } catch (firestoreError: any) {
         throw this.getErrorMessage(firestoreError);
       }
@@ -115,10 +113,13 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   async getByField(field: string, value: string, params?: FirestoreParams): Promise<T[] | null> {
     return await runAsyncInInjectionContext(this.injector, async () => {
       if (!params?.collection) throw new Error("You must specify the collection");
-      
+
       try {
-        const q = query(
-          collection(this.firestore, params.collection),
+        let collectionRef: CollectionReference = collection(this.firestore, params?.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+
+        const q: Query = query(
+          collectionRef,
           where(field, '==', value)
         );
 
@@ -138,8 +139,10 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       if (!params?.collection) throw new Error("You must specify the collection");
 
       try {
+        let collectionRef: CollectionReference = collection(this.firestore, params?.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
         const q: Query = query(
-          collection(this.firestore, params.collection),
+          collectionRef,
           where(field, '==', value)
         );
 
@@ -158,13 +161,9 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       if (!params?.collection) throw new Error("You must provide the collection.");
 
       try {
-        let collectionRef: CollectionReference;
-        if (params.converter) {
-          collectionRef = collection(this.firestore, params.collection).withConverter(params.converter);
-        } else {
-          collectionRef = collection(this.firestore, params.collection);
-        }
-        return (await getDocs(collectionRef)).docs.map(doc => ({ ...doc.data() }));
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+        return (await getDocs(collectionRef)).docs.map(doc => ({ ...doc.data(), _id: doc.id }));
       } catch (firestoreError: any) {
         throw this.getErrorMessage(firestoreError);
       }
@@ -176,12 +175,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       if (!params?.collection) throw new Error("You must provide the collection.");
 
       try {
-        let collectionRef: CollectionReference<DocumentData>;
-        if (params.converter) {
-          collectionRef = collection(this.firestore, params.collection).withConverter(params.converter);
-        } else {
-          collectionRef = collection(this.firestore, params.collection);
-        }
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
 
         let q: Query = collectionRef;
 
@@ -219,18 +214,14 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       let docRef: DocumentReference;
       if (obj._id) {
         docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
-        const targetDoc = params.converter ? 
-          docRef.withConverter(params.converter) : 
-          docRef;
-          
-        await setDoc(targetDoc, objWithTimestamps);
-      } else {
-        const baseCollection = collection(this.firestore, params.collection);
-        const targetCollection = params.converter ? 
-          baseCollection.withConverter(params.converter) : 
-          baseCollection;
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
 
-        docRef = await addDoc(targetCollection, obj);
+        await setDoc(docRef, objWithTimestamps);
+      } else {
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+
+        docRef = await addDoc(collectionRef, obj);
       }
       const retObj: T = (await getDoc(docRef)).data() as T;
       return <T>({ ...retObj, _id: docRef.id });
@@ -245,14 +236,12 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     }
   
     try {
-      const docRef = doc(this.firestore, params.collection, obj._id);
-      const targetDoc = params.converter ? 
-        docRef.withConverter(params.converter) : 
-        docRef;
+      let docRef: DocumentReference = doc(this.firestore, params.collection, obj._id);
+      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
   
       const { _id, ...fieldsToUpdate } = obj;
   
-      await updateDoc(targetDoc, {
+      await updateDoc(docRef, {
         ...fieldsToUpdate,
         updatedAt: serverTimestamp()
       });
@@ -266,14 +255,14 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   async remove(id: string, params?: FirestoreParams): Promise<T | null> {
     if (params && !params.collection) throw new Error("You must provide the collection.");
     try {
-      const objectDoc = doc(this.firestore, `${params?.collection}/${id}`);
-      const docSnapshot = await getDoc(objectDoc);
+      const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
+      const docSnapshot = await getDoc(docRef);
 
       if (!docSnapshot.exists()) {
         throw new Error(`Document with uid ${id} does not exist.`);
       }
 
-      await deleteDoc(objectDoc);
+      await deleteDoc(docRef);
       return null;  // Return null after successful deletion
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
@@ -283,8 +272,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   async exists(id: string, params: FirestoreParams): Promise<boolean> {
     if (params && !params.collection) throw new Error("You must provide the collection.");
     try {
-      const objectDoc = doc(this.firestore, `${params.collection}/${id}`);
-      const docSnapshot = await getDoc(objectDoc);
+      const docRef: DocumentReference = doc(this.firestore, `${params.collection}/${id}`);
+      const docSnapshot = await getDoc(docRef);
       return docSnapshot.exists();  // Returns true if the document exists, false otherwise
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
@@ -341,6 +330,6 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     };
   
     return errorMessages[errorCode] || 'Error en la base de datos. Por favor, inténtalo de nuevo.'; */
-    return 'Error en la base de datos. Por favor, inténtalo de nuevo.';	
+    return 'Database error';	
   }
 }

@@ -1,13 +1,14 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
 import { ArticleModel } from "./article.model";
+import { Timestamps } from "./appModel.type";
 
 export enum PostStatus {
   Active = 'active',
   Finished = 'finished'
 }
 
-export interface PostModel extends JSONSerializable<PostModel> {
+export interface PostModel extends JSONSerializable<PostModel>, Timestamps {
   _id: string;
   title: string;
   description: string;
@@ -17,7 +18,6 @@ export interface PostModel extends JSONSerializable<PostModel> {
   price: number;
   shipping: number;
   status: PostStatus;
-  createdAt: Date;
   finishedAt: Date | null;
   article: Partial<ArticleModel>;
 }
@@ -32,7 +32,6 @@ export class Post implements PostModel {
   public price: number = 0;
   public shipping: number = 0;
   public status: PostStatus = PostStatus.Active;
-  public createdAt: Date = new Date();
   public finishedAt: Date | null = null;
   public article: Partial<ArticleModel> = {};
 
@@ -65,4 +64,21 @@ export class Post implements PostModel {
     }
     return null;
   }
+}
+
+export function isPostModel(obj: any): obj is PostModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.title === 'string' &&
+    typeof obj.description === 'string' &&
+    typeof obj.mainImageURL === 'string' &&
+    Array.isArray(obj.imagesURLs) &&
+    typeof obj.user === 'object' &&
+    typeof obj.price === 'number' &&
+    typeof obj.shipping === 'number' &&
+    typeof obj.status === 'string' &&
+    typeof obj.article === 'object' &&
+    typeof obj.createdAt === 'object' &&
+    typeof obj.updatedAt === 'object';
 }

@@ -36,7 +36,7 @@ interface NoneCharacteristics {
 
 type InstrumentLevel = 'Básico' | 'Intermedio' | 'Avanzado';
 
-interface InstrumentCharacteristics {
+export interface InstrumentCharacteristics {
   category: ArticleCategory.Instruments;
   type: InstrumentType;
   brand: string;
@@ -112,3 +112,27 @@ export type ArticleCharacteristics =
   ProfessionalCharacteristics |
   AccessoryCharacteristics |
   NoneCharacteristics;
+
+export function isInstrumentCharacteristics(c: ArticleCharacteristics): c is InstrumentCharacteristics {
+  return c.category === ArticleCategory.Instruments;
+}
+
+export function isBookCharacteristics(c: ArticleCharacteristics): c is BookCharacteristics {
+  return c.category === ArticleCategory.Books;
+}
+
+export function isRecordingCharacteristics(c: ArticleCharacteristics): c is RecordingCharacteristics {
+  return c.category === ArticleCategory.Recordings;
+}
+
+export function isAccessoryCharacteristics(c: ArticleCharacteristics): c is AccessoryCharacteristics {
+  return c.category === ArticleCategory.Accessories;
+}
+
+export function isProfessionalCharacteristics(c: ArticleCharacteristics): c is ProfessionalCharacteristics {
+  return c.category === ArticleCategory.Professional;
+}
+
+export function isNoneCharacteristics(c: ArticleCharacteristics): c is NoneCharacteristics {
+  return c.category === ArticleCategory.None;
+}
