@@ -1,15 +1,16 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
+import { Timestamps } from "./appModel.type";
 import { PostModel } from "./post.model";
 import { UserModel } from "./user.model";
 
-interface CartItem {
+export interface CartItem {
   postId: PostModel["_id"],
   title: PostModel["title"],
   price: PostModel["price"],
   shipping: PostModel["shipping"],
 }
 
-export interface CartModel extends JSONSerializable<CartModel> {
+export interface CartModel extends JSONSerializable<CartModel>, Timestamps {
   _id: string;
   userId: UserModel["_id"];
   items: CartItem[]; // Map (should not be excessively large)

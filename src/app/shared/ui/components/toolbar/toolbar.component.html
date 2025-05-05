@@ -24,7 +24,12 @@
     }
     @if (showCart()) {
       <ion-button (click)="this.router.navigate(['/cart'])">
-        <ion-icon slot="icon-only" name="cart-outline" color="light"></ion-icon>
+        <div class="cart-icon-wrapper">
+          <ion-icon slot="icon-only" name="cart-outline" color="light"></ion-icon>
+          @if (cartService.cartItemsAmount() > 0) {
+            <ion-badge class="cart-badge" color="dark">{{ cartService.cartItemsAmount() }}</ion-badge>
+          }
+        </div>
       </ion-button>
     }
   </ion-buttons>

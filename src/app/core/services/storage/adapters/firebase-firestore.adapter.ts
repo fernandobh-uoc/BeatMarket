@@ -1,7 +1,7 @@
 import { EnvironmentInjector, Inject, inject, Injectable, InjectionToken, Injector, runInInjectionContext, Signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { Storage } from '../storage.interface';
-import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt } from '@angular/fire/firestore';
+import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt, serverTimestamp } from '@angular/fire/firestore';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
 import { UserModel } from "src/app/core/domain/models/user.model";
 import { PostModel } from "src/app/core/domain/models/post.model";
@@ -207,25 +207,33 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   async create(obj: T, params?: FirestoreParams): Promise<T | null> {
     if (!params?.collection) throw new Error("You must provide the collection.");
 
-    console.log({ _id: obj._id });
     try {
+      const now = serverTimestamp();
+
+      const objWithTimestamps = { 
+        ...obj, 
+        createdAt: now, 
+        updatedAt: now, 
+      };
+
+      let docRef: DocumentReference;
       if (obj._id) {
-        const docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
+        docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
         const targetDoc = params.converter ? 
           docRef.withConverter(params.converter) : 
           docRef;
-
-        await setDoc(targetDoc, obj);
-        return { ...obj, _id: docRef.id };
+          
+        await setDoc(targetDoc, objWithTimestamps);
       } else {
         const baseCollection = collection(this.firestore, params.collection);
         const targetCollection = params.converter ? 
           baseCollection.withConverter(params.converter) : 
           baseCollection;
 
-        const docRef = await addDoc(targetCollection, obj);
-        return { ...obj, _id: docRef.id };
+        docRef = await addDoc(targetCollection, obj);
       }
+      const retObj: T = (await getDoc(docRef)).data() as T;
+      return <T>({ ...retObj, _id: docRef.id });
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }
@@ -236,10 +244,6 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       throw new Error("You must provide the collection.");
     }
   
-    if (!obj._id) {
-      throw new Error("You must provide the id of the object to update.");
-    }
-  
     try {
       const docRef = doc(this.firestore, params.collection, obj._id);
       const targetDoc = params.converter ? 
@@ -248,9 +252,12 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   
       const { _id, ...fieldsToUpdate } = obj;
   
-      await updateDoc(targetDoc, fieldsToUpdate);
+      await updateDoc(targetDoc, {
+        ...fieldsToUpdate,
+        updatedAt: serverTimestamp()
+      });
   
-      return obj as T;
+      return this.getById(obj._id, params); // Return the updated object
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }

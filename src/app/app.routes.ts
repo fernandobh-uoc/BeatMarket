@@ -13,5 +13,9 @@ export const routes: Routes = [
     loadChildren: () => import('./shared/ui/tabs/tabs.routes').then(m => m.TabsRoutes),
     canMatch: [authGuard],
     data: { authStatusMustBe: true }
+  },
+  {
+    path: 'cart',
+    loadComponent: () => import('./features/cart/cart.page').then( m => m.CartPage)
   }
 ];

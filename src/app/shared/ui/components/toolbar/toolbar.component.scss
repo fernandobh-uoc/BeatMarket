@@ -1,3 +1,17 @@
 ion-title {
   margin-left: 0.5rem;
 }
+
+.cart-icon-wrapper {
+  position: relative;
+  display: inline-block;
+}
+
+.cart-badge {
+  position: absolute;
+  top: -4px;
+  right: -8px;
+  font-size: 0.7rem;
+  padding: 2px 6px;
+  border-radius: 50%;
+}

@@ -3,7 +3,7 @@ import { User, UserModel } from '../models/user.model';
 import { Storage } from '../../services/storage/storage.interface';
 import { environment } from 'src/environments/environment.dev';
 import { Observable } from 'rxjs/internal/Observable';
-import { ActivePostConverter, UserConverter } from '../../services/storage/adapters/converters/user.converter'; 
+import { ActivePostConverter, UserConverter } from '../../services/storage/adapters/converters/user.converter';
 import { Post } from '../models/post.model';
 import { combineLatestWith, map, of, switchMap } from 'rxjs';
 import { collection } from 'firebase/firestore';
@@ -29,39 +29,41 @@ export class UserRepository {
       }
 
       const activePosts = await this.storage.getCollection({ collection: `users/${id}/activePosts`, converter: this.activePostConverter });
-      user.activePosts = activePosts ?? []; 
+      user.activePosts = activePosts ?? [];
       return user;
 
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return null;
   }
 
   getUserById$(id: string, includeActivePosts: boolean = true): Observable<User | null> | null {
-    if (this.storage.getById$) {
+    if (!this.storage.getById$) return null;
+    
+    try {
       const user$: Observable<User | null> = this.storage.getById$(id, { collection: 'users', converter: this.userConverter });
-      if (!includeActivePosts) return user$;
+      if (!includeActivePosts || !this.storage.getCollection$) return user$;
 
-      if (this.storage.getCollection$) {
-        const activePosts$: Observable<Partial<Post>[] | null> = 
-          this.storage.getCollection$({ 
-            collection: `users/${id}/activePosts`, 
-            converter: this.activePostConverter 
-          });
-        return user$.pipe(
-          combineLatestWith(activePosts$),
-          map(([user, activePosts]) => {
-            if (user) {
-              user.activePosts = activePosts ?? [];
-              return user;
-            }
-            return null;
-          })
-        );
-      }
+      const activePosts$: Observable<Partial<Post>[] | null> =
+        this.storage.getCollection$({
+          collection: `users/${id}/activePosts`,
+          converter: this.activePostConverter
+        });
+      return user$.pipe(
+        combineLatestWith(activePosts$),
+        map(([user, activePosts]) => {
+          if (user) {
+            user.activePosts = activePosts ?? [];
+            return user;
+          }
+          return null;
+        })
+      );
+    } catch (storageError) {
+      console.error(storageError);
+      throw storageError;
     }
-    return null;
   }
 
   async getUserByEmail(email: string, includeActivePosts: boolean = true): Promise<User | null> {
@@ -82,42 +84,42 @@ export class UserRepository {
       return user;
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return null;
   }
-  
-  getUserByEmail$(email: string, includeActivePosts: boolean = true): Observable<User | null> {
-    try {
-      if (this.storage.getByField$) {
-        const user$: Observable<User | null> = 
-          this.storage.getByField$('email', email, { collection: 'users', converter: this.userConverter }).pipe(
-            map(users => users && users.length > 0 ? users[0] : null)
-          );
-        
-        if (!includeActivePosts || !this.storage.getCollection$) {
-          return user$;
-        }
 
-        return user$.pipe(
-          switchMap(user => {
-            if (!user || !this.storage.getCollection$) return of(null);
-            
-            return this.storage.getCollection$({
-              collection: `users/${user._id}/activePosts`,
-              converter: this.activePostConverter
-            }).pipe(
-              map(activePosts => {
-                user.activePosts = activePosts ?? [];
-                return user;
-              })
-            )
-          })
-        )
+  getUserByEmail$(email: string, includeActivePosts: boolean = true): Observable<User | null> | null {
+    if (!this.storage.getByField$) return null;
+
+    try {
+      const user$: Observable<User | null> =
+        this.storage.getByField$('email', email, { collection: 'users', converter: this.userConverter }).pipe(
+          map(users => users && users.length > 0 ? users[0] : null)
+        );
+
+      if (!includeActivePosts || !this.storage.getCollection$) {
+        return user$;
       }
+
+      return user$.pipe(
+        switchMap(user => {
+          if (!user || !this.storage.getCollection$) return of(null);
+
+          return this.storage.getCollection$({
+            collection: `users/${user._id}/activePosts`,
+            converter: this.activePostConverter
+          }).pipe(
+            map(activePosts => {
+              user.activePosts = activePosts ?? [];
+              return user;
+            })
+          )
+        })
+      )
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return of(null);
   }
 
   async getUserByUsername(username: string): Promise<User | null> {
@@ -129,50 +131,53 @@ export class UserRepository {
       return null;
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
     return null;
   }
 
-  getUserByUsername$(username: string): Observable<User | null> {
+  getUserByUsername$(username: string): Observable<User | null> | null {
+    if (!this.storage.getByField$) return null;
+
     try {
-      if (this.storage.getByField$) {
-        return this.storage.getByField$('username', username, { collection: 'users' }).pipe(
-          map(users => users && users.length > 0 ? users[0] : null)
-        );
-      }
+      return this.storage.getByField$('username', username, { collection: 'users' }).pipe(
+        map(users => users && users.length > 0 ? users[0] : null)
+      );
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return of(null);
   }
 
-  async getAllUsers(): Promise<User[]> {
+  async getAllUsers(): Promise<User[] | null> {
+    if (!this.storage.getCollection) return null;
+    
     try {
-      if (this.storage.getCollection) {
-        return await this.storage.getCollection({ collection: 'users', converter: this.userConverter });
-      }
+      return await this.storage.getCollection({ collection: 'users', converter: this.userConverter });
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return [];
   }
 
-  getAllUsers$(): Observable<User[]> {
+  getAllUsers$(): Observable<User[] | null> | null {
+    if (!this.storage.getCollection$) return null;
+
     try {
-      if (this.storage.getCollection$) {
-        return this.storage.getCollection$({ collection: 'users', converter: this.userConverter });
-      }
+      return this.storage.getCollection$({ collection: 'users', converter: this.userConverter });
     } catch (storageError) {
       console.error(storageError);
+      throw storageError;
     }
-    return of([]);
   }
 
   async saveUser(userData: Partial<UserModel>): Promise<User | boolean | null> {
     try {
-      const user: User = User.Build(userData);
-      if (await this.storage.create(user, { collection: 'users', converter: this.userConverter })) {
-        return user;
+      const _user: User = User.Build(userData);
+      let user: User | null;
+      if (user = await this.storage.create(_user, { collection: 'users', converter: this.userConverter })) {
+        console.log({ user });
+        return user; // Return the created user with timestamps
       }
       return false;
     } catch (storageError) {
@@ -180,7 +185,19 @@ export class UserRepository {
     }
   }
 
-  async userExists(uid: string): Promise<boolean> {
-    return await this.storage.exists(uid);
+  async updateUser(userData: Partial<User> & { _id: string }): Promise<User | boolean | null> {
+    try {
+      //const user: User = User.Build(userData);
+      if (await this.storage.update(userData, { collection: 'users', converter: this.userConverter })) {
+        return true;
+      }
+      return false;
+    } catch (storageError) {
+      throw storageError;
+    }
+  }
+
+  async userExists(id: string): Promise<boolean> {
+    return await this.storage.exists(id);
   }
 }

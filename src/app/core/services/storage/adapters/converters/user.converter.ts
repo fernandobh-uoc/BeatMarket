@@ -1,7 +1,8 @@
-import { FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
+import { FieldValue, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
 import { Role, User, UserModel } from "src/app/core/domain/models/user.model";
 import { Post, PostModel } from "src/app/core/domain/models/post.model";
 import { ArticleCategory, ArticleModel } from "src/app/core/domain/models/article.model";
+import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface UserFirestoreModel {
   email: string;
@@ -22,8 +23,8 @@ export interface UserFirestoreModel {
   };
   roles: string[];
   bio: string;
-  createdAt: Timestamp;
-  updatedAt: Timestamp;
+  createdAt: Timestamp | FieldValue;
+  updatedAt: Timestamp | FieldValue;
 }
 
 export interface ActivePostFirestoreModel {
@@ -32,13 +33,6 @@ export interface ActivePostFirestoreModel {
   price: number;
 }
 
-export function isValidDateInput(val: unknown): val is string | number | Date {
-  return (
-    typeof val === 'string' ||
-    typeof val === 'number' ||
-    val instanceof Date
-  );
-}
 
 export class UserConverter implements FirestoreDataConverter<UserModel, UserFirestoreModel> {
   toFirestore(user: WithFieldValue<UserModel>): WithFieldValue<UserFirestoreModel> {
@@ -55,10 +49,14 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
       bio: user.bio,
       createdAt: isValidDateInput(user.createdAt)
         ? Timestamp.fromDate(new Date(user.createdAt))
-        : Timestamp.now(),
-      updatedAt: isValidDateInput(user.updatedAt)
-        ? Timestamp.fromDate(new Date(user.updatedAt))
-        : Timestamp.now()
+        : isFieldValue(user.createdAt)
+          ? user.createdAt
+          : serverTimestamp(),
+      updatedAt: isValidDateInput(user.createdAt)
+        ? Timestamp.fromDate(new Date(user.createdAt))
+        : isFieldValue(user.createdAt)
+          ? user.createdAt
+          : serverTimestamp(),
     };
   }
 
@@ -67,21 +65,25 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
 
     return User.Build({
       _id: snapshot.id,
-      email: data?.email ?? '',
-      username: data?.username ?? '',
-      profilePictureURL: data?.profilePictureURL ?? '',
-      name: data?.name ?? { first: '', last: '' },
+      email: data.email ?? '',
+      username: data.username ?? '',
+      profilePictureURL: data.profilePictureURL ?? '',
+      name: data.name ?? { first: '', last: '' },
       //dateOfBirth: data?.dateOfBirth?.toDate() ?? null,
-      address: data?.address ?? {
+      address: data.address ?? {
         line1: '',
         city: '',
         country: '',
         zipcode: ''
       },
-      roles: (data?.roles ?? []).map(role => role as Role),
-      bio: data?.bio ?? '',
-      createdAt: data?.createdAt?.toDate() ?? null,
-      updatedAt: data?.updatedAt?.toDate() ?? null
+      roles: (data.roles ?? []).map(role => role as Role),
+      bio: data.bio ?? '',
+      createdAt: isFirestoreTimestamp(data.createdAt) 
+        ? data.createdAt.toDate() 
+        : null,
+      updatedAt: isFirestoreTimestamp(data.updatedAt) 
+        ? data.updatedAt.toDate() 
+        : null
     });
   }
 }

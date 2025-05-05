@@ -6,8 +6,8 @@ import { Observable } from 'rxjs/internal/Observable';
 
 @Injectable({ providedIn: 'root' })
 export class PostRepository {
-  private storage = inject<Storage<Post>>(environment.storageTokens.user);
-  //private converter: PostConverter;
+  private storage = inject<Storage<Post>>(environment.storageTokens.post);
+  private postConverter: PostConverter;
 
   async getPostById(id: string): Promise<Post | null> {
     try {

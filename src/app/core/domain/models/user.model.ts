@@ -1,4 +1,5 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface"; 
+import { Timestamps } from "./appModel.type";
 import { PostModel } from "./post.model";
 
 interface FullName {
@@ -30,7 +31,7 @@ export enum Role {
   Student = 'Estudiante'
 }
 
-export interface UserModel extends JSONSerializable<UserModel> {
+export interface UserModel extends JSONSerializable<UserModel>, Timestamps {
   _id: string;
   email: string;
   username: string;
@@ -40,8 +41,6 @@ export interface UserModel extends JSONSerializable<UserModel> {
   address: Address;
   roles: Role[];
   bio: string;
-  createdAt?: Date | number | null;
-  updatedAt?: Date | number | null;
 
   activePosts: Partial<PostModel>[]; // Subcollection
 
@@ -70,8 +69,6 @@ export class User implements UserModel {
   public address: Address = { line1: '', city: '', country: '', zipcode: '' };
   public roles: Role[] = [];
   public bio: string = '';
-  public createdAt?: Date | number | null = new Date();
-  public updatedAt?: Date | number | null = new Date();
   public activePosts: Partial<PostModel>[] = [];
 
   private constructor(user: Partial<UserModel> = {}) {

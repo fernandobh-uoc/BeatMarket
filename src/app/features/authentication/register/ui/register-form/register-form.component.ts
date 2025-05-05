@@ -19,7 +19,9 @@ import { UserRepository } from 'src/app/core/domain/repositories/user.repository
   imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent {
-  #userRepository = inject(UserRepository);
+  //#userRepository = inject(UserRepository);
+  emailValidator = new EmailValidator();
+  usernameValidator = new UsernameValidator();
   registerForm: FormGroup;
   //localErrorMessage = signal<string>('');
 
@@ -67,14 +69,14 @@ export class RegisterFormComponent {
       emailData: this.fb.group({
         email: this.fb.control('', {
           validators: [Validators.required, Validators.email],
-          asyncValidators: [EmailValidator.validate(this.#userRepository)],
+          asyncValidators: [this.emailValidator.validate()],
           updateOn: 'blur'
         }),
       }),
       userData: this.fb.group({
         username: this.fb.control('', {
           validators: [Validators.required, Validators.minLength(4)],
-          asyncValidators: [UsernameValidator.validate(this.#userRepository)],
+          asyncValidators: [this.usernameValidator.validate()],
           updateOn: 'blur'
         }),
         password: this.fb.control('', {

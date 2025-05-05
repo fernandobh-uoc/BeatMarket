@@ -1,14 +1,16 @@
 import { ElementRef, inject, Injectable, Signal, signal, ViewChild, viewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
-import { UserModel } from 'src/app/core/domain/models/user.model';
+import { isUserModel, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { CartService } from 'src/app/features/cart/data-access/cart.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterService {
   #authService = inject(AuthService);
+  #cartService = inject(CartService);
   profilePictureDataURL: string | undefined | null = null;
 
   #errorMessage = signal<string>('');
@@ -17,7 +19,7 @@ export class RegisterService {
     return this.#errorMessage.asReadonly();
   }
 
-  getAvatarData = async () => {
+  getAvatarData = async (): Promise<void> => {
     try {
       const image: Photo = await Camera.getPhoto({
         quality: 80,
@@ -31,7 +33,7 @@ export class RegisterService {
     }
   }
 
-  setAvatarDataNotNative = (event: any) => {
+  setAvatarDataNotNative = (event: any): void => {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
 
@@ -46,10 +48,10 @@ export class RegisterService {
     reader.readAsDataURL(file);
   }
 
-  registerUser = async (userFormData: any) => {
+  registerUser = async (userFormData: any): Promise<void> => {
     //console.log(userFormData);
     try {
-      await this.#authService.register({
+      const user: User | boolean | null = await this.#authService.register({
         method: 'email',
         userData: {
           email: userFormData.email ?? '',
@@ -70,7 +72,12 @@ export class RegisterService {
           bio: userFormData.bio ?? '',
           profilePictureDataURL: this.profilePictureDataURL ?? '',
         }
-      })
+      });
+
+      // Create cart for the user (before user has logged in)
+      if (isUserModel(user)) {
+        await this.#cartService.createCart(user._id);
+      }
     } catch (errorMessage: any) {
       console.error(errorMessage);
       this.#errorMessage.set(errorMessage);

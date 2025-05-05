@@ -12,6 +12,7 @@ export interface Storage<T extends { _id: string } & AppModel> {
   getCollection$?(params?: any): Observable<any[]>;
 
   create(obj: T, params?: any): Promise<T | null>;
+  update(obj: Partial<T> & { _id: string }, params?: any): Promise<T | null>;
   remove(id: string, params?: any): Promise<T | null>;
   exists(id: string, params?: any): Promise<boolean>;
 

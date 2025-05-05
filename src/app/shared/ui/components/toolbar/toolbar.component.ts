@@ -1,20 +1,22 @@
 import { Component, inject, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar } from '@ionic/angular/standalone';
+import { IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar, IonBadge } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, cartOutline, menu, searchOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
+import { CartService } from 'src/app/features/cart/data-access/cart.service';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss'],
   standalone: true,
-  imports: [IonSearchbar, IonProgressBar, IonBackButton, IonButton, IonIcon, IonButtons, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonBadge, IonSearchbar, IonProgressBar, IonBackButton, IonButton, IonIcon, IonButtons, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class ToolbarComponent {
-  router = inject(Router);
+export class ToolbarComponent implements OnInit {
+  public cartService = inject(CartService);
+  public router = inject(Router);
   
   public type = input<'arrow-back' | 'menu'>('arrow-back');
 
@@ -31,6 +33,11 @@ export class ToolbarComponent {
 
   constructor() {
     addIcons({ menu, arrowBackOutline, searchOutline, cartOutline });
+  }
+
+  async ngOnInit(): Promise<void> {
+    await this.cartService.loadCart();
+    
   }
 
   openMenu() {

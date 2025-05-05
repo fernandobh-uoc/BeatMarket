@@ -3,7 +3,9 @@ import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/fo
 import { UserRepository } from "src/app/core/domain/repositories/user.repository";
 
 export class UsernameValidator {
-  static validate(userRepository?: UserRepository): AsyncValidatorFn {
+  #userRepository = inject(UserRepository);
+
+  validate(): AsyncValidatorFn {
     return async (control: AbstractControl): Promise<ValidationErrors | null> => {
       /* return new Promise<ValidationErrors | null>(resolve => {
         setTimeout(() => {
@@ -14,9 +16,9 @@ export class UsernameValidator {
         }, 1000);
       }) */
 
-      const user = await userRepository?.getUserByUsername(control.value);
+      const user = await this.#userRepository.getUserByUsername(control.value);
       console.log(user);
-      return await userRepository?.getUserByUsername(control.value) ? 
+      return await this.#userRepository.getUserByUsername(control.value) ? 
         { usernameExists: true } 
         : null;
       //return { usernameExists: await userRepository?.getUserByUsername(control.value.toLowerCase()) == null }; 

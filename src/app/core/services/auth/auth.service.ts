@@ -11,7 +11,7 @@ import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
 import { firstValueFrom, Observable, of } from 'rxjs';
 import { toSignal } from '@angular/core/rxjs-interop';
 
-interface AuthStatus {
+export interface AuthStatus {
   isAuthenticated: boolean,
   userRoles: Role[],
   userId: string,
@@ -95,7 +95,7 @@ export class AuthService {
     }
   }
 
-  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | null | void> {
+  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | boolean | null> {
     this.#setAuthMethod(method);
     
     try {
@@ -124,7 +124,7 @@ export class AuthService {
       let { password, ...userDataWithoutPassword } = userData;
       
       // Save to storage
-      await this.#userRepository.saveUser(userDataWithoutPassword);
+      return await this.#userRepository.saveUser(userDataWithoutPassword);
 
       //let user: User | boolean | null = null;
       //if (user = await this.#userRepository.saveUser(userDataWithoutPassword) && user) {
