@@ -1,0 +1,160 @@
+<form [formGroup]="sellForm">
+  <div formGroupName="commonData" class="inputs-container">
+    <div class="images-upload-box-container">
+      <div class="images-upload-box" [class.has-image]="uploadedImagesURLs().length > 0" (click)="uploadImages.emit()">
+        <ion-text>Añadir imágenes</ion-text>
+        <div class="camera-icon-wrapper">
+          <ion-icon name="camera-outline" color="light" size="large"></ion-icon>
+          @if (uploadedImagesURLs().length > 0) {
+            <ion-badge class="camera-badge" color="dark">{{ uploadedImagesURLs().length }}</ion-badge>
+          }
+        </div>
+      </div>
+      @if (submitAttempted() && uploadedImagesURLs().length === 0) {
+        <ion-text class="error-text" color="danger">Debes añadir al menos una imagen al anuncio</ion-text>
+      }
+    </div>
+
+    <div class="input-wrapper">
+      <ion-label class="custom" color="light">Título del anuncio</ion-label>
+      <ion-input formControlName="title" type="text" class="custom" (ionFocus)="controlFocus.emit('commonData')"></ion-input>
+      @if (submitAttempted()) {
+        @if (sellForm.get('commonData.title')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">El título del anuncio es obligatorio</ion-text>
+        }
+        @if (sellForm.get('commonData.title')?.errors?.['minlength']) {
+          <ion-text class="error-text" color="danger">El título del anuncio es demasiado corto</ion-text>
+        }
+      }
+    </div>
+
+    <div class="price-wrapper">
+      <div class="input-wrapper price-input-wrapper">
+        <ion-label class="custom" color="light">Precio</ion-label>
+        <ion-input formControlName="price" type="text" inputmode="decimal" class="custom" (ionFocus)="controlFocus.emit('commonData')">
+          <ion-text class="price-currency" slot="end">€</ion-text>
+        </ion-input>
+        @if (submitAttempted()) {
+          @if (sellForm.get('commonData.price')?.errors?.['required']) {
+            <ion-text class="error-text" color="danger">El precio es obligatorio</ion-text>
+          }
+          @if (sellForm.get('commonData.price')?.errors?.['pattern']) {
+            <ion-text class="error-text" color="danger">El precio debe ser un número</ion-text>
+          }
+          @if (sellForm.get('commonData.price')?.errors?.['min']) {
+            <ion-text class="error-text" color="danger">El precio debe ser mayor o igual a 0 €</ion-text>
+          }
+        }
+      </div>
+      <div class="price-suggestion-wrapper">
+        <ion-text class="inline-link" (click)="suggestPrice.emit()">Sugerir precio</ion-text>
+      </div>
+    </div>
+
+    <div class="input-wrapper description-wrapper">
+      <ion-label class="custom" color="light">Descripción del anuncio</ion-label>
+      <!-- <ion-input formControlName="bio" type="text" class="custom" (ionFocus)="controlFocus.emit('personalData')"></ion-input> -->
+      <ion-textarea formControlName="description" class="custom" (ionFocus)="controlFocus.emit('commonData')"></ion-textarea>
+      @if (submitAttempted()) {
+        @if (sellForm.get('commonData.description')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">La descripción del anuncio es obligatoria</ion-text>
+        }
+      }
+    </div>
+
+    <div class="input-wrapper category-wrapper">
+      <ion-label class="custom" color="light">Categoría</ion-label>
+      <div class="radiobuttons-container">
+        <ion-radio-group formControlName="category" (ionChange)="onCategoryChange($event)">
+          <ion-row>
+            @for (category of categories; track category) {
+              <ion-col>
+                <div class="radiobutton-wrapper">
+                  <ion-radio labelPlacement="end" [value]="category" color="light">
+                    {{ category }}
+                  </ion-radio>
+                </div>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-radio-group>
+      </div>
+      @if (submitAttempted()) {
+        @if (sellForm.get('commonData.category')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">Debes seleccionar una categoría</ion-text>
+        }
+      }
+    </div>
+  </div>
+
+  <div formGroupName="specificData" class="inputs-container">
+    @switch (this.selectedCategory()) {
+      @case (categoriesEnum.Instruments) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Tipo de instrumento</ion-label>
+          <ion-select formControlName="type" aria-label="Instrument type" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" (ionChange)="onInstrumentTypeChange($event)"> …
+            @for (type of instrumentTypes; track type) {
+              <ion-select-option [value]="type">{{ type }}</ion-select-option>
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (sellForm.get('specificData.type')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El tipo de instrumento es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Marca</ion-label>
+          <ion-select formControlName="brand" aria-label="Instrument brand" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" > …
+            @for (brand of instrumentBrands(); track brand) {
+              <ion-select-option [value]="brand">{{ brand }}</ion-select-option>
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (sellForm.get('specificData.brand')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">La marca del instrumento es obligatoria (si es desconocida, elige la opción "Otra")</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Modelo (opcional)</ion-label>
+          <ion-input formControlName="model" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Color (opcional)</ion-label>
+          <ion-input formControlName="color" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Año de fabricación (opcional)</ion-label>
+          <ion-input formControlName="fabricationYear" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Número de serie (opcional)</ion-label>
+          <ion-input formControlName="serialNumber" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Nivel de instrumento (opcional)</ion-label>
+          <ion-select formControlName="instrumentLevel" aria-label="Instrument level" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" > …
+            @for (level of instrumentLevels; track level) {
+              <ion-select-option [value]="level">{{ level }}</ion-select-option>
+            }
+          </ion-select>
+        </div>
+      }
+    }
+  </div>
+</form>
+
+<div class="button-container">
+  <ion-button [disabled]="disabledPublishButton()" type="button"
+  (click)="formSubmit.emit()">Publicar anuncio</ion-button>
+</div>
