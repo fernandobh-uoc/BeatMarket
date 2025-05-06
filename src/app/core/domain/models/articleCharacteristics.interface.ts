@@ -1,6 +1,6 @@
 import { ArticleCategory } from "./article.model";
 
-enum InstrumentType {
+export enum InstrumentType {
   None = '',
   String = 'Cuerda',
   Wind = 'Viento madera',
@@ -11,7 +11,90 @@ enum InstrumentType {
   Other = 'Otros'
 }
 
-enum RecordingFormat {
+export const InstrumentBrands = {
+  // 🎸 String
+  String: {
+    Fender: 'Fender',
+    Gibson: 'Gibson',
+    Ibanez: 'Ibanez',
+    Taylor: 'Taylor',
+    Yamaha: 'Yamaha',
+  },
+
+  // 🎹 Keyboard
+  Keyboard: {
+    Roland: 'Roland',
+    Kawai: 'Kawai',
+    Korg: 'Korg',
+    Steinway: 'Steinway & Sons',
+    Casio: 'Casio',
+  },
+
+  // 🎷 Wind (woodwinds)
+  Wind: {
+    BuffetCrampon: 'Buffet Crampon',
+    Selmer: 'Selmer',
+    YamahaWind: 'Yamaha (viento)',
+    Jupiter: 'Jupiter',
+  },
+
+  // 🎺 Brass
+  Brass: {
+    Bach: 'Bach',
+    Conn: 'Conn',
+    Getzen: 'Getzen',
+    Besson: 'Besson',
+  },
+
+  // 🥁 Percussion
+  Percussion: {
+    Pearl: 'Pearl',
+    Tama: 'Tama',
+    Zildjian: 'Zildjian',
+    Ludwig: 'Ludwig',
+  },
+
+  // 🎛️ Electronic
+  Electronic: {
+    Moog: 'Moog',
+    Elektron: 'Elektron',
+    NativeInstruments: 'Native Instruments',
+  },
+
+  // Other (General)
+  Other: 'Otra',
+
+  // None or empty
+  None: ''
+};
+
+type InstrumentBrandForType = {
+  [InstrumentType.String]: keyof typeof InstrumentBrands.String;
+  [InstrumentType.Keyboard]: keyof typeof InstrumentBrands.Keyboard;
+  [InstrumentType.Wind]: keyof typeof InstrumentBrands.Wind;
+  [InstrumentType.Brass]: keyof typeof InstrumentBrands.Brass;
+  [InstrumentType.Percussion]: keyof typeof InstrumentBrands.Percussion;
+  [InstrumentType.Electronic]: keyof typeof InstrumentBrands.Electronic;
+  [InstrumentType.Other]: keyof typeof InstrumentBrands.Other;
+  [InstrumentType.None]: keyof typeof InstrumentBrands.None;
+};
+
+export enum AccesoryType {
+  None = '',
+  Pedal = 'Pedal',
+  Tuner = 'Afinador',
+  Stand = 'Atril',
+  Metronome = 'Metrónomo',
+  Cable = 'Cable',
+  Case = 'Estuche',
+  Straps = 'Correas',
+  Picks = 'Púas',
+  Cleaning_kits = 'Kit de limpieza',
+  Other = 'Otros'
+}
+
+export enum RecordingFormat {
+  None = '',
   CD = 'CD',
   Vinyl = 'Vinilo',
   Cassette = 'Cassette',
@@ -19,7 +102,7 @@ enum RecordingFormat {
   Other = 'Otros'
 }
 
-enum BookTheme {
+export enum BookTheme {
   None = 'none',
   Music_sheets = 'Partituras',
   Music_theory = 'Teoría musical',
@@ -34,12 +117,17 @@ interface NoneCharacteristics {
   category: ArticleCategory.None;
 }
 
-type InstrumentLevel = 'Básico' | 'Intermedio' | 'Avanzado';
+export enum InstrumentLevel {
+  None = '',
+  Basic = 'Básico',
+  Intermediate = 'Intermedio',
+  Advanced = 'Avanzado'
+}
 
 export interface InstrumentCharacteristics {
   category: ArticleCategory.Instruments;
   type: InstrumentType;
-  brand: string;
+  brand: InstrumentBrandForType[InstrumentType];
   model?: string;
   color?: string;
   fabricationYear?: string;
@@ -51,7 +139,7 @@ export interface InstrumentCharacteristics {
 interface RecordingCharacteristics {
   category: ArticleCategory.Recordings;
   format: RecordingFormat;
-  title: string;
+  recordingTitle: string;
   artist: string;
   genre: string;
   year?: string;
@@ -69,8 +157,9 @@ interface RecordingCharacteristics {
 
 interface AccessoryCharacteristics {
   category: ArticleCategory.Accessories;
+  type: AccesoryType;
   name: string;
-  brand: string;
+  brand?: string;
   associatedInstrument?: string;
 }
 
@@ -105,12 +194,18 @@ interface BookCharacteristics {
   volume?: string;
 }
 
+interface OtherCharacteristics {
+  category: ArticleCategory.Other;
+  description: string;
+}
+
 export type ArticleCharacteristics = 
   InstrumentCharacteristics | 
   BookCharacteristics | 
   RecordingCharacteristics |
   ProfessionalCharacteristics |
   AccessoryCharacteristics |
+  OtherCharacteristics |
   NoneCharacteristics;
 
 export function isInstrumentCharacteristics(c: ArticleCharacteristics): c is InstrumentCharacteristics {
