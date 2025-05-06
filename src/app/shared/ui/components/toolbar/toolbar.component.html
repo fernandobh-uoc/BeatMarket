@@ -1,4 +1,3 @@
-<!-- <ion-header [attr.translucent]="!largeTitle()" [attr.collapse]="largeTitle() ? 'condense' : undefined">-->  
 <ion-toolbar color="dark">
   <ion-buttons slot="start">
     <!-- <ion-button (click)="goTo()">
@@ -10,9 +9,11 @@
       @if (type() === 'arrow-back') {
         <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button> 
       } @else if (type() === 'menu') {
-        <ion-button (click)="openMenu()">
-          <ion-icon slot="icon-only" name="menu" color="light"></ion-icon>
-        </ion-button>
+        <ion-menu-toggle>
+          <ion-button>
+            <ion-icon slot="icon-only" name="menu" color="light"></ion-icon>
+          </ion-button>
+        </ion-menu-toggle>
       }
     }
   </ion-buttons>
@@ -35,7 +36,7 @@
   </ion-buttons>
   <ion-title [attr.size]="largeTitle() ? 'large' : undefined">{{ title() }}</ion-title>
   @if (showProgressBar()) {
-    <ion-progress-bar [value]="progressBarValue()"></ion-progress-bar>
+    <ion-progress-bar color="light" [value]="progressBarValue()"></ion-progress-bar>
   }
 </ion-toolbar>
 <!-- </ion-header>-->
