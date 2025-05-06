@@ -101,9 +101,14 @@ ion-toolbar ion-button {
 ion-toolbar ion-back-button,
 ion-toolbar ion-button {
 	--margin-start: 0px;
-	--padding-start: 0px;
+	/* --padding-start: 0px; */
 	--icon-margin-start: 0px;
 	--icon-padding-start: 0px;
+}
+
+ion-progress-bar {
+  --background: var(--ion-color-dark-shade);
+  --progress-background: var(--ion-color-light);
 }
 
 /* ion-toolbar ion-back-button::part(native),
@@ -204,6 +209,18 @@ ion-select.custom {
 
 	--padding-start: 1rem;
 	--padding-end: 0.5rem;
+
+	max-width: 100%;
+	overflow: hidden;
+}
+
+ion-select.custom::part(container) {
+  width: 100%;
+}
+
+ion-select.custom::part(icon) {
+  position: absolute;
+  right: var(--padding-end);
 }
 
 ion-input .input-bottom {
