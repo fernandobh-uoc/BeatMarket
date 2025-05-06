@@ -47,7 +47,13 @@
         (nextStep)="nextStep()"
         (formSubmit)="handleRegister()"> 
       </app-register-form>
-      <input type="file" accept="image/*" #fileInput hidden (change)="handleFileInput($event)">
+      <input 
+        #fileInput
+        type="file" 
+        accept="image/*" 
+        (change)="handleFileInput($event)"
+        hidden
+      />
     </div>
   </div>
 </ion-content>

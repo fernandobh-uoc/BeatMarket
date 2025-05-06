@@ -38,20 +38,6 @@ ion-datetime-button::part(native) {
   max-width: calc(70% - 3rem);
 }
 
-.select-input {
-  max-width: 100%;
-  overflow: hidden;
-}
-
-ion-select::part(container) {
-  width: 100%;
-}
-
-ion-select::part(icon) {
-  position: absolute;
-  right: var(--padding-end);
-}
-
 .roles-subtitle {
   margin-bottom: 1rem;
   color: var(--ion-color-light-shade);

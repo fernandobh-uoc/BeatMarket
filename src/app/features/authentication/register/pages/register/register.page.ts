@@ -19,7 +19,7 @@ import { Router } from '@angular/router';
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
-  imports: [IonContent, IonHeader, IonProgressBar, IonText, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, RegisterFormComponent]
+  imports: [IonContent, IonHeader, IonProgressBar, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, RegisterFormComponent]
 })
 export class RegisterPage {
   #router = inject(Router);
@@ -87,9 +87,9 @@ export class RegisterPage {
   }
 
   fileInput: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild('fileInput');
-  onAvatarUpload = () => {
+  onAvatarUpload = async () => {
     if (Capacitor.isNativePlatform()) {
-      this.#registerService.getAvatarData();
+      await this.#registerService.getAvatarData();
     } else {
       // Activate hidden file input
       this.fileInput()?.nativeElement.click();

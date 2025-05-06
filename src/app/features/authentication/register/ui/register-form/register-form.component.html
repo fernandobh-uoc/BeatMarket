@@ -156,7 +156,7 @@
           class="custom select-input">
           <ion-icon slot="start" name="globe-outline"></ion-icon>
           @for (country of countries; track country.iso2) {
-          <ion-select-option [value]="country.iso2">{{ country.nameES }}</ion-select-option>
+            <ion-select-option [value]="country.iso2">{{ country.nameES }}</ion-select-option>
           }
         </ion-select>
       </div>
@@ -171,11 +171,11 @@
       <ion-text class="roles-subtitle">Elige los roles que más se identifiquen con tu actividad musical</ion-text>
       <div class="checkboxes-container">
         @for (role of roles; track role) {
-        <div class="checkbox-wrapper">
-          <ion-checkbox labelPlacement="end" [value]="role" color="light" (ionChange)="onRoleChange($event)">
-            {{ role }}
-          </ion-checkbox>
-        </div>
+          <div class="checkbox-wrapper">
+            <ion-checkbox labelPlacement="end" [value]="role" color="light" (ionChange)="onRoleChange($event)">
+              {{ role }}
+            </ion-checkbox>
+          </div>
         }
       </div>
     </div>
@@ -197,28 +197,27 @@
 
 <div class="buttons-container">
   @switch(step()) {
-  @case (1) {
-  <!-- <ion-button type="button" [disabled]="!emailValid()" (click)="nextStep()">Next</ion-button> -->
-  <!-- <ion-button [disabled]="registerFormComponent()?.registerForm?.get('emailData')?.pending" type="button" (click)="nextStep()">Next</ion-button> -->
-  <div class="button-subtitle-container">
-    <ion-button (click)="nextStep.emit()" [disabled]="disabledNextButtons()['email']()">Continuar</ion-button>
-    <ion-text>¿Ya tienes cuenta? <a class="inline-link" [routerLink]="['/auth/login']">Ingresar</a></ion-text>
-  </div>
-  }
-  @case (2) {
-  <ion-button [disabled]="disabledNextButtons()['userData']()" type="button"
-    (click)="nextStep.emit()">Continuar</ion-button>
-  }
-  @case (3) {
-  <ion-button [disabled]="disabledNextButtons()['personalData']()" type="button"
-    (click)="nextStep.emit()">Continuar</ion-button>
-  }
-  @case (4) {
-  @if (submitAttempts()['otherData']() && authProviderErrorMessage()) {
-  <ion-text class="error-text" color="danger">{{ authProviderErrorMessage() }}</ion-text>
-  }
-  <ion-button [disabled]="disabledNextButtons()['otherData']()" type="button"
-    (click)="formSubmit.emit()">Finalizar</ion-button>
-  }
+    @case (1) {
+    <!-- <ion-button type="button" [disabled]="!emailValid()" (click)="nextStep()">Next</ion-button> -->
+    <!-- <ion-button [disabled]="registerFormComponent()?.registerForm?.get('emailData')?.pending" type="button" (click)="nextStep()">Next</ion-button> -->
+    <div class="button-subtitle-container">
+      <ion-button (click)="nextStep.emit()" [disabled]="disabledNextButtons()['email']()">Continuar</ion-button>
+      <ion-text>¿Ya tienes cuenta? <a class="inline-link" [routerLink]="['/auth/login']">Ingresar</a></ion-text>
+    </div>
+    }
+    @case (2) {
+    <ion-button [disabled]="disabledNextButtons()['userData']()" type="button"
+      (click)="nextStep.emit()">Continuar</ion-button>
+    }
+    @case (3) {
+    <ion-button [disabled]="disabledNextButtons()['personalData']()" type="button"
+      (click)="nextStep.emit()">Continuar</ion-button>
+    }
+    @case (4) {
+      @if (submitAttempts()['otherData']() && authProviderErrorMessage()) {
+        <ion-text class="error-text" color="danger">{{ authProviderErrorMessage() }}</ion-text>
+      }
+      <ion-button [disabled]="disabledNextButtons()['otherData']()" type="button" (click)="formSubmit.emit()">Finalizar</ion-button>
+    }
   }
 </div>
