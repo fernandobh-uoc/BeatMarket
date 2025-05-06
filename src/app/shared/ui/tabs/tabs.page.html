@@ -1,4 +1,9 @@
-<ion-tabs>
+<app-menu 
+  contentId="menu-content"
+  [username]="authService.currentUser()?.username ?? ''"
+  [userProfilePictureURL]="authService.currentUser()?.profilePictureURL ?? ''">
+</app-menu>
+<ion-tabs id="menu-content">
   <ion-tab-bar slot="bottom" color="dark">
     <ion-tab-button tab="home">
       <ion-icon aria-hidden="true" name="home"></ion-icon>
@@ -10,7 +15,7 @@
       <ion-label>Mi Perfil</ion-label>
     </ion-tab-button>
 
-    <ion-tab-button tab="profile">
+    <ion-tab-button tab="sell">
       <ion-icon aria-hidden="true" name="musical-notes"></ion-icon>
       <ion-label>Vender</ion-label>
     </ion-tab-button>

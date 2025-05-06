@@ -17,6 +17,10 @@ export const TabsRoutes: Routes = [
         loadComponent: () => import('../../../features/profile/profile.page').then(m => m.ProfilePage)
       },
       {
+        path: 'sell',
+        loadComponent: () => import('../../../features/sell/sell.page').then(m => m.SellPage)
+      },
+      {
         path: '',
         redirectTo: '/tabs/home',
         pathMatch: 'full'
