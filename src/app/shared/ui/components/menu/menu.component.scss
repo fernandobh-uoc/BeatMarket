@@ -1,0 +1,43 @@
+.menu-header {
+  ion-toolbar {
+    min-height: 5rem;
+    display: flex;
+  }
+
+  ion-toolbar::part(container) {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    gap: 1rem;
+  }
+
+  ion-avatar {
+    cursor: pointer;
+  }
+
+  ion-title {
+    font-size: 1.5rem;
+    font-style: normal;
+    font-weight: 400;
+    line-height: 1.75rem;
+    font-variant: none;
+  }
+}
+
+.menu-content {
+  ion-item {
+    cursor: pointer;
+  }
+
+  ion-icon {
+    margin-inline-end: 1rem;
+  }
+
+  ion-label {
+    font-size: var(--body-large-size, 1rem);
+    font-style: normal;
+    font-weight: var(--body-large-weight, 400);
+    line-height: var(--body-large-line-height, 1.5rem);
+    letter-spacing: var(--body-large-tracking, 0.03125rem);
+  }
+}
