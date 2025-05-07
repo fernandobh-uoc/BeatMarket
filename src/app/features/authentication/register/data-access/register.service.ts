@@ -11,7 +11,7 @@ import { CartService } from 'src/app/features/cart/data-access/cart.service';
 export class RegisterService {
   #authService = inject(AuthService);
   #cartService = inject(CartService);
-  profilePictureDataURL: string | undefined | null = null;
+  profilePictureDataURL = signal<string | undefined | null>(null);
 
   #errorMessage = signal<string>('');
 
@@ -27,7 +27,7 @@ export class RegisterService {
         resultType: CameraResultType.DataUrl,
         source: CameraSource.Prompt
       });
-      this.profilePictureDataURL = image.dataUrl;
+      this.profilePictureDataURL.set(image.dataUrl);
     } catch (error) {
       console.error(`Error al seleccionar avatar: ${error}`);
     }
@@ -42,7 +42,7 @@ export class RegisterService {
 
     reader.onload = () => {
       const dataUrl = reader.result as string;
-      this.profilePictureDataURL = dataUrl;
+      this.profilePictureDataURL.set(dataUrl);
     };
 
     reader.readAsDataURL(file);
@@ -51,7 +51,7 @@ export class RegisterService {
   registerUser = async (userFormData: any): Promise<void> => {
     //console.log(userFormData);
     try {
-      const user: User | boolean | null = await this.#authService.register({
+      const user: User | null = await this.#authService.register({
         method: 'email',
         userData: {
           email: userFormData.email ?? '',
@@ -70,7 +70,7 @@ export class RegisterService {
           },
           roles: userFormData.roles ?? [],
           bio: userFormData.bio ?? '',
-          profilePictureDataURL: this.profilePictureDataURL ?? '',
+          profilePictureDataURL: this.profilePictureDataURL() ?? '',
         }
       });
 

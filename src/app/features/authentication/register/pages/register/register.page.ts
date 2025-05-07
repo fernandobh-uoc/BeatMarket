@@ -38,6 +38,7 @@ export class RegisterPage {
   progress = computed(() => (this.step() / this.totalSteps));
 
   authProviderErrorMessage = computed(() => this.#registerService.errorMessage() ?? '');
+  profilePictureDataURL = computed(() => this.#registerService.profilePictureDataURL() ?? '');
   
   //registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
 
