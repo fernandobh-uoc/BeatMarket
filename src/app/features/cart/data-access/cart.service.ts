@@ -35,7 +35,6 @@ export class CartService {
         this.#cart.set(cart);
       });
       if (cart$) await firstValueFrom(cart$);
-      console.log(this.#cart());
     }
   }
 

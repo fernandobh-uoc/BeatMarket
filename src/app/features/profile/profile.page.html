@@ -1,13 +1,35 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>profile</ion-title>
-  </ion-toolbar>
+<ion-header>
+  <app-toolbar type="menu" [title]="'Mi perfil'"></app-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">profile</ion-title>
+      <ion-title size="large">Mi perfil</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <div class="container">
+    <div class="top-tabs-container">
+      <div class="my-data-tab" (click)="selectedTab.set('profileData')">
+        <ion-text [class.selected]="selectedTab() === 'profileData'">Mis datos</ion-text>
+      </div>
+      <div class="my-posts-tab" (click)="selectedTab.set('userPosts')">
+        <ion-text [class.selected]="selectedTab() === 'userPosts'">Mis anuncios</ion-text>
+      </div>
+    </div>
+
+    @if (selectedTab() === 'profileData') {
+      <div class="profile-data-container">
+        <div class="data-field-wrapper">
+          <ion-label class="custom">Email</ion-label>
+          <ion-text color="light">{{ currentUser()?.email }}</ion-text>
+        </div>
+      </div>
+    }
+
+    @if (selectedTab() === 'userPosts') {
+      
+    }
+  </div>
 </ion-content>

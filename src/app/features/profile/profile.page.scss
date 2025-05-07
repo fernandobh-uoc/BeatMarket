@@ -1,0 +1,35 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+
+  .top-tabs-container {
+    display: flex;
+    flex-direction: row;
+    min-height: 4rem;
+    min-width: 100dvw;
+    margin-left: calc(1.5rem * -1);
+    margin-bottom: 3rem;
+
+    & > .my-data-tab,
+    & > .my-posts-tab {
+      flex: 1 0 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--ion-color-medium);
+      cursor: pointer;
+    }
+
+    .my-data-tab {
+      border-right: 1px solid var(--ion-color-dark-tint);
+    }
+    .my-posts-tab {
+      border-left: 1px solid var(--ion-color-dark-tint);
+    }
+  }
+}
+
+.selected {
+  color: var(--ion-color-light);
+}
