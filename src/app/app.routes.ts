@@ -4,7 +4,7 @@ import { authGuard } from './core/guards/auth.guard';
 export const routes: Routes = [
   {
     path: 'auth',
-    loadChildren: () => import('./features/authentication/auth.routes').then(m => m.AuthRoutes),
+    loadChildren: () => import('src/app/features/authentication/auth.routes').then(m => m.AuthRoutes),
     canMatch: [authGuard],
     data: { authStatusMustBe: false }
   },
@@ -16,10 +16,14 @@ export const routes: Routes = [
   },
   {
     path: 'cart',
-    loadComponent: () => import('./features/cart/cart.page').then( m => m.CartPage)
+    loadComponent: () => import('src/app/features/cart/cart.page').then(m => m.CartPage)
   },
   {
     path: 'sell',
-    loadComponent: () => import('./features/sell/sell.page').then( m => m.SellPage)
+    loadComponent: () => import('src/app/features/sell/pages/sell/sell.page').then(m => m.SellPage)
+  },
+  {
+    path: 'splash',
+    loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
   }
 ];

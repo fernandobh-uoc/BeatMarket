@@ -10,15 +10,23 @@ export const TabsRoutes: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('../../../features/home/home.page').then(m => m.HomePage)
+        loadComponent: () => import('src/app/features/home/home.page').then(m => m.HomePage)
       },
       {
         path: 'profile',
-        loadComponent: () => import('../../../features/profile/profile.page').then(m => m.ProfilePage)
+        loadComponent: () => import('src/app/features/profile/profile.page').then(m => m.ProfilePage)
       },
+      /* {
+        path: 'sell',
+        loadComponent: () => import('src/app/features/sell/pages/sell/sell.page').then(m => m.SellPage)
+      }, */
       {
         path: 'sell',
-        loadComponent: () => import('../../../features/sell/sell.page').then(m => m.SellPage)
+        loadChildren: () => import('src/app/features/sell/sell.routes').then(m => m.SellRoutes)
+      },
+      {
+        path: 'sell/splash',
+        loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
       },
       {
         path: '',
