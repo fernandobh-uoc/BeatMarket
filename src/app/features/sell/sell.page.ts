@@ -3,7 +3,7 @@ import { CommonModule } from '@angular/common';
 import { FormGroup, FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
-import { SellFormComponent } from './ui/sell-form/sell-form.component';
+import { SellFormComponent } from './ui/publish-form/publish-form.component';
 import { SellService } from './data-access/sell.service';
 import { images, returnUpBackOutline } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';

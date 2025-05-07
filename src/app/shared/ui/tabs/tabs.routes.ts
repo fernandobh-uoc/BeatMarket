@@ -25,10 +25,6 @@ export const TabsRoutes: Routes = [
         loadChildren: () => import('src/app/features/sell/sell.routes').then(m => m.SellRoutes)
       },
       {
-        path: 'sell/splash',
-        loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
-      },
-      {
         path: '',
         redirectTo: '/tabs/home',
         pathMatch: 'full'

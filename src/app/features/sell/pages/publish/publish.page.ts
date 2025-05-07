@@ -3,28 +3,23 @@ import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormGroup, FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
-import { SellFormComponent } from '../../ui/sell-form/sell-form.component';
+import { PublishFormComponent } from '../../ui/publish-form/publish-form.component';
 import { SellService } from '../../data-access/sell.service';
-import { images, returnUpBackOutline } from 'ionicons/icons';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-sell',
-  templateUrl: './sell.page.html',
-  styleUrls: ['./sell.page.scss'],
+  templateUrl: './publish.page.html',
+  styleUrls: ['./publish.page.scss'],
   standalone: true,
-  imports: [SellFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class SellPage implements OnInit {
-  /* step = signal<number>(1);
-  totalSteps = 3;
-  progressBarValue = computed(() => (this.step() / this.totalSteps)); */
-
+export class PublishPage implements OnInit {
   sellService = inject(SellService);
-  #router = inject(Router);
+  router = inject(Router);
 
-  sellFormComponent = viewChild(SellFormComponent);
+  publishFormComponent = viewChild(PublishFormComponent);
 
   publishErrorMessage = computed(() => this.sellService.errorMessage());
 
@@ -55,14 +50,14 @@ export class SellPage implements OnInit {
   async handleFormSubmit() {
     this.submitAttempted.set(true);
 
-    const sellForm: FormGroup<any> | undefined = this.sellFormComponent()?.sellForm;
-    sellForm?.updateValueAndValidity();
+    const publishForm: FormGroup<any> | undefined = this.publishFormComponent()?.publishForm;
+    publishForm?.updateValueAndValidity();
 
-    console.log('Invalid controls:', this.findInvalidControls(sellForm));
+    console.log('Invalid controls:', this.findInvalidControls(publishForm));
 
-    console.log(sellForm?.value);
+    console.log(publishForm?.value);
 
-    if (sellForm?.invalid) {
+    if (publishForm?.invalid) {
       return;
     }
 
@@ -71,22 +66,22 @@ export class SellPage implements OnInit {
     }
 
     console.log({
-      ...sellForm?.value.commonData,
-      characteristics: sellForm?.value.specificData,
+      ...publishForm?.value.commonData,
+      characteristics: publishForm?.value.specificData,
     });
 
     this.disabledPublishButton.set(true);
 
     await this.sellService.publishPost({
-      ...sellForm?.value.commonData,
+      ...publishForm?.value.commonData,
       characteristics: {
-        ...sellForm?.value.specificData,
-        category: sellForm?.value.commonData.category // Append category to characteristics for discrimination on PostConverter
+        ...publishForm?.value.specificData,
+        category: publishForm?.value.commonData.category // Append category to characteristics for discrimination on PostConverter
       },
     });
     
     if (!this.publishErrorMessage()) {
-      this.#router.navigate(['/tabs/sell/splash']);
+      this.router.navigate(['/tabs/sell/splash']);
     }
   }
 

@@ -8,14 +8,14 @@ import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentT
 
 @Component({
   selector: 'app-sell-form',
-  templateUrl: './sell-form.component.html',
-  styleUrls: ['./sell-form.component.scss'],
+  templateUrl: './publish-form.component.html',
+  styleUrls: ['./publish-form.component.scss'],
   imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule]
 })
-export class SellFormComponent  implements OnInit {
+export class PublishFormComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
 
-  sellForm!: FormGroup;
+  publishForm!: FormGroup;
 
   formSubmit = output<void>();
   submitAttempted = input<boolean>(false);
@@ -65,7 +65,7 @@ export class SellFormComponent  implements OnInit {
   }
 
   #initForm() {
-    this.sellForm = this.fb.group({
+    this.publishForm = this.fb.group({
       commonData: this.fb.group({
         title: this.fb.control('', { 
           validators: [Validators.required, Validators.minLength(20)],
@@ -146,8 +146,8 @@ export class SellFormComponent  implements OnInit {
   onCategoryChange(event: any) {
     this.selectedCategory.set(event.detail.value);
 
-    if (this.sellForm.contains('specificData')) {
-      this.sellForm.removeControl('specificData');
+    if (this.publishForm.contains('specificData')) {
+      this.publishForm.removeControl('specificData');
     }
 
     let specificGroup: FormGroup | undefined;
@@ -275,7 +275,7 @@ export class SellFormComponent  implements OnInit {
     }
 
     if (specificGroup) {
-      this.sellForm.setControl('specificData', specificGroup);
+      this.publishForm.setControl('specificData', specificGroup);
     }
   }
 

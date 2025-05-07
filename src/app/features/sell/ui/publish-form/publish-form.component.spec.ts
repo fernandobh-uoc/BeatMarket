@@ -1,19 +1,19 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { SellFormComponent } from './sell-form.component';
+import { PublishFormComponent } from './publish-form.component';
 
 describe('SellFormComponent', () => {
-  let component: SellFormComponent;
-  let fixture: ComponentFixture<SellFormComponent>;
+  let component: PublishFormComponent;
+  let fixture: ComponentFixture<PublishFormComponent>;
 
   beforeEach(waitForAsync(() => {
     TestBed.configureTestingModule({
-      declarations: [ SellFormComponent ],
+      declarations: [ PublishFormComponent ],
       imports: [IonicModule.forRoot()]
     }).compileComponents();
 
-    fixture = TestBed.createComponent(SellFormComponent);
+    fixture = TestBed.createComponent(PublishFormComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   }));

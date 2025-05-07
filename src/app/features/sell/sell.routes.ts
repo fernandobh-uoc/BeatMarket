@@ -2,16 +2,16 @@ import { Routes } from "@angular/router";
 
 export const SellRoutes: Routes = [
   {
-    path: 'sell',
-    loadComponent: () => import('src/app/features/sell/pages/sell/sell.page').then(m => m.SellPage)
+    path: 'publish',
+    loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage)
   },
   {
-    path: 'sell/splash',
+    path: 'splash',
     loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
   },
   {
     path: '',
-    redirectTo: 'sell',
+    redirectTo: 'publish',
     pathMatch: 'full'
   }
 ];

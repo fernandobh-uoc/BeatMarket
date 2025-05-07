@@ -19,10 +19,6 @@ export const routes: Routes = [
     loadComponent: () => import('src/app/features/cart/cart.page').then(m => m.CartPage)
   },
   {
-    path: 'sell',
-    loadComponent: () => import('src/app/features/sell/pages/sell/sell.page').then(m => m.SellPage)
-  },
-  {
     path: 'splash',
     loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
   }
