@@ -55,6 +55,8 @@ export class RegisterFormComponent implements OnInit {
 
   formattedDate = signal<string>(new Date().toLocaleDateString('es-ES'));
 
+  avatarDataURL = input<string>('');
+
   countries = countries;
   roles: Role[] = [
     Role.Amateur,

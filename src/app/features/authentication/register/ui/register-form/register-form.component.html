@@ -74,7 +74,10 @@
     <div class="input-wrapper-row">
       <ion-label class="custom" color="light">Avatar (opcional)</ion-label>
       <ion-avatar slot="start" (click)="uploadAvatar.emit()">
-        <img alt="Avatar de usuario por defecto" src="../../../../../../assets/user-avatar-default-shade.svg" />
+        <img 
+          alt="Avatar de usuario por defecto"
+          [src]="avatarDataURL() || '../../../../../../assets/user-avatar-default-shade.svg'" 
+        />
       </ion-avatar>
     </div>
   </div>
