@@ -7,12 +7,12 @@ export interface CartItem {
   postId: PostModel["_id"],
   title: PostModel["title"],
   price: PostModel["price"],
-  shipping: PostModel["shipping"],
+  shipping: number,
 }
 
 export interface CartModel extends JSONSerializable<CartModel>, Timestamps {
   _id: string;
-  userId: UserModel["_id"];
+  userId: UserModel["_id"] | string;
   items: CartItem[]; // Map (should not be excessively large)
 }
 
@@ -50,4 +50,21 @@ export class Cart implements CartModel {
     }
     return null;
   }
+}
+
+export function isCartModel(obj: any): obj is CartModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.userId === 'string' &&
+    Array.isArray(obj.items);
+}
+
+export function isCartItem(obj: any): obj is CartItem {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj.postId === 'string' &&
+    typeof obj.title === 'string' &&
+    typeof obj.price === 'number' &&
+    typeof obj.shipping === 'number';
 }

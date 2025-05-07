@@ -21,9 +21,9 @@ export enum ArticleCondition {
   Refurbished = 'Restaurado'
 }
 
-export interface ArticleModel extends JSONSerializable<ArticleModel> {
-  _id: string;
-  name: string;
+export interface ArticleModel {
+  //_id: string;
+  //name: string;
   category: ArticleCategory;
   condition: ArticleCondition;
   characteristics: ArticleCharacteristics;
@@ -32,15 +32,15 @@ export interface ArticleModel extends JSONSerializable<ArticleModel> {
 export function isArticleModel(obj: any): obj is ArticleModel {
   return typeof obj === 'object' &&
     obj !== null &&
-    typeof obj._id === 'string' &&
-    typeof obj.name === 'string' &&
+    /* typeof obj._id === 'string' &&
+    typeof obj.name === 'string' && */
     typeof obj.category === 'string' &&
     typeof obj.condition === 'string' &&
     typeof obj.characteristics === 'object';
 }
 
 /* class Article implements ArticleModel {
-  public _id: string = '';
+  //public _id: string = '';
   public name: string = '';
   public category: ArticleCategory = ArticleCategory.None;
   public condition: ArticleCondition = ArticleCondition.None;

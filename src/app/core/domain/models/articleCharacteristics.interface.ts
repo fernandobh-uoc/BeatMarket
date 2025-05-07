@@ -132,7 +132,6 @@ export interface InstrumentCharacteristics {
   color?: string;
   fabricationYear?: string;
   serialNumber?: string;
-  accessories?: string[];
   instrumentLevel?: InstrumentLevel;
 }
 

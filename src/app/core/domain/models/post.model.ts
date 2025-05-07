@@ -1,11 +1,17 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
-import { ArticleModel } from "./article.model";
+import { ArticleCategory, ArticleCondition, ArticleModel } from "./article.model";
 import { Timestamps } from "./appModel.type";
 
 export enum PostStatus {
   Active = 'active',
   Finished = 'finished'
+}
+
+export interface PostUserData {
+  userId: UserModel["_id"];
+  username: UserModel["username"];
+  profilePictureURL: UserModel["profilePictureURL"];
 }
 
 export interface PostModel extends JSONSerializable<PostModel>, Timestamps {
@@ -14,12 +20,12 @@ export interface PostModel extends JSONSerializable<PostModel>, Timestamps {
   description: string;
   mainImageURL: string;
   imagesURLs: string[];
-  user: Partial<UserModel>;
+  user: PostUserData;
   price: number;
-  shipping: number;
+  //shipping: number;
   status: PostStatus;
   finishedAt: Date | null;
-  article: Partial<ArticleModel>;
+  article: ArticleModel;
 }
 
 export class Post implements PostModel {
@@ -28,12 +34,20 @@ export class Post implements PostModel {
   public description: string = '';
   public mainImageURL: string = '';
   public imagesURLs: string[] = [];
-  public user: Partial<UserModel> = {};
+  public user: PostUserData = {
+    userId: '',
+    username: '',
+    profilePictureURL: ''
+  };
   public price: number = 0;
-  public shipping: number = 0;
+  //public shipping: number = 0;
   public status: PostStatus = PostStatus.Active;
   public finishedAt: Date | null = null;
-  public article: Partial<ArticleModel> = {};
+  public article: ArticleModel = {
+    category: ArticleCategory.None,
+    condition: ArticleCondition.None,
+    characteristics: { category: ArticleCategory.None }
+  };
 
   private constructor(post: Partial<PostModel> = {}) {
     Object.assign(this, { ...post });
@@ -76,7 +90,7 @@ export function isPostModel(obj: any): obj is PostModel {
     Array.isArray(obj.imagesURLs) &&
     typeof obj.user === 'object' &&
     typeof obj.price === 'number' &&
-    typeof obj.shipping === 'number' &&
+    //typeof obj.shipping === 'number' &&
     typeof obj.status === 'string' &&
     typeof obj.article === 'object' &&
     typeof obj.createdAt === 'object' &&
