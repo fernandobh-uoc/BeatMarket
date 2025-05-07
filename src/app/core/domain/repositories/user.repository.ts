@@ -1,12 +1,13 @@
 import { inject, Injectable } from '@angular/core';
-import { User, UserModel } from '../models/user.model';
+import { ActivePost, User, UserModel } from '../models/user.model';
 import { Storage } from '../../services/storage/storage.interface';
 import { environment } from 'src/environments/environment.dev';
 import { Observable } from 'rxjs/internal/Observable';
 import { ActivePostConverter, UserConverter } from '../../services/storage/adapters/converters/user.converter';
-import { Post } from '../models/post.model';
+import { Post, PostModel } from '../models/post.model';
 import { combineLatestWith, map, of, switchMap } from 'rxjs';
 import { collection } from 'firebase/firestore';
+import { ArticleModel } from '../models/article.model';
 
 @Injectable({ providedIn: 'root' })
 export class UserRepository {
@@ -28,10 +29,13 @@ export class UserRepository {
         return user;
       }
 
-      const activePosts = await this.storage.getCollection({ collection: `users/${id}/activePosts`, converter: this.activePostConverter });
+      const activePosts: ActivePost[] = 
+        await this.storage.getCollection({ 
+          collection: `users/${id}/activePosts`, 
+          converter: this.activePostConverter 
+        });
       user.activePosts = activePosts ?? [];
       return user;
-
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -45,11 +49,12 @@ export class UserRepository {
       const user$: Observable<User | null> = this.storage.getById$(id, { collection: 'users', converter: this.userConverter });
       if (!includeActivePosts || !this.storage.getCollection$) return user$;
 
-      const activePosts$: Observable<Partial<Post>[] | null> =
+      const activePosts$: Observable<ActivePost[] | null> =
         this.storage.getCollection$({
           collection: `users/${id}/activePosts`,
           converter: this.activePostConverter
         });
+
       return user$.pipe(
         combineLatestWith(activePosts$),
         map(([user, activePosts]) => {
@@ -133,7 +138,6 @@ export class UserRepository {
       console.error(storageError);
       throw storageError;
     }
-    return null;
   }
 
   getUserByUsername$(username: string): Observable<User | null> | null {
@@ -171,7 +175,7 @@ export class UserRepository {
     }
   }
 
-  async saveUser(userData: Partial<UserModel>): Promise<User | boolean | null> {
+  async saveUser(userData: Partial<UserModel>): Promise<User | null> {
     try {
       const _user: User = User.Build(userData);
       let user: User | null;
@@ -179,19 +183,39 @@ export class UserRepository {
         console.log({ user });
         return user; // Return the created user with timestamps
       }
-      return false;
+      return null;
     } catch (storageError) {
       throw storageError;
     }
   }
 
-  async updateUser(userData: Partial<User> & { _id: string }): Promise<User | boolean | null> {
+  async updateUser(userData: Partial<UserModel> & { _id: string }): Promise<User | null> {
     try {
-      //const user: User = User.Build(userData);
-      if (await this.storage.update(userData, { collection: 'users', converter: this.userConverter })) {
-        return true;
+      let user: User | null;
+      if (user = await this.storage.update(userData, { collection: 'users', converter: this.userConverter })) {
+        return user;
       }
-      return false;
+      return null;
+    } catch (storageError) {
+      throw storageError;
+    }
+  }
+
+  async saveActivePost(userId: string, postId: string, activePostData: ActivePost): Promise<User | null> {
+    if (!this.storage.createInSubcollection) return null;
+
+    try {
+      let user: User | null;
+      if (user = await this.storage.createInSubcollection(
+        activePostData, { 
+          collection: `users/${userId}/activePosts/${postId}`, 
+          converter: this.activePostConverter 
+        })
+      ) {
+        console.log({ user });
+        return user;
+      }
+      return null;
     } catch (storageError) {
       throw storageError;
     }
