@@ -151,6 +151,7 @@ export class SellService {
       const downloadURLs: string[] | null = await this.#uploadImagesToCloudStorage(post._id);
       await this.#postRepository.updatePost({
         _id: post._id,
+        mainImageURL: downloadURLs?.[0] ?? '',
         imagesURLs: downloadURLs ?? []
       });
 
