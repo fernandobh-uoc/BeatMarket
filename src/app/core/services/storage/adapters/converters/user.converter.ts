@@ -1,5 +1,5 @@
 import { FieldValue, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
-import { Role, User, UserModel } from "src/app/core/domain/models/user.model";
+import { ActivePost, Role, User, UserModel } from "src/app/core/domain/models/user.model";
 import { Post, PostModel } from "src/app/core/domain/models/post.model";
 import { ArticleCategory, ArticleModel } from "src/app/core/domain/models/article.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
@@ -88,7 +88,7 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
 }
 
 export class ActivePostConverter implements FirestoreDataConverter<Partial<PostModel> & Partial<ArticleModel>, ActivePostFirestoreModel> {
-  toFirestore(activePost: WithFieldValue<Partial<PostModel> & Partial<ArticleModel>>): WithFieldValue<ActivePostFirestoreModel> {
+  toFirestore(activePost: WithFieldValue<ActivePost>): WithFieldValue<ActivePostFirestoreModel> {
     return {
       title: typeof activePost.title === 'string' ? activePost.title : '',
       category: activePost?.category?.toString() ?? ArticleCategory.None,
@@ -96,7 +96,7 @@ export class ActivePostConverter implements FirestoreDataConverter<Partial<PostM
     };
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot, options?: SnapshotOptions): Partial<PostModel> & Partial<ArticleModel> {
+  fromFirestore(snapshot: QueryDocumentSnapshot, options?: SnapshotOptions): ActivePost {
     const data = snapshot.data(options);
 
     const rawCategory = data?.['category'] ?? '';
@@ -108,6 +108,6 @@ export class ActivePostConverter implements FirestoreDataConverter<Partial<PostM
       title: data?.['title'] ?? '',
       category: categoryEnumValue,
       price: data?.['price'] ?? 0
-    } as Partial<PostModel> & Partial<ArticleModel>;
+    } as ActivePost;
   }
 }

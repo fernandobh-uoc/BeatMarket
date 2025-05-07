@@ -1,12 +1,11 @@
 import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
 import { ArticleCategory, ArticleCondition, ArticleModel, isArticleModel } from "src/app/core/domain/models/article.model";
-import { Post, PostModel, PostStatus } from "src/app/core/domain/models/post.model";
+import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/models/post.model";
 import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
 import { UserModel } from "src/app/core/domain/models/user.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface PostFirestoreModel {
-  postId: string;
   title: string;
   description: string;
   mainImageURL: string;
@@ -17,11 +16,10 @@ export interface PostFirestoreModel {
     profilePictureURL: string;
   },
   price: number;
-  shipping: number;
+  //shipping: number;
   status: string;
   finishedAt: Timestamp | null;
   article: {
-    name: string;
     category: string;
     condition: string;
     characteristics: {
@@ -83,31 +81,28 @@ export interface PostFirestoreModel {
 
 export class PostConverter implements FirestoreDataConverter<PostModel, PostFirestoreModel> {
   toFirestore(post: WithFieldValue<PostModel>): WithFieldValue<PostFirestoreModel> {
-    let { user, article } = post;
-    user = user as Partial<UserModel>;
-    article = article as Partial<ArticleModel>;
+    console.log({ post });
+    let article: Partial<ArticleModel> = post.article as Partial<ArticleModel>;
 
     let category: string = ArticleCategory.None;
     let characteristics: any = { category: ArticleCategory.None };
     if (isArticleModel(article)) {
       category = article.category;
       const c = article.characteristics;
+      console.log({ c });
 
       if (isInstrumentCharacteristics(c)) {
         characteristics = {
-          category,
           type: c.type,
           brand: c.brand,
           model: c.model,
           color: c.color,
           fabricationYear: c.fabricationYear,
           serialNumber: c.serialNumber,
-          accessories: c.accessories,
           instrumentLevel: c.instrumentLevel,
         }
       } else if (isBookCharacteristics(c)) {
         characteristics = {
-          category,
           author: c.author,
           theme: c.theme,
           edition: c.edition,
@@ -121,9 +116,8 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
         }
       } else if (isRecordingCharacteristics(c)) {
         characteristics = {
-          category,
           format: c.format,
-          title: c.title,
+          recordingTitle: c.recordingTitle,
           artist: c.artist,
           genre: c.genre,
           year: c.year,
@@ -140,14 +134,12 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
         }
       } else if (isAccessoryCharacteristics(c)) {
         characteristics = {
-          category,
           name: c.name,
           brand: c.brand,
           associatedInstrument: c.associatedInstrument,
         }
       } else if (isProfessionalCharacteristics(c)) {
         characteristics = {
-          category,
           name: c.name,
           brand: c.brand,
           model: c.model,
@@ -162,32 +154,34 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
           warrantyCountry: c.warrantyCountry,
         }
       }
+
+      console.log({ characteristics });
     }
 
+    console.log({ article });
+
     return {
-      postId: post._id,
       title: post.title,
       description: post.description,
       mainImageURL: post.mainImageURL,
       imagesURLs: post.imagesURLs,
       user: {
-        userId: user._id ?? '',
-        username: user.username ?? '',
-        profilePictureURL: user.profilePictureURL ?? '',
+        userId: (<PostUserData>post.user).userId,
+        username: (<PostUserData>post.user).username,
+        profilePictureURL: (<PostUserData>post.user).profilePictureURL,
       },
       price: post.price,
-      shipping: post.shipping,
+      //shipping: post.shipping,
       status: post.status,
       finishedAt: isValidDateInput(post.finishedAt) 
         ? Timestamp.fromDate(new Date(post.finishedAt)) 
         : isFieldValue(post.finishedAt)
           ? post.finishedAt
-          : serverTimestamp(),
+          : null,
       article: {
-        name: article.name ?? '',
         category,
-        condition: article.condition ?? '',
-        characteristics
+        condition: (<Partial<ArticleModel>>post.article).condition ?? '',
+        characteristics: { ...characteristics }
       },
       createdAt: isValidDateInput(post.createdAt)
         ? Timestamp.fromDate(new Date(post.createdAt))
@@ -213,7 +207,7 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
       imagesURLs: data.imagesURLs ?? [],
       user: data.user ?? {},
       price: data.price ?? 0,
-      shipping: data.shipping ?? 0,
+      //shipping: data.shipping ?? 0,
       status: Object.values(PostStatus).includes(data.status as PostStatus) 
         ? (data.status as PostStatus)
         : PostStatus.Active,
@@ -221,7 +215,6 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
         ? data.finishedAt.toDate() 
         : null,
       article: {
-        name: data.article.name,
         category: data.article.category as ArticleCategory,
         condition: data.article.condition as ArticleCondition,
         characteristics: data.article.characteristics as ArticleCharacteristics
