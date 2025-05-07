@@ -13,14 +13,16 @@ import { toSignal } from '@angular/core/rxjs-interop';
 
 export interface AuthStatus {
   isAuthenticated: boolean,
-  userRoles: Role[],
   userId: string,
+  username: string,
+  userRoles: Role[],
 }
 
 const defaultAuthStatus: AuthStatus = {
   isAuthenticated: false,
+  userId: '',
+  username: '',
   userRoles: [],
-  userId: ''
 }
 
 @Injectable({ providedIn: 'root' })
@@ -95,7 +97,7 @@ export class AuthService {
     }
   }
 
-  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | boolean | null> {
+  async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | null> {
     this.#setAuthMethod(method);
     
     try {
@@ -190,6 +192,7 @@ export class AuthService {
       this.#authStatus.set({
         isAuthenticated: true,
         userId: user._id,
+        username: user.username,
         userRoles: user.roles
       });
       await this.#cache.set('authStatus', this.#authStatus());
