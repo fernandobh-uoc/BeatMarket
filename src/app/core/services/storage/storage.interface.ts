@@ -16,5 +16,8 @@ export interface Storage<T extends { _id: string } & AppModel> {
   remove(id: string, params?: any): Promise<T | null>;
   exists(id: string, params?: any): Promise<boolean>;
 
+  createInSubcollection?(obj: any, params?: any): Promise<any | null>;
+  updateInSubcollection?(obj: Partial<any> & { _id: string }, params?: any): Promise<any | null>;
+
   query(params?: any): Promise<T[]>;
 }

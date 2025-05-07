@@ -3,7 +3,7 @@ import { toSignal } from "@angular/core/rxjs-interop";
 import { Storage } from '../storage.interface';
 import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt, serverTimestamp } from '@angular/fire/firestore';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
-import { UserModel } from "src/app/core/domain/models/user.model";
+import { ActivePost, UserModel } from "src/app/core/domain/models/user.model";
 import { PostModel } from "src/app/core/domain/models/post.model";
 import { CartModel } from "src/app/core/domain/models/cart.model";
 import { SaleModel } from "src/app/core/domain/models/sale.model";
@@ -229,6 +229,36 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       throw this.getErrorMessage(firestoreError);
     }
   };
+
+  async createInSubcollection(obj: any, params?: FirestoreParams): Promise<any | null> {
+    if (!params?.collection) throw new Error("You must provide the collection.");
+
+    try {
+      let docRef: DocumentReference = doc(this.firestore, `${params.collection}`);
+      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+
+      await setDoc(docRef, obj);
+      const retObj: any = (await getDoc(docRef)).data();
+      return ({ ...retObj, _id: docRef.id });
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
+    }
+  };
+
+  async updateInSubcollection(obj: any & { _id: string; }, params?: any): Promise<any | null> {
+    if (!params?.collection) throw new Error("You must provide the collection.");
+
+    try {
+      let docRef: DocumentReference = doc(this.firestore, `${params.collection}`);
+      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+
+      await updateDoc(docRef, obj);
+      const retObj: any = (await getDoc(docRef)).data();
+      return ({ ...retObj, _id: docRef.id });
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
+    }
+  }
 
   async update(obj: Partial<T> & { _id: string }, params?: FirestoreParams): Promise<T | null> {
     if (!params?.collection) {
