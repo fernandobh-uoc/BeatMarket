@@ -62,6 +62,30 @@
       }
     </div>
 
+    <div class="input-wrapper condition-wrapper">
+      <ion-label class="custom" color="light">Estado del artículo</ion-label>
+      <div class="radiobuttons-container">
+        <ion-radio-group formControlName="condition">
+          <ion-row>
+            @for (condition of conditions; track condition) {
+              <ion-col>
+                <div class="radiobutton-wrapper">
+                  <ion-radio labelPlacement="end" [value]="condition" color="light">
+                    {{ condition }}
+                  </ion-radio>
+                </div>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-radio-group>
+      </div>
+      @if (submitAttempted()) {
+        @if (sellForm.get('commonData.category')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">Debes seleccionar un estado</ion-text>
+        }
+      }
+    </div>
+
     <div class="input-wrapper category-wrapper">
       <ion-label class="custom" color="light">Categoría</ion-label>
       <div class="radiobuttons-container">

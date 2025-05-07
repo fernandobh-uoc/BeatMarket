@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ArticleCategory } from 'src/app/core/domain/models/article.model';
+import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/article.model';
 import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
@@ -25,6 +25,9 @@ export class SellFormComponent  implements OnInit {
   uploadedImagesURLs = input<string[]>([]);
   
   suggestPrice = output<void>();
+
+  conditionsEnum = ArticleCondition;
+  conditions: ArticleCondition[] = Object.values(ArticleCondition).filter(condition => condition !== ArticleCondition.None);
 
   categoriesEnum = ArticleCategory;
   categories: ArticleCategory[] = Object.values(ArticleCategory).filter(category => category !== ArticleCategory.None);
@@ -80,6 +83,10 @@ export class SellFormComponent  implements OnInit {
           validators: [Validators.required],
           updateOn: 'blur'
         }),
+        condition: this.fb.control('', {
+          validators: [Validators.required],
+          updateOn: 'blur'
+        }),
         category: this.fb.control(this.selectedCategory(), {
           validators: [Validators.required],
           updateOn: 'blur'
@@ -131,9 +138,9 @@ export class SellFormComponent  implements OnInit {
           InstrumentBrands.Other
         ];
       case InstrumentType.Other:
-        return [InstrumentBrands.None];
+        return [InstrumentBrands.Other];
     }
-    return [];
+    return [InstrumentBrands.None];
   }
 
   onCategoryChange(event: any) {
@@ -268,7 +275,7 @@ export class SellFormComponent  implements OnInit {
     }
 
     if (specificGroup) {
-      this.sellForm.addControl('specificData', specificGroup);
+      this.sellForm.setControl('specificData', specificGroup);
     }
   }
 
