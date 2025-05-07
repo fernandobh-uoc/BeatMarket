@@ -16,10 +16,6 @@ export const TabsRoutes: Routes = [
         path: 'profile',
         loadComponent: () => import('src/app/features/profile/profile.page').then(m => m.ProfilePage)
       },
-      /* {
-        path: 'sell',
-        loadComponent: () => import('src/app/features/sell/pages/sell/sell.page').then(m => m.SellPage)
-      }, */
       {
         path: 'sell',
         loadChildren: () => import('src/app/features/sell/sell.routes').then(m => m.SellRoutes)

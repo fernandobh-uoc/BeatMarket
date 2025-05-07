@@ -1,5 +1,6 @@
 import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
+import { ViewWillEnter } from '@ionic/angular';
 import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/article.model';
 import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
@@ -12,7 +13,7 @@ import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentT
   styleUrls: ['./publish-form.component.scss'],
   imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule]
 })
-export class PublishFormComponent implements OnInit {
+export class PublishFormComponent {
   fb: FormBuilder = inject(FormBuilder);
 
   publishForm!: FormGroup;
@@ -95,6 +96,10 @@ export class PublishFormComponent implements OnInit {
       specificData: this.fb.group({})
     })
   }
+
+  resetForm() {
+    this.publishForm.reset();
+  } 
 
   #updateUploadImageBoxBackgroud(imageUrl: string) {
     const imageBox = document.querySelector('.images-upload-box') as HTMLElement;

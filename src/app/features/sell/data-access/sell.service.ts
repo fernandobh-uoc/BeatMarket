@@ -164,6 +164,7 @@ export class SellService {
 
       await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
 
+      this.latestPublishedPostId.set(post._id);
       //currentUser.activePosts.push(post as Partial<Post>);
       //await this.#authService.updateUser(user);
 

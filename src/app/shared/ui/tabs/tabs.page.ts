@@ -6,6 +6,7 @@ import { addIcons } from 'ionicons';
 import { chatboxEllipses, home, musicalNotes, personCircle } from 'ionicons/icons';
 import { MenuComponent } from '../components/menu/menu.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-tabs',
@@ -15,9 +16,16 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
   imports: [MenuComponent, IonLabel, IonTabBar, IonTabButton, IonTabs, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class TabsPage {
+  router = inject(Router);
   authService = inject(AuthService);
 
   constructor() {
     addIcons({ home, personCircle, musicalNotes, chatboxEllipses });
+  }
+
+  onTabChange(event: { tab: string}) {
+    if (event.tab === 'sell') {
+      this.router.navigateByUrl('/tabs/sell/publish', { replaceUrl: true });
+    }
   }
 }

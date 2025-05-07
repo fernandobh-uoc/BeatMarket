@@ -3,7 +3,7 @@
   [username]="authService.currentUser()?.username ?? ''"
   [userProfilePictureURL]="authService.currentUser()?.profilePictureURL ?? ''">
 </app-menu>
-<ion-tabs id="menu-content">
+<ion-tabs id="menu-content" (ionTabsWillChange)="onTabChange($event)">
   <ion-tab-bar slot="bottom" color="dark">
     <ion-tab-button tab="home">
       <ion-icon aria-hidden="true" name="home"></ion-icon>

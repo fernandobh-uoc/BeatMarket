@@ -7,6 +7,7 @@ import { PublishFormComponent } from '../../ui/publish-form/publish-form.compone
 import { SellService } from '../../data-access/sell.service';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
+import { ViewWillEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-sell',
@@ -15,7 +16,7 @@ import { Router } from '@angular/router';
   standalone: true,
   imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class PublishPage implements OnInit {
+export class PublishPage implements OnInit, ViewWillEnter {
   sellService = inject(SellService);
   router = inject(Router);
 
@@ -27,6 +28,12 @@ export class PublishPage implements OnInit {
   submitAttempted = signal<boolean>(false);
 
   disabledPublishButton = signal<boolean>(false);
+
+  ionViewWillEnter(): void {
+    this.submitAttempted.set(false);
+    this.disabledPublishButton.set(false);
+    this.publishFormComponent()?.resetForm();  
+  }
 
   onControlFocus(control: string) {
     this.submitAttempted.set(false);
