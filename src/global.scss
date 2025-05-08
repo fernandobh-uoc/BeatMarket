@@ -225,6 +225,7 @@ form {
 
 	ion-input.custom:focus-within {
 		border: 1px solid var(--ion-color-medium);
+		border-style: inset;
 		border-radius: 8px;
 	}
 
