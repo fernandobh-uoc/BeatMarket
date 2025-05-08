@@ -17,7 +17,12 @@
 
     <div class="input-wrapper">
       <ion-label class="custom" color="light">Título del anuncio</ion-label>
-      <ion-input formControlName="title" type="text" class="custom" (ionFocus)="controlFocus.emit('commonData')"></ion-input>
+      <ion-input
+        #titleInput
+        formControlName="title"
+        type="text"
+        class="custom"
+        (ionFocus)="controlFocus.emit('commonData')"></ion-input>
       @if (submitAttempted()) {
         @if (publishForm.get('commonData.title')?.errors?.['required']) {
           <ion-text class="error-text" color="danger">El título del anuncio es obligatorio</ion-text>
