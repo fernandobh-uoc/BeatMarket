@@ -27,9 +27,13 @@
     .my-posts-tab {
       border-left: 1px solid var(--ion-color-dark-tint);
     }
+
+    .selected {
+      color: var(--ion-color-light);
+    }
   }
+
+  
 }
 
-.selected {
-  color: var(--ion-color-light);
-}
+

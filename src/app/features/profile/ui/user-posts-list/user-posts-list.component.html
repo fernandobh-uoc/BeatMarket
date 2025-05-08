@@ -1,0 +1,20 @@
+@if (posts()?.length === 0) {
+  <div class="container-empty">
+    <ion-text class="text-empty">No tienes anuncios publicados</ion-text>
+  </div>
+} @else {
+  <ion-list lines="none" class="posts-list">
+    @for(post of posts(); track post._id) {
+      <ion-item class="post-item">
+        <ion-thumbnail slot="start" class="post-image">
+          <img [src]="post.mainImageURL" alt="Imagen principal del anuncio">
+        </ion-thumbnail>
+        <div class="labels-container">
+          <ion-text class="post-title">{{ post.title }}</ion-text>
+          <ion-label class="post-category">{{ post.category}}</ion-label>
+          <ion-text class="post-price">{{ post.price }} €</ion-text>
+        </div>
+      </ion-item>
+    }
+  </ion-list>
+}

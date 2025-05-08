@@ -20,16 +20,11 @@
     </div>
 
     @if (selectedTab() === 'profileData') {
-      <div class="profile-data-container">
-        <div class="data-field-wrapper">
-          <ion-label class="custom">Email</ion-label>
-          <ion-text color="light">{{ currentUser()?.email }}</ion-text>
-        </div>
-      </div>
+      <app-user-data-list [user]="currentUser()"></app-user-data-list>
     }
 
     @if (selectedTab() === 'userPosts') {
-      
+      <app-user-posts-list [posts]="currentUser()?.activePosts"></app-user-posts-list>
     }
   </div>
 </ion-content>

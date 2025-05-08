@@ -1,0 +1,66 @@
+
+<div class="profile-data-container">
+  <app-user-data-item-wrapper
+    [editable]="false"
+    keyTag="email"
+    type="text"
+    label="Email"
+    data="{{ user()?.email }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="username"
+    type="text"
+    label="Nombre de usuario"
+    data="{{ user()?.username }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="password"
+    type="password"
+    label="Contraseña"
+    data="••••••••"
+  ></app-user-data-item-wrapper>
+  
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="first"
+    type="text"
+    label="Nombre"
+    data="{{ user()?.name?.first }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="last"
+    type="text"
+    label="Apellidos"
+    data="{{ user()?.name?.last }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="line1"
+    type="text"
+    label="Dirección"
+    data="{{ user()?.address?.line1 }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="zipcode"
+    type="number"
+    label="Código postal"
+    data="{{ user()?.address?.zipcode }}"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="country"
+    type="select"
+    label="País"
+    data="{{ user()?.address?.country ?? '' | countryCodeToName }}"
+  ></app-user-data-item-wrapper>
+</div>

@@ -1,0 +1,67 @@
+<div class="label-text-wrapper">
+  <ion-label class="custom">{{ label() }}</ion-label>
+
+  <div class="data-field-wrapper">
+    @if (editable() && editingStateActive()) {
+      <div class="edit-form-wrapper">
+        <form>
+          @switch (type()) {
+            @case ('text') {
+              <ion-input #editInput class="custom" type="text" [value]="data()" (ionFocus)="controlFocus.emit()" (ionInput)="controlInput.emit(editInput.value)"></ion-input>
+            }
+            @case ('password') {
+              <ion-input #editInput class="custom" type="password" (ionFocus)="controlFocus.emit()" (ionInput)="controlInput.emit(editInput.value)">
+                <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
+              </ion-input>
+            }
+            @case ('number') {
+              <ion-input #editInput class="custom" type="text" inputmode="numeric" [value]="data()" (ionFocus)="controlFocus.emit()" (ionInput)="controlInput.emit(editInput.value)"></ion-input>
+            }
+            @case ('avatar') {
+              <ion-avatar #editInput class="custom" (ionFocus)="controlFocus.emit()"></ion-avatar>
+            }
+            @case('select') {
+              <ion-select #editInput interface="action-sheet" color="light" class="custom select-input" (ionFocus)="controlFocus.emit()" (ionChange)="selectChange.emit()">
+                @for (option of selectOptions(); track option.iso2) {
+                  <ion-select-option [value]="option.iso2">{{ option.nameES }}</ion-select-option>
+                }
+              </ion-select>
+            }
+          }
+        </form>
+      </div>
+      <div class="edit-buttons-wrapper">
+        <ion-text 
+          class="inline-link-save"
+          [class.inline-link-disabled]="disabledSaveButtonPending() || disabledSaveButtonManual()" 
+          (click)="
+            !disabledSaveButtonPending()
+            && !disabledSaveButtonManual()
+            && save.emit(editInput()?.value)"
+        >Guardar</ion-text>
+        <ion-text 
+          class="inline-link-cancel"
+          [class.inline-link-disabled]="disabledSaveButtonPending()"
+          (click)="!disabledSaveButtonPending()
+            && editable() 
+            && toggleEditingState.emit()"
+        >Cancelar</ion-text>
+      </div>
+    } @else {
+      <div class="data-display-wrapper" [class.min-height-wrapper]="editable()">
+        <ion-text color="light">{{ data() }}</ion-text>
+        @if (editable()) {
+          <ion-text class="inline-link-edit" (click)="toggleEditingState.emit()">Editar</ion-text>
+        }
+      </div>
+    }
+    
+  </div>
+  @if (keyTag() === 'username' && usernameErrorMessage()) {
+    <ion-text class="error-text" color="danger">{{ usernameErrorMessage() }}</ion-text>
+  }
+  @if (keyTag() === 'password' && passwordUpdateSuccessMessage()) {
+    <ion-text class="success-text" color="success">{{ passwordUpdateSuccessMessage() }}</ion-text>
+  }
+
+</div>
