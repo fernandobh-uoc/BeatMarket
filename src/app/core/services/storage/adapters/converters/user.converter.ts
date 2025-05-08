@@ -3,6 +3,7 @@ import { ActivePost, Role, User, UserModel } from "src/app/core/domain/models/us
 import { Post, PostModel } from "src/app/core/domain/models/post.model";
 import { ArticleCategory, ArticleModel } from "src/app/core/domain/models/article.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
+import { onSnapshotsInSync } from "firebase/firestore";
 
 export interface UserFirestoreModel {
   email: string;
@@ -31,6 +32,7 @@ export interface ActivePostFirestoreModel {
   title: string;
   category: string;
   price: number;
+  mainImageURL: string;
 }
 
 export class UserConverter implements FirestoreDataConverter<UserModel, UserFirestoreModel> {
@@ -92,7 +94,8 @@ export class ActivePostConverter implements FirestoreDataConverter<Partial<PostM
     return {
       title: typeof activePost.title === 'string' ? activePost.title : '',
       category: activePost?.category?.toString() ?? ArticleCategory.None,
-      price: typeof activePost.price === 'number' ? activePost.price : 0
+      price: typeof activePost.price === 'number' ? activePost.price : 0,
+      mainImageURL: activePost?.mainImageURL ?? ''
     };
   }
 
@@ -105,9 +108,11 @@ export class ActivePostConverter implements FirestoreDataConverter<Partial<PostM
       : ArticleCategory.None;
 
     return {
+      _id: snapshot.id,
       title: data?.['title'] ?? '',
       category: categoryEnumValue,
-      price: data?.['price'] ?? 0
-    } as ActivePost;
+      price: data?.['price'] ?? 0,
+      mainImageURL: data?.['mainImageURL'] ?? ''
+    };
   }
 }

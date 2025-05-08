@@ -33,9 +33,11 @@ export enum Role {
 }
 
 export interface ActivePost {
+  _id: string;
   title: string;
   category: ArticleCategory;
   price: number;
+  mainImageURL: string;
 }
 
 export interface UserModel extends JSONSerializable<UserModel>, Timestamps {

@@ -201,19 +201,19 @@ export class UserRepository {
     }
   }
 
-  async saveActivePost(userId: string, postId: string, activePostData: ActivePost): Promise<User | null> {
+  async saveActivePost(userId: string, postId: string, activePostData: Omit<ActivePost, '_id'>): Promise<ActivePost | null> {
     if (!this.storage.createInSubcollection) return null;
 
     try {
-      let user: User | null;
-      if (user = await this.storage.createInSubcollection(
+      let activePost: ActivePost | null;
+      if (activePost = await this.storage.createInSubcollection(
         activePostData, { 
           collection: `users/${userId}/activePosts/${postId}`, 
           converter: this.activePostConverter 
         })
       ) {
-        console.log({ user });
-        return user;
+        console.log({ activePost });
+        return activePost;
       }
       return null;
     } catch (storageError) {
