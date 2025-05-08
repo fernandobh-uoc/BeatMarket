@@ -1,4 +1,12 @@
-export default [
+export interface CountryData {
+  nameES: string,
+  nameEN: string,
+  iso2: string,
+  iso3: string,
+  phoneCode: string
+}
+
+export const countries = [
   {
     "nameES": "Afganistán",
     "nameEN": "Afghanistan",

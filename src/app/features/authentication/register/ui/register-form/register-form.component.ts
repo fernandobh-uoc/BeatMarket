@@ -8,7 +8,7 @@ import { UsernameValidator } from '../../utils/validators/username.validator';
 import { addIcons } from 'ionicons';
 import { calendarOutline, checkmarkCircleOutline, closeCircleOutline, globeOutline } from 'ionicons/icons';
 
-import countries from "../../utils/countries" ;
+import { countries } from "../../../../../shared/utils/countries" ;
 import { Role } from 'src/app/core/domain/models/user.model';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 
