@@ -20,4 +20,5 @@ export interface Storage<T extends { _id: string } & AppModel> {
   updateInSubcollection?(obj: Partial<any> & { _id: string }, params?: any): Promise<any | null>;
 
   query(params?: any): Promise<T[]>;
+  query$(params?: any): Observable<T[]>;
 }

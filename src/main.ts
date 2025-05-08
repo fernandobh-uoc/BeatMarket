@@ -15,6 +15,12 @@ import { importProvidersFrom } from '@angular/core';
 import { IonicStorageModule } from '@ionic/storage-angular';
 import { Capacitor } from '@capacitor/core';
 import { AuthService } from './app/core/services/auth/auth.service';
+import { PostRepository } from './app/core/domain/repositories/post.repository';
+import { FirestorePostRepository } from './app/core/domain/repositories/firestore/firestore.post.repository';
+import { CartRepository } from './app/core/domain/repositories/cart.repository';
+import { FirestoreCartRepository } from './app/core/domain/repositories/firestore/firestore.cart.repository';
+import { UserRepository } from './app/core/domain/repositories/user.repository';
+import { FirestoreUserRepository } from './app/core/domain/repositories/firestore/firestore.user.repository';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -42,6 +48,10 @@ bootstrapApplication(AppComponent, {
     provideAppInitializer(() => {
       const authService = inject(AuthService);
       return authService.init();
-    })
+    }),
+
+    { provide: UserRepository, useClass: FirestoreUserRepository },
+    { provide: PostRepository, useClass: FirestorePostRepository },
+    { provide: CartRepository, useClass: FirestoreCartRepository }
   ],
 });

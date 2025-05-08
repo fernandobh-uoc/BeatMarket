@@ -53,10 +53,10 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
         : isFieldValue(user.createdAt)
           ? user.createdAt
           : serverTimestamp(),
-      updatedAt: isValidDateInput(user.createdAt)
-        ? Timestamp.fromDate(new Date(user.createdAt))
-        : isFieldValue(user.createdAt)
-          ? user.createdAt
+      updatedAt: isValidDateInput(user.updatedAt)
+        ? Timestamp.fromDate(new Date(user.updatedAt))
+        : isFieldValue(user.updatedAt)
+          ? user.updatedAt
           : serverTimestamp(),
     };
   }

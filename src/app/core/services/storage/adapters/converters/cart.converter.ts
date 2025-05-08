@@ -29,10 +29,10 @@ export class CartConverter implements FirestoreDataConverter<CartModel, CartFire
         : isFieldValue(cart.createdAt)
           ? cart.createdAt
           : serverTimestamp(),
-      updatedAt: isValidDateInput(cart.createdAt)
-        ? Timestamp.fromDate(new Date(cart.createdAt))
-        : isFieldValue(cart.createdAt)
-          ? cart.createdAt
+      updatedAt: isValidDateInput(cart.updatedAt)
+        ? Timestamp.fromDate(new Date(cart.updatedAt))
+        : isFieldValue(cart.updatedAt)
+          ? cart.updatedAt
           : serverTimestamp(),
     };
   }

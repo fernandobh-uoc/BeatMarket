@@ -1,7 +1,7 @@
 import { EnvironmentInjector, Inject, inject, Injectable, InjectionToken, Injector, runInInjectionContext, Signal } from "@angular/core";
 import { toSignal } from "@angular/core/rxjs-interop";
 import { Storage } from '../storage.interface';
-import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt, serverTimestamp } from '@angular/fire/firestore';
+import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt, serverTimestamp, QueryConstraint } from '@angular/fire/firestore';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
 import { ActivePost, UserModel } from "src/app/core/domain/models/user.model";
 import { PostModel } from "src/app/core/domain/models/post.model";
@@ -67,8 +67,14 @@ export const FIREBASE_FIRESTORE_TOKENS = {
 export interface FirestoreParams {
   collection?: string | undefined;
   converter?: FirestoreDataConverter<any>;
-  filters?: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }[];
+  queryConstraints?: QueryConstraint[];
+  /* filters?: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }[];
   orderBy?: { field: string | FieldPath; direction?: OrderByDirection };
+  limit?: number;
+  startAt?: unknown;
+  startAfter?: unknown;
+  endAt?: unknown;
+  endBefore?: unknown; */
 }
 
 @Injectable({ providedIn: 'root' })
@@ -178,7 +184,8 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
         let collectionRef: CollectionReference = collection(this.firestore, params.collection);
         collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
 
-        let q: Query = collectionRef;
+        return collectionData(collectionRef, { idField: '_id' }) as Observable<any[]>;
+        /* let q: Query = collectionRef;
 
         // Apply filters ([{ field: 'active', operator: '==', value: true }])
         if (params.filters && Array.isArray(params.filters)) {
@@ -192,7 +199,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
           q = query(q, orderBy(params.orderBy.field, params.orderBy.direction || 'asc'));
         }
 
-        return collectionData(q, { idField: '_id' }) as Observable<any[]>;
+        return collectionData(q, { idField: '_id' }) as Observable<any[]>; */
       } catch (firestoreError: any) {
         throw this.getErrorMessage(firestoreError);
       }
@@ -319,20 +326,51 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
       const collectionRef: CollectionReference = collection(this.firestore, params.collection);
       let firestoreQuery: Query = collectionRef;
 
-      // Apply filters dynamically
-      if (params.filters && Array.isArray(params.filters)) {
-        params.filters.forEach((filter: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }) => {
-          firestoreQuery = query(firestoreQuery, where(filter.field, filter.operator, filter.value));
+      // Apply constraints
+      if (params.queryConstraints && Array.isArray(params.queryConstraints)) {
+        params.queryConstraints.forEach((queryConstraint: QueryConstraint) => {
+          firestoreQuery = query(firestoreQuery, queryConstraint);
         });
+
+        /* params.filters.forEach((filter: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }) => {
+          firestoreQuery = query(firestoreQuery, where(filter.field, filter.operator, filter.value));
+        }); */
       }
 
       // Apply sorting if specified
-      if (params.orderBy) {
+      /* if (params.orderBy) {
         firestoreQuery = query(firestoreQuery, orderBy(params.orderBy.field, params.orderBy.direction || 'asc'));
       }
 
+      if (params.limit) {
+        firestoreQuery = query(firestoreQuery, limit(params.limit));
+      } */
+
       const querySnapshot = await getDocs(firestoreQuery);
       return querySnapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
+    } catch (firestoreError: any) {
+      throw this.getErrorMessage(firestoreError);
+    }
+  }
+
+  query$(params?: FirestoreParams): Observable<T[]> {
+    if (!params || !params.collection) {
+      throw new Error("You must provide the collection.");
+    }
+
+    try {
+      let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+      collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+      let q: Query = collectionRef;
+
+      // Apply constraints
+      if (params.queryConstraints && Array.isArray(params.queryConstraints)) {
+        params.queryConstraints.forEach((queryConstraint: QueryConstraint) => {
+          q = query(q, queryConstraint);
+        });
+      }
+
+      return collectionData(q, { idField: '_id' }) as Observable<any[]>;
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }

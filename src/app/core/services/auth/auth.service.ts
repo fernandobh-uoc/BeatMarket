@@ -29,13 +29,12 @@ const defaultAuthStatus: AuthStatus = {
 export class AuthService {
   #currentUser = signal<User | null>(null);
   #authStatus = signal<AuthStatus>(defaultAuthStatus);
-
-  #authMethod!: AuthMethod;
   #errorMessage = signal<string | null>(null);
 
-  #userRepository = inject(UserRepository);
-  #cloudStorage = inject(environment.cloudStorageToken);
-  #cache = inject(LocalStorageService);
+  userRepository = inject(UserRepository);
+  cloudStorage = inject(environment.cloudStorageToken);
+  cache = inject(LocalStorageService);
+  authMethod!: AuthMethod;
 
   constructor(
     private injector: EnvironmentInjector,
@@ -65,14 +64,14 @@ export class AuthService {
 
   #setAuthMethod(method: 'email' | 'google' | 'apple') {
     runInInjectionContext(this.injector, () => {
-      if (method === 'email' && !(this.#authMethod instanceof EmailAuth)) {
-        this.#authMethod = inject(EmailAuth);
+      if (method === 'email' && !(this.authMethod instanceof EmailAuth)) {
+        this.authMethod = inject(EmailAuth);
       }
-      if (method === 'google' && !(this.#authMethod instanceof GoogleAuth)) {
-        this.#authMethod = inject(GoogleAuth);
+      if (method === 'google' && !(this.authMethod instanceof GoogleAuth)) {
+        this.authMethod = inject(GoogleAuth);
       }
-      if (method === 'apple' && !(this.#authMethod instanceof AppleAuth)) {
-        this.#authMethod = inject(AppleAuth);
+      if (method === 'apple' && !(this.authMethod instanceof AppleAuth)) {
+        this.authMethod = inject(AppleAuth);
       }
     });
   }
@@ -83,7 +82,7 @@ export class AuthService {
 
   #uploadProfilePicture = async ({ profilePictureDataUrl, uid }: { profilePictureDataUrl: string, uid: string }): Promise<string | void> => {
     try {
-      return await this.#cloudStorage.upload(`profilePictures/${uid}/avatar`, dataUrlToBlob(profilePictureDataUrl));
+      return await this.cloudStorage.upload(`profilePictures/${uid}`, dataUrlToBlob(profilePictureDataUrl));
     } catch (error) {
       throw error;
     }
@@ -91,7 +90,7 @@ export class AuthService {
 
   #getDefaultProfilePictureURL = async (): Promise<string | void> => {
     try {
-      return await this.#cloudStorage.getDownloadURL(`profilePictures/default.webp`);
+      return await this.cloudStorage.getDownloadURL(`profilePictures/default.webp`);
     } catch (error) {
       throw error;
     }
@@ -102,7 +101,7 @@ export class AuthService {
     
     try {
       // Register with auth provider
-      const result = await this.#authMethod.register({
+      const result = await this.authMethod.register({
         email: userData.email,
         password: userData.password,
         username: userData.username
@@ -126,10 +125,10 @@ export class AuthService {
       let { password, ...userDataWithoutPassword } = userData;
       
       // Save to storage
-      return await this.#userRepository.saveUser(userDataWithoutPassword);
+      return await this.userRepository.saveUser(userDataWithoutPassword);
 
       //let user: User | boolean | null = null;
-      //if (user = await this.#userRepository.saveUser(userDataWithoutPassword) && user) {
+      //if (user = await this.userRepository.saveUser(userDataWithoutPassword) && user) {
       //  this.#currentUser.set(user);
       //  this.#updateAuthStatus(user);
       //};
@@ -141,33 +140,43 @@ export class AuthService {
     //return this.#currentUser();
   }
 
-  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null | void> {
+  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null> {
     this.#setAuthMethod(method);
-    let user$: Observable<User | null> | null = null;
-
+    
     try {
-      const result = await this.#authMethod.login(credentials?.email, credentials?.password);
-      if (this.#isUidObject(result)) {
-        user$ = this.#userRepository.getUserById$(result.uid);
-      }
-      if (result instanceof Observable) {
-        user$ = result;
-      }
+      const result = await this.authMethod.login(credentials?.email, credentials?.password);
+      
+      // Static user, return it
       if (isUserModel(result)) {
-        // TODO: Handle when provider returns a static user
+        return result as User;
       }
 
-      if (user$) {
-        /* runInInjectionContext(this.injector, () => {
-          this.currentUser = toSignal(user$!);
-          console.log({ currentUser: this.currentUser() });
-          this.#updateAuthStatus(this.currentUser() ?? null);
-        }); */
-        user$.subscribe(user => {
-          this.#currentUser.set(user);
-        });
-        this.#updateAuthStatus(await firstValueFrom(user$));
+      if (!this.#isUidObject(result)) {
+        return null;
       }
+
+      if (this.userRepository.getUserById$) {
+        let user$: Observable<User | null> | null = this.userRepository.getUserById$(result.uid, true);
+
+        if (user$) {
+          /* runInInjectionContext(this.injector, () => {
+            this.currentUser = toSignal(user$!);
+            console.log({ currentUser: this.currentUser() });
+            this.#updateAuthStatus(this.currentUser() ?? null);
+          }); */
+          user$.subscribe(user => {
+            this.#currentUser.set(user);
+          });
+          this.#updateAuthStatus(await firstValueFrom(user$));
+          return null;
+        }
+      }
+
+      let user: User | null = await this.userRepository.getUserById(result.uid, true);
+      if (user) {
+        return user;
+      }
+      return null;
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
       throw errorMessage;
@@ -177,10 +186,10 @@ export class AuthService {
   async logout(): Promise<void> {
     this.#setAuthMethod('email');
     try {
-      await this.#authMethod.logout();
+      await this.authMethod.logout();
       this.#currentUser.set(null);
       this.#authStatus.set(defaultAuthStatus);
-      await this.#cache.set('authStatus', this.#authStatus());
+      await this.cache.set('authStatus', this.#authStatus());
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
       throw errorMessage;
@@ -190,7 +199,7 @@ export class AuthService {
   async updatePassword(newPassword: string): Promise<void> {
     this.#setAuthMethod('email');
     try {
-      await this.#authMethod.updatePassword(newPassword);
+      await this.authMethod.updatePassword(newPassword);
     } catch (errorMessage: any) {
       this.#errorMessage.set(errorMessage);
       throw errorMessage;
@@ -205,22 +214,29 @@ export class AuthService {
         username: user.username,
         userRoles: user.roles
       });
-      await this.#cache.set('authStatus', this.#authStatus());
+      await this.cache.set('authStatus', this.#authStatus());
     }
   }
 
-  async #loadUserFromStorage(): Promise<User | null | void> {
-    const authStatus: AuthStatus | null = await this.#cache.get<AuthStatus>('authStatus');
+  async #loadUserFromStorage(): Promise<void> {
+    const authStatus: AuthStatus | null = await this.cache.get<AuthStatus>('authStatus');
+
     if (authStatus != null && authStatus.isAuthenticated) {
       const id: string = authStatus.userId;
-      const user$ = this.#userRepository.getUserById$(id);
-      if (user$) {
-        user$.subscribe(user => {
-          this.#currentUser.set(user);
-        });
-
-        this.#updateAuthStatus(await firstValueFrom(user$)); // Wait for the user to be loaded before the app starts
+      if (this.userRepository.getUserById$) {
+        const user$ = this.userRepository.getUserById$(id);
+        if (user$) {
+          user$.subscribe(user => {
+            this.#currentUser.set(user);
+          });
+  
+          this.#updateAuthStatus(await firstValueFrom(user$)); // Wait for the user to be loaded before the app starts
+          return;
+        }
       }
+
+      const user = await this.userRepository.getUserById(id);
+      this.#currentUser.set(user);
     }
   }
 }

@@ -1,37 +1,25 @@
-import { inject, Injectable } from '@angular/core';
-import { Cart } from '../models/cart.model';
-import { Storage } from '../../services/storage/storage.interface';
-import { environment } from 'src/environments/environment.dev';
-import { Observable } from 'rxjs/internal/Observable';
+import { InjectionToken } from "@angular/core";
+import { Observable } from "rxjs/internal/Observable";
+import { SaleModel, Sale } from "../models/sale.model";
 
-@Injectable({ providedIn: 'root' })
-export class SaleRepository {
-  private storage = inject<Storage<Cart>>(environment.storageTokens.user);
-  //private converter: SaleConverter;
+export const SaleRepository = new InjectionToken<SaleRepository>('SaleRepository');
 
-  async getSaleById(id: string): Promise<Cart | null> {
-    try {
-      return await this.storage.getById(id, { collection: 'carts' });
-    } catch (storageError) {
-      console.error(storageError);
-    }
-    return null;
-  }
+export interface SaleRepository {
+  getSaleById(id: string): Promise<Sale | null>;
+  getSaleById$?(id: string): Observable<Sale | null> | null;
+  getSalesByBuyerId(userId: string): Promise<Sale[] | null>;
+  getSalesByBuyerId$?(userId: string): Observable<Sale[] | null> | null;
+  getSalesByBuyerUsername(username: string): Promise<Sale[] | null>;
+  getSalesByBuyerUsername$?(username: string): Observable<Sale[] | null> | null;
+  getSalesBySellerId(userId: string): Promise<Sale[] | null>;
+  getSalesBySellerId$?(userId: string): Observable<Sale[] | null> | null;
+  getSalesBySellerUsername(username: string): Promise<Sale[] | null>;
+  getSalesBySellerUsername$?(username: string): Observable<Sale[] | null> | null;
+  getAllSales(): Promise<Sale[] | null>;
+  getAllSales$?(): Observable<Sale[] | null> | null;
 
-  getSaleById$(id: string): Observable<Cart | null> {
-    return this.storage.getById$(id, { collection: 'carts' });
-  }
-
-  async saveSale(cart: Cart): Promise<Cart | null> {
-    try {
-      await this.storage.create(cart);
-    } catch (storageError) {
-      console.error(storageError);
-    }
-    return null;
-  }
-
-  async saleExists(id: string): Promise<boolean> {
-    return await this.storage.exists(id);
-  }
+  saveSale(saleData: Partial<SaleModel>): Promise<Sale | null>;
+  updateSale(saleData: Partial<SaleModel> & { _id: string }): Promise<Sale | null>;
+  deleteSale(id: string): Promise<boolean>;
+  saleExists(id: string): Promise<boolean>;
 }

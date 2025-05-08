@@ -2,7 +2,6 @@ import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, Snapsho
 import { ArticleCategory, ArticleCondition, ArticleModel, isArticleModel } from "src/app/core/domain/models/article.model";
 import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/models/post.model";
 import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
-import { UserModel } from "src/app/core/domain/models/user.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface PostFirestoreModel {
@@ -81,7 +80,6 @@ export interface PostFirestoreModel {
 
 export class PostConverter implements FirestoreDataConverter<PostModel, PostFirestoreModel> {
   toFirestore(post: WithFieldValue<PostModel>): WithFieldValue<PostFirestoreModel> {
-    console.log({ post });
     let article: Partial<ArticleModel> = post.article as Partial<ArticleModel>;
 
     let category: string = ArticleCategory.None;
@@ -89,7 +87,6 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
     if (isArticleModel(article)) {
       category = article.category;
       const c = article.characteristics;
-      console.log({ c });
 
       if (isInstrumentCharacteristics(c)) {
         characteristics = {
@@ -154,11 +151,7 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
           warrantyCountry: c.warrantyCountry,
         }
       }
-
-      console.log({ characteristics });
     }
-
-    console.log({ article });
 
     return {
       title: post.title,
@@ -188,10 +181,10 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
         : isFieldValue(post.createdAt)
           ? post.createdAt
           : serverTimestamp(),
-      updatedAt: isValidDateInput(post.createdAt)
-        ? Timestamp.fromDate(new Date(post.createdAt))
-        : isFieldValue(post.createdAt)
-          ? post.createdAt
+      updatedAt: isValidDateInput(post.updatedAt)
+        ? Timestamp.fromDate(new Date(post.updatedAt))
+        : isFieldValue(post.updatedAt)
+          ? post.updatedAt
           : serverTimestamp(),
     }
   }
@@ -201,12 +194,12 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
 
     return Post.Build({
       _id: snapshot.id,
-      title: data.title ?? '',
-      description: data.description ?? '',
-      mainImageURL: data.mainImageURL ?? '',
-      imagesURLs: data.imagesURLs ?? [],
-      user: data.user ?? {},
-      price: data.price ?? 0,
+      title: data.title,
+      description: data.description,
+      mainImageURL: data.mainImageURL,
+      imagesURLs: data.imagesURLs,
+      user: data.user,
+      price: data.price,
       //shipping: data.shipping ?? 0,
       status: Object.values(PostStatus).includes(data.status as PostStatus) 
         ? (data.status as PostStatus)

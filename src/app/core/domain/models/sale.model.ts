@@ -2,36 +2,38 @@ import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { PostModel } from "./post.model";
 import { UserModel } from "./user.model";
 import { ArticleCondition } from "./article.model";
+import { Timestamps } from "./appModel.type";
 
-export interface SaleModel extends JSONSerializable<SaleModel> {
+export interface SalePostData {
+  postId: PostModel["_id"];
+  title: PostModel["title"];
+  articleCondition: PostModel["article"]["condition"];
+  price: PostModel["price"];
+}
+
+export interface SaleUserData {
+  userId: UserModel["_id"];
+  username: UserModel["username"];
+}
+
+export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
   _id: string;
-  postInfo: {
-    postId: PostModel["_id"];
-    title: PostModel["title"];
-    articleCondition: PostModel["article"]["condition"];
-    price: PostModel["price"];
-  };
-  buyerInfo: {
-    userId: UserModel["_id"];
-    username: UserModel["username"];
-  };
-  sellerInfo: {
-    userId: UserModel["_id"];
-    username: UserModel["username"];
-  };
+  postData: SalePostData;
+  buyerData: SaleUserData;
+  sellerData: SaleUserData;
   saleDate: Date;
 }
 
-export class SaleModel implements SaleModel {
+export class Sale implements SaleModel {
   public _id: string = '';
-  public postInfo: { postId: PostModel["_id"], title: PostModel["title"], articleCondition: PostModel["article"]["condition"], price: PostModel["price"] } = {
+  public postData: { postId: PostModel["_id"], title: PostModel["title"], articleCondition: PostModel["article"]["condition"], price: PostModel["price"] } = {
     postId: '',
     title: '',
     articleCondition: ArticleCondition.None,
     price: 0
   };
-  public buyerInfo: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
-  public sellerInfo: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
+  public buyerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
+  public sellerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
   public saleDate: Date = new Date();
 
   private constructor(sale: Partial<SaleModel> = {}) {
@@ -39,7 +41,7 @@ export class SaleModel implements SaleModel {
   }
 
   static Build(sale: Partial<SaleModel> = {}): SaleModel {
-    return new SaleModel(sale);
+    return new Sale(sale);
   }
 
   public toJSON(): string {

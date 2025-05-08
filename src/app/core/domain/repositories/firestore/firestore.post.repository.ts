@@ -1,29 +1,21 @@
-import { InjectionToken } from '@angular/core';
+import { inject, Injectable, InjectionToken } from '@angular/core';
+import { Post, PostModel } from '../../models/post.model';
+import { Storage } from '../../../services/storage/storage.interface';
+import { environment } from 'src/environments/environment.dev';
 import { Observable } from 'rxjs/internal/Observable';
-import { Post, PostModel } from '../models/post.model';
+import { PostConverter } from '../../../services/storage/adapters/converters/post.converter';
+import { PostRepository } from '../post.repository';
+import { FirebaseFirestoreAdapter, FirestoreParams } from '../../../services/storage/adapters/firebase-firestore.adapter';
+import { Firestore } from '@angular/fire/firestore';
 
-export const PostRepository = new InjectionToken<PostRepository>('PostRepository');
+/* const FIRESTORE_POST_TOKEN = new InjectionToken<Storage<PostModel>>('FirebaseFirestorePost', {
+  providedIn: 'root',
+  factory: () => new FirebaseFirestoreAdapter<PostModel>(inject(Firestore))
+}) */
 
-export interface PostRepository {
-  getPostById(id: string): Promise<Post | null>;
-  getPostById$?(id: string): Observable<Post | null> | null;
-  getPostsByUserId(userId: string): Promise<Post[] | null>;
-  getPostsByUserId$?(userId: string): Observable<Post[] | null> | null;
-  getPostsByUsername(username: string): Promise<Post[] | null>;
-  getPostsByUsername$?(username: string): Observable<Post[] | null> | null;
-  getAllPosts(): Promise<Post[] | null>;
-  getAllPosts$?(): Observable<Post[] | null> | null;
-  queryPosts(queryConstraints?: any): Promise<Post[] | null>;
-  queryPosts$?(queryConstraints?: any): Observable<Post[] | null> | null;
-  savePost(postData: Partial<PostModel>): Promise<Post | null>;
-  updatePost(postData: Partial<Post> & { _id: string }): Promise<Post | null>;
-  deletePost(id: string): Promise<boolean>;
-  postExists(id: string): Promise<boolean>;
-}
-
-/* @Injectable({ providedIn: 'root' })
-export class PostRepository {
-  private storage = inject<Storage<Post>>(environment.storageTokens.post);
+@Injectable({ providedIn: 'root' })
+export class FirestorePostRepository implements PostRepository {
+  private storage = inject<Storage<Post>>(FirebaseFirestoreAdapter<PostModel>);
   private postConverter: PostConverter;
 
   constructor() {
@@ -113,20 +105,28 @@ export class PostRepository {
     }
   }
 
-  async queryPosts(queryConstraints?: any[]): Promise<Post[] | null> {
+  async queryPosts(queryConstraints?: any): Promise<Post[] | null> {
     try {
-      return this.storage.query({ collection: 'posts', queryConstraints });
+      return this.storage.query({ 
+        collection: 'posts',
+        converter: this.postConverter,
+        queryConstraints
+      });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
     }
   }
 
-  queryPosts$(queryConstraints?: any[]): Observable<Post[] | null> | null {
+  queryPosts$(queryConstraints?: any): Observable<Post[] | null> | null {
     if (!this.storage.query$) return null;
 
     try {
-      return this.storage.query$({ collection: 'posts', queryConstraints });
+      return this.storage.query$({ 
+        collection: 'posts',
+        converter: this.postConverter,
+        queryConstraints
+      });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -136,10 +136,8 @@ export class PostRepository {
   async savePost(postData: Partial<PostModel>): Promise<Post | null> {
     try {
       const _post: Post = Post.Build(postData);
-      console.log({ _post });
       let post: Post | null;
       if (post = await this.storage.create(_post, { collection: 'posts', converter: this.postConverter })) {
-        console.log({ post });
         return post; // Return the created post with timestamps
       }
       return null;
@@ -160,7 +158,19 @@ export class PostRepository {
     }
   }
 
-  async postExists(id: string): Promise<boolean> {
-    return await this.storage.exists(id);
+  async deletePost(id: string): Promise<boolean> {
+    try {
+      return await this.storage.remove(id);
+    } catch (storageError) {
+      throw storageError;
+    }
   }
-}  */
+
+  async postExists(id: string): Promise<boolean> {
+    try {
+      return await this.storage.exists(id);
+    } catch (storageError) {
+      throw storageError;
+    }
+  }
+}
