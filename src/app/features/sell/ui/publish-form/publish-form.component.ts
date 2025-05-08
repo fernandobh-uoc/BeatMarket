@@ -1,11 +1,12 @@
-import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, output, signal, ViewChild, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
-import { ViewWillEnter } from '@ionic/angular';
+import { ViewDidEnter } from '@ionic/angular';
 import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/article.model';
 import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
 import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, RecordingFormat } from 'src/app/core/domain/models/articleCharacteristics.interface';
+import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
 
 @Component({
   selector: 'app-sell-form',
@@ -17,10 +18,12 @@ export class PublishFormComponent {
   fb: FormBuilder = inject(FormBuilder);
 
   publishForm!: FormGroup;
+  @ViewChild('titleInput') titleInput!: IonInput;
 
   formSubmit = output<void>();
   submitAttempted = input<boolean>(false);
   controlFocus = output<string>();
+  focusedInput = signal<string>('');
 
   uploadImages = output<void>();
   uploadedImagesURLs = input<string[]>([]);
@@ -44,7 +47,7 @@ export class PublishFormComponent {
   bookThemes: string[] = Object.values(BookTheme).filter(type => type !== BookTheme.None);
 
   disabledPublishButton = input<boolean>(false);
-  
+
   constructor() {
     addIcons({ cameraOutline, logoEuro });
     effect(() => {
@@ -100,6 +103,10 @@ export class PublishFormComponent {
   resetForm() {
     this.publishForm.reset();
   } 
+
+  focusTitleInput() {
+    this.titleInput.setFocus();
+  }
 
   #updateUploadImageBoxBackgroud(imageUrl: string) {
     const imageBox = document.querySelector('.images-upload-box') as HTMLElement;

@@ -1,13 +1,13 @@
 import { Component, computed, ElementRef, inject, OnInit, Signal, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormGroup, FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonInput } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { PublishFormComponent } from '../../ui/publish-form/publish-form.component';
 import { SellService } from '../../data-access/sell.service';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
-import { ViewWillEnter } from '@ionic/angular';
+import { ViewWillEnter, ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-sell',
@@ -16,11 +16,12 @@ import { ViewWillEnter } from '@ionic/angular';
   standalone: true,
   imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class PublishPage implements OnInit, ViewWillEnter {
+export class PublishPage implements OnInit, ViewWillEnter, ViewDidEnter {
   sellService = inject(SellService);
   router = inject(Router);
 
   publishFormComponent = viewChild(PublishFormComponent);
+  titleInput = viewChild('titleInput');
 
   publishErrorMessage = computed(() => this.sellService.errorMessage());
 
@@ -32,7 +33,11 @@ export class PublishPage implements OnInit, ViewWillEnter {
   ionViewWillEnter(): void {
     this.submitAttempted.set(false);
     this.disabledPublishButton.set(false);
-    this.publishFormComponent()?.resetForm();  
+    this.publishFormComponent()?.resetForm();
+  }
+
+  ionViewDidEnter(): void {
+    this.publishFormComponent()?.focusTitleInput();
   }
 
   onControlFocus(control: string) {
