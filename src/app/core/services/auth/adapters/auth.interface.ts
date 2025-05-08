@@ -11,4 +11,5 @@ export interface Auth {
   loginWithEmail(email: string, password: string): Promise<AuthReturnType>;
   loginWithProvider(provider: AuthProvider): Promise<AuthReturnType>;
   logout(): Promise<void>;
+  updatePassword(newPassword: string): Promise<void>;
 }

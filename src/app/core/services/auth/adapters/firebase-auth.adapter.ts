@@ -11,6 +11,7 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile, 
+  updatePassword
 } from '@angular/fire/auth';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './auth.interface';
 import { User, UserModel } from "../../../domain/models/user.model";
@@ -96,6 +97,17 @@ export class FirebaseAuthAdapter implements Auth {
   async logout(): Promise<void> {
     try {
       await signOut(this.authInstance);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+
+  async updatePassword(newPassword: string): Promise<void> {
+    try {
+      const firebaseUser: FirebaseUser | null = await this.firebaseUser();
+      if (!firebaseUser) return;
+      
+      await updatePassword(firebaseUser, newPassword);
     } catch (authError: any) {
       throw authError;
     }
