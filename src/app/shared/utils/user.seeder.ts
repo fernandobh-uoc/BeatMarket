@@ -1,8 +1,8 @@
 export const users = [
   {
-    email: 'lucía.gómez1@gmail.com',
+    email: 'lucia.gomez1@gmail.com',
     username: 'lucía.gómez1',
-    password: '123456',
+    password: '123456a',
     firstName: 'Lucía',
     lastName: 'Gómez',
     address: 'Gran Vía, 10',
@@ -12,9 +12,9 @@ export const users = [
     bio: 'Apasionado por la música clásica y los instrumentos de cuerda.'
   },
   {
-    email: 'carlos.fernández2@gmail.com',
+    email: 'carlos.fernandez2@gmail.com',
     username: 'carlos.fernández2',
-    password: '123456',
+    password: '123456a',
     firstName: 'Carlos',
     lastName: 'Fernández',
     address: 'Avenida del Sol, 11',
@@ -24,9 +24,9 @@ export const users = [
     bio: 'Estudiante de música interesado en el jazz.'
   },
   {
-    email: 'maría.lópez3@gmail.com',
+    email: 'maria.lopez3@gmail.com',
     username: 'maría.lópez3',
-    password: '123456',
+    password: '123456a',
     firstName: 'María',
     lastName: 'López',
     address: 'Calle Mayor, 12',
@@ -36,9 +36,9 @@ export const users = [
     bio: 'Coleccionista de vinilos antiguos.'
   },
   {
-    email: 'javier.martínez4@gmail.com',
+    email: 'javier.martinez4@gmail.com',
     username: 'javier.martínez4',
-    password: '123456',
+    password: '123456a',
     firstName: 'Javier',
     lastName: 'Martínez',
     address: 'Paseo de la Castellana, 13',
@@ -48,9 +48,9 @@ export const users = [
     bio: 'Profesional del sonido especializado en grabación.'
   },
   {
-    email: 'elena.sánchez5@gmail.com',
+    email: 'elena.sanchez5@gmail.com',
     username: 'elena.sánchez5',
-    password: '123456',
+    password: '123456a',
     firstName: 'Elena',
     lastName: 'Sánchez',
     address: 'Calle Alcalá, 14',
@@ -60,9 +60,9 @@ export const users = [
     bio: 'Aficionado a la guitarra eléctrica y la producción casera.'
   },
   {
-    email: 'miguel.díaz6@gmail.com',
+    email: 'miguel.diaz6@gmail.com',
     username: 'miguel.díaz6',
-    password: '123456',
+    password: '123456a',
     firstName: 'Miguel',
     lastName: 'Díaz',
     address: 'Gran Vía, 15',
@@ -74,7 +74,7 @@ export const users = [
   {
     email: 'sara.romero7@gmail.com',
     username: 'sara.romero7',
-    password: '123456',
+    password: '123456a',
     firstName: 'Sara',
     lastName: 'Romero',
     address: 'Avenida del Sol, 16',
@@ -86,7 +86,7 @@ export const users = [
   {
     email: 'david.alonso8@gmail.com',
     username: 'david.alonso8',
-    password: '123456',
+    password: '123456a',
     firstName: 'David',
     lastName: 'Alonso',
     address: 'Calle Mayor, 17',
@@ -98,7 +98,7 @@ export const users = [
   {
     email: 'laura.rubio9@gmail.com',
     username: 'laura.rubio9',
-    password: '123456',
+    password: '123456a',
     firstName: 'Laura',
     lastName: 'Rubio',
     address: 'Paseo de la Castellana, 18',
@@ -110,7 +110,7 @@ export const users = [
   {
     email: 'pablo.molina10@gmail.com',
     username: 'pablo.molina10',
-    password: '123456',
+    password: '123456a',
     firstName: 'Pablo',
     lastName: 'Molina',
     address: 'Calle Alcalá, 19',
