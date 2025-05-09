@@ -70,6 +70,10 @@ export class SellService {
     }
   }
 
+  removeImages = async (): Promise<void> => {
+    this.imagesDataURLs.set([]);
+  }
+
   #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
     //const imageDataURLs = this.imagesDataURLs();
     //if (!imageDataURLs) return;
@@ -156,14 +160,19 @@ export class SellService {
       });
 
       // Add post to active posts of the user
-      const activePostInfo: Omit<ActivePost, '_id'> = {
+      const activePostData: Omit<ActivePost, '_id'> = {
         title: post?.title ?? '',
         category: post?.article.category ?? ArticleCategory.None,
         price: post?.price ?? 0,
         mainImageURL: downloadURLs?.[0] ?? ''
       };
 
-      await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
+      //await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
+      await this.#userRepository.saveActivePost({ 
+        userId: currentUser._id, 
+        postId: post._id, 
+        activePostData: activePostData 
+      });
 
       this.latestPublishedPostId.set(post._id);
       //currentUser.activePosts.push(post as Partial<Post>);
