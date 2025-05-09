@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { TabsPage } from './tabs.page';
 import { authGuard } from 'src/app/core/guards/auth.guard';
+import { latestPostsResolver, recommendedPostsResolver } from 'src/app/features/home/utils/resolvers/home.resolver';
 //import { AuthGuard } from '../core/guards/auth.guard';
 
 export const TabsRoutes: Routes = [
@@ -10,7 +11,11 @@ export const TabsRoutes: Routes = [
     children: [
       {
         path: 'home',
-        loadComponent: () => import('src/app/features/home/home.page').then(m => m.HomePage)
+        loadComponent: () => import('src/app/features/home/home.page').then(m => m.HomePage),
+        resolve: {
+          latestPosts: latestPostsResolver,
+          recommendedPosts: recommendedPostsResolver
+        }
       },
       {
         path: 'profile',

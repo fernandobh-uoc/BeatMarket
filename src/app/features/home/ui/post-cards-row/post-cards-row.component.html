@@ -1,0 +1,16 @@
+<div class="carousel-container">
+  <div class="carousel">
+    @for (post of posts(); track post._id) {
+      <ion-card>
+        <img [src]="post.mainImageURL" alt="Imagen principal del anuncio {{ post.title }}">
+        <ion-card-header>
+          <ion-card-title>{{ post.title }}</ion-card-title>
+          <ion-card-subtitle>{{ post.article?.category }}</ion-card-subtitle>
+        </ion-card-header>
+        <ion-card-content>
+          {{ post.price }}
+        </ion-card-content>
+      </ion-card>
+    } 
+  </div>
+</div>
