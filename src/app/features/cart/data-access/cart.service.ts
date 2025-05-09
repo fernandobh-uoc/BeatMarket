@@ -9,11 +9,11 @@ import { firstValueFrom } from 'rxjs';
   providedIn: 'root'
 })
 export class CartService {
+  cartRepository = inject(CartRepository);
+  cache = inject(LocalStorageService);
+
   #cart = signal<CartModel | null>(null);
   #cartItemsAmount = computed<number>(() => this.#cart()?.items.length ?? 0);
-
-  #cartRepository = inject(CartRepository);
-  #cache = inject(LocalStorageService);
 
   get cart() {
     return this.#cart.asReadonly();
@@ -24,25 +24,33 @@ export class CartService {
   }
 
   async createCart(userId: string): Promise<void> {
-    await this.#cartRepository.saveCart({ userId });
+    await this.cartRepository.saveCart({ userId });
   }
 
   async loadCart(): Promise<void> {
-    if (!this.#cart()) {
-      const userId = (await this.#cache.get<AuthStatus>('authStatus'))?.userId ?? '';
-      const cart$ = this.#cartRepository.getCartByUserId$(userId);
+    if (this.#cart()) return;
+    const userId = (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '';
+
+    // Try to load real-time cart
+    if (this.cartRepository.getCartByUserId$) {
+      const cart$ = this.cartRepository.getCartByUserId$(userId);
       cart$?.subscribe(cart => {
         this.#cart.set(cart);
       });
-      if (cart$) await firstValueFrom(cart$);
+      if (cart$) await firstValueFrom(cart$); 
+      return;
     }
+
+    // Else, load a snapshot
+    const cart = await this.cartRepository.getCartByUserId(userId);
+    this.#cart.set(cart);
   }
 
   async addItemToCart(item: CartItem): Promise<void> {
     const cart: CartModel | null = this.#cart();
     if (!cart) return;
     cart.items.push(item);
-    await this.#cartRepository.updateCart(cart);
+    await this.cartRepository.updateCart(cart);
   }
 
   constructor() { }
