@@ -1,14 +1,30 @@
-import { EnvironmentInjector, Inject, inject, Injectable, InjectionToken, Injector, runInInjectionContext, Signal } from "@angular/core";
-import { toSignal } from "@angular/core/rxjs-interop";
-import { Storage } from '../storage.interface';
-import { FirestoreErrorCode, Firestore, doc, setDoc, getDoc, deleteDoc, collection, query, where, orderBy, getDocs, CollectionReference, Query, QuerySnapshot, addDoc, docData, QueryDocumentSnapshot, DocumentData, onSnapshot, collectionData, FirestoreError, FirestoreDataConverter, DocumentReference, DocumentSnapshot, updateDoc, WhereFilterOp, FieldPath, OrderByDirection, limit, limitToLast, startAt, startAfter, endAt, serverTimestamp, QueryConstraint } from '@angular/fire/firestore';
-import { AppModel } from "src/app/core/domain/models/appModel.type";
-import { ActivePost, UserModel } from "src/app/core/domain/models/user.model";
-import { PostModel } from "src/app/core/domain/models/post.model";
-import { CartModel } from "src/app/core/domain/models/cart.model";
-import { SaleModel } from "src/app/core/domain/models/sale.model";
-import { ConversationModel } from "src/app/core/domain/models/conversation.model";
+import { EnvironmentInjector, Injectable, inject, InjectionToken, Injector, runInInjectionContext } from "@angular/core";
 import { Observable } from "rxjs/internal/Observable";
+import { 
+  Firestore, 
+  doc, docData, getDoc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, 
+  DocumentReference, DocumentSnapshot, 
+  collection, collectionData,  
+  CollectionReference, FieldPath,
+  FirestoreDataConverter,
+  query, Query, QuerySnapshot, 
+  or, and, where, orderBy, 
+  limit as queryLimit, 
+  startAt as queryStartAt, 
+  startAfter as queryStartAfter, 
+  endAt as queryEndAt, 
+  endBefore as queryEndBefore,
+  QueryConstraint, QueryFilterConstraint,
+  WhereFilterOp, OrderByDirection,
+  serverTimestamp, 
+
+  FirestoreErrorCode,
+} from '@angular/fire/firestore';
+
+import { Storage } from '../storage.interface';
+import { AppModel } from "src/app/core/domain/models/appModel.type";
+import { ConversationModel } from "src/app/core/domain/models/conversation.model";
+
 
 
 /**
@@ -31,50 +47,57 @@ export async function runAsyncInInjectionContext<T>(injector: Injector, fn: () =
   });
 }
 
-const FIREBASE_FIRESTORE_USER_TOKEN = new InjectionToken<Storage<UserModel>>('FirebaseFirestoreUser', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<UserModel>(inject(Firestore))
-})
-
-const FIREBASE_FIRESTORE_POST_TOKEN = new InjectionToken<Storage<PostModel>>('FirebaseFirestorePost', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<PostModel>(inject(Firestore))
-})
-
-const FIREBASE_FIRESTORE_CART_TOKEN = new InjectionToken<Storage<CartModel>>('FirebaseFirestoreCart', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<CartModel>(inject(Firestore))
-})
-
-const FIREBASE_FIRESTORE_SALE_TOKEN = new InjectionToken<Storage<SaleModel>>('FirebaseFirestoreSale', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<SaleModel>(inject(Firestore))
-});
-
 const FIREBASE_FIRESTORE_CONVERSATION_TOKEN = new InjectionToken<Storage<ConversationModel>>('FirebaseFirestoreConversation', {
   providedIn: 'root',
   factory: () => new FirebaseFirestoreAdapter<ConversationModel>(inject(Firestore))
 })
 
 export const FIREBASE_FIRESTORE_TOKENS = {
-  user: FIREBASE_FIRESTORE_USER_TOKEN,
-  post: FIREBASE_FIRESTORE_POST_TOKEN,
-  cart: FIREBASE_FIRESTORE_CART_TOKEN,
-  sale: FIREBASE_FIRESTORE_SALE_TOKEN,
   conversation: FIREBASE_FIRESTORE_CONVERSATION_TOKEN
 }
+
+type FirestoreFilter =
+  | { field: string | FieldPath; operator: WhereFilterOp; value: unknown }
+  | { and: FirestoreFilter[] }
+  | { or: FirestoreFilter[] };
+
 
 export interface FirestoreParams {
   collection?: string | undefined;
   converter?: FirestoreDataConverter<any>;
-  queryConstraints?: QueryConstraint[];
-  /* filters?: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }[];
-  orderBy?: { field: string | FieldPath; direction?: OrderByDirection };
-  limit?: number;
-  startAt?: unknown;
-  startAfter?: unknown;
-  endAt?: unknown;
-  endBefore?: unknown; */
+  queryConstraints?: {
+    filters?: FirestoreFilter[];
+    orderBy?: { field: string | FieldPath; direction?: OrderByDirection };
+    limit?: number;
+    startAt?: unknown;
+    startAfter?: unknown;
+    endAt?: unknown;
+    endBefore?: unknown;
+  };
+}
+
+function isFilterConstraint(c: any): c is QueryFilterConstraint {
+  return ['where', 'or', 'and'].includes(c.type);
+}
+
+function buildQueryConstraints(filters: FirestoreFilter[]): QueryConstraint[] {
+  const constraints: QueryConstraint[] = [];
+
+  Array.from(filters).forEach(f => {
+    if ('or' in f) {
+      const sub = buildQueryConstraints(f.or);
+      const filterConstraints = sub.filter(isFilterConstraint) as QueryFilterConstraint[];
+      constraints.push(or(...filterConstraints) as unknown as QueryConstraint); // <- key fix
+    } else if ('and' in f) {
+      const sub = buildQueryConstraints(f.and);
+      const filterConstraints = sub.filter(isFilterConstraint) as QueryFilterConstraint[];
+      constraints.push(and(...filterConstraints) as unknown as QueryConstraint);
+    } else {
+      constraints.push(where(f.field, f.operator, f.value));
+    }
+  });
+
+  return constraints;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -83,7 +106,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
   constructor(private firestore: Firestore) { }
 
   async getById(id: string, params?: FirestoreParams): Promise<T | null> {
-    
+
     return await runAsyncInInjectionContext(this.injector, async () => {
       if (params && !(params.collection)) throw new Error("You must specify the collection");
       try {
@@ -212,10 +235,10 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     try {
       const now = serverTimestamp();
 
-      const objWithTimestamps = { 
-        ...obj, 
-        createdAt: now, 
-        updatedAt: now, 
+      const objWithTimestamps = {
+        ...obj,
+        createdAt: now,
+        updatedAt: now,
       };
 
       let docRef: DocumentReference;
@@ -271,36 +294,37 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     if (!params?.collection) {
       throw new Error("You must provide the collection.");
     }
-  
+
     try {
       let docRef: DocumentReference = doc(this.firestore, params.collection, obj._id);
       docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
-  
+
       const { _id, ...fieldsToUpdate } = obj;
-  
+
       await updateDoc(docRef, {
         ...fieldsToUpdate,
         updatedAt: serverTimestamp()
       });
-  
+
       return this.getById(obj._id, params); // Return the updated object
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }
   }
 
-  async remove(id: string, params?: FirestoreParams): Promise<T | null> {
+  async remove(id: string, params?: FirestoreParams): Promise<boolean> {
     if (params && !params.collection) throw new Error("You must provide the collection.");
     try {
       const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
       const docSnapshot = await getDoc(docRef);
 
       if (!docSnapshot.exists()) {
-        throw new Error(`Document with uid ${id} does not exist.`);
+        console.error(`Document with uid ${id} does not exist.`);
+        return false;
       }
 
       await deleteDoc(docRef);
-      return null;  // Return null after successful deletion
+      return true;  // Return null after successful deletion
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }
@@ -317,37 +341,48 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     }
   };
 
-  async query(params?: FirestoreParams): Promise<T[]> {
-    if (!params || !params.collection) {
+  async query(params: FirestoreParams): Promise<T[] | null> {
+    if (!params.collection) {
       throw new Error("You must provide the collection.");
     }
 
+    if (!params.queryConstraints) {
+      throw new Error("You must provide the query constraints.");
+    }
+
     try {
-      const collectionRef: CollectionReference = collection(this.firestore, params.collection);
-      let firestoreQuery: Query = collectionRef;
+      let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+      collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
 
-      // Apply constraints
-      if (params.queryConstraints && Array.isArray(params.queryConstraints)) {
-        params.queryConstraints.forEach((queryConstraint: QueryConstraint) => {
-          firestoreQuery = query(firestoreQuery, queryConstraint);
-        });
+      const constraints: QueryConstraint[] = [];
+      const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
 
-        /* params.filters.forEach((filter: { field: string | FieldPath; operator: WhereFilterOp; value: unknown }) => {
-          firestoreQuery = query(firestoreQuery, where(filter.field, filter.operator, filter.value));
-        }); */
+      if (filters?.length) {
+        constraints.push(...buildQueryConstraints(filters));
+      }
+      if (order) {
+        constraints.push(orderBy(order.field, order.direction || 'asc'));
+      }
+      if (limit !== undefined) {
+        constraints.push(queryLimit(limit));
+      }
+      if (startAt !== undefined) {
+        constraints.push(queryStartAt(startAt));
+      }
+      if (startAfter !== undefined) {
+        constraints.push(queryStartAfter(startAfter));
+      }
+      if (endAt !== undefined) {
+        constraints.push(queryEndAt(endAt));
+      }
+      if (endBefore !== undefined) {
+        constraints.push(queryEndBefore(endBefore));
       }
 
-      // Apply sorting if specified
-      /* if (params.orderBy) {
-        firestoreQuery = query(firestoreQuery, orderBy(params.orderBy.field, params.orderBy.direction || 'asc'));
-      }
+      const firestoreQuery: Query = query(collectionRef, ...constraints);
+      const snapshot = await getDocs(firestoreQuery);
 
-      if (params.limit) {
-        firestoreQuery = query(firestoreQuery, limit(params.limit));
-      } */
-
-      const querySnapshot = await getDocs(firestoreQuery);
-      return querySnapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
+      return snapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }
@@ -398,6 +433,6 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     };
   
     return errorMessages[errorCode] || 'Error en la base de datos. Por favor, inténtalo de nuevo.'; */
-    return 'Database error';	
+    return 'Database error';
   }
 }

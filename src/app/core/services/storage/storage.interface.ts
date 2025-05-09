@@ -13,12 +13,12 @@ export interface Storage<T extends { _id: string } & AppModel> {
 
   create(obj: T, params?: any): Promise<T | null>;
   update(obj: Partial<T> & { _id: string }, params?: any): Promise<T | null>;
-  remove(id: string, params?: any): Promise<T | null>;
+  remove(id: string, params?: any): Promise<boolean>;
   exists(id: string, params?: any): Promise<boolean>;
 
   createInSubcollection?(obj: any, params?: any): Promise<any | null>;
   updateInSubcollection?(obj: Partial<any> & { _id: string }, params?: any): Promise<any | null>;
 
-  query(params?: any): Promise<T[]>;
-  query$(params?: any): Observable<T[]>;
+  query(params: any): Promise<T[] | null>;
+  query$?(params: any): Observable<T[] | null> | null;
 }
