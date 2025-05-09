@@ -6,16 +6,18 @@ import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGr
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
 import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, RecordingFormat } from 'src/app/core/domain/models/articleCharacteristics.interface';
-import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
+import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.pipe';
 
 @Component({
   selector: 'app-sell-form',
   templateUrl: './publish-form.component.html',
   styleUrls: ['./publish-form.component.scss'],
-  imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule]
+  imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule],
+  providers: [FormatCurrencyPipe]
 })
 export class PublishFormComponent {
   fb: FormBuilder = inject(FormBuilder);
+  currencyPipe = inject(FormatCurrencyPipe);
 
   publishForm!: FormGroup;
   @ViewChild('titleInput') titleInput!: IonInput;
@@ -28,6 +30,7 @@ export class PublishFormComponent {
   uploadImages = output<void>();
   uploadedImagesURLs = input<string[]>([]);
   
+  isPriceFocused = false;
   suggestPrice = output<void>();
 
   conditionsEnum = ArticleCondition;
@@ -60,6 +63,8 @@ export class PublishFormComponent {
         // Use the first image URL as the background image for the box
         const imageUrl = uploadedImages[0];
         this.#updateUploadImageBoxBackgroud(imageUrl);
+      } else {
+        this.#updateUploadImageBoxBackgroud('');
       }
     })
   }
@@ -72,7 +77,7 @@ export class PublishFormComponent {
     this.publishForm = this.fb.group({
       commonData: this.fb.group({
         title: this.fb.control('', { 
-          validators: [Validators.required, Validators.minLength(20)],
+          validators: [Validators.required, Validators.minLength(10)],
           updateOn: 'blur'
         }),
         price: this.fb.control('', { 
@@ -106,6 +111,14 @@ export class PublishFormComponent {
 
   focusTitleInput() {
     this.titleInput.setFocus();
+  }
+
+  formatPrice() {
+    const value = this.publishForm.get('commonData.price')?.value;
+    if (!isNaN(value)) {
+      const formatted = this.currencyPipe.transform(value, false); // pipe injected
+      this.publishForm.get('commonData.price')?.setValue(formatted);
+    }
   }
 
   #updateUploadImageBoxBackgroud(imageUrl: string) {

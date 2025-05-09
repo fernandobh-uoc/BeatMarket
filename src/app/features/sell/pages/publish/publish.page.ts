@@ -7,7 +7,7 @@ import { PublishFormComponent } from '../../ui/publish-form/publish-form.compone
 import { SellService } from '../../data-access/sell.service';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
-import { ViewWillEnter, ViewDidEnter } from '@ionic/angular';
+import { ViewWillEnter, ViewDidEnter, ViewWillLeave } from '@ionic/angular';
 
 @Component({
   selector: 'app-sell',
@@ -16,7 +16,7 @@ import { ViewWillEnter, ViewDidEnter } from '@ionic/angular';
   standalone: true,
   imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class PublishPage implements OnInit, ViewWillEnter, ViewDidEnter {
+export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
   sellService = inject(SellService);
   router = inject(Router);
 
@@ -30,14 +30,21 @@ export class PublishPage implements OnInit, ViewWillEnter, ViewDidEnter {
 
   disabledPublishButton = signal<boolean>(false);
 
-  ionViewWillEnter(): void {
+  /* ionViewWillEnter(): void {
     this.submitAttempted.set(false);
     this.disabledPublishButton.set(false);
     this.publishFormComponent()?.resetForm();
-  }
+  } */
 
   ionViewDidEnter(): void {
     this.publishFormComponent()?.focusTitleInput();
+  }
+
+  ionViewWillLeave(): void {
+    this.submitAttempted.set(false);
+    this.disabledPublishButton.set(false);
+    this.publishFormComponent()?.resetForm();
+    this.sellService.removeImages();
   }
 
   onControlFocus(control: string) {

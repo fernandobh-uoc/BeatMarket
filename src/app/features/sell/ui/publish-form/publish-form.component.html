@@ -36,7 +36,14 @@
     <div class="price-wrapper">
       <div class="input-wrapper price-input-wrapper">
         <ion-label class="custom" color="light">Precio</ion-label>
-        <ion-input formControlName="price" type="text" inputmode="decimal" class="custom" (ionFocus)="controlFocus.emit('commonData')">
+        <ion-input 
+          formControlName="price" 
+          type="text" 
+          inputmode="decimal" 
+          class="custom" 
+          (ionFocus)="controlFocus.emit('commonData')"
+          (ionBlur)="formatPrice(); isPriceFocused = false"
+        >
           <ion-text class="price-currency" slot="end">€</ion-text>
         </ion-input>
         @if (submitAttempted()) {

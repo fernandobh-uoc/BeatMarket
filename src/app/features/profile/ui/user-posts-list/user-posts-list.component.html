@@ -11,8 +11,8 @@
         </ion-thumbnail>
         <div class="labels-container">
           <ion-text class="post-title">{{ post.title }}</ion-text>
-          <ion-label class="post-category">{{ post.category}}</ion-label>
-          <ion-text class="post-price">{{ post.price }} €</ion-text>
+          <ion-label class="post-category">{{ post.category }}</ion-label>
+          <ion-text class="post-price">{{ post.price | formatCurrency }} €</ion-text>
         </div>
       </ion-item>
     }
