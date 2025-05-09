@@ -23,7 +23,7 @@ export class TabsPage {
     addIcons({ home, personCircle, musicalNotes, chatboxEllipses });
   }
 
-  onTabChange(event: { tab: string}) {
+  onTabChange(event: { tab: string }) {
     if (event.tab === 'sell') {
       this.router.navigateByUrl('/tabs/sell/publish', { replaceUrl: true });
     }
