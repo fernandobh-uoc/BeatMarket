@@ -23,7 +23,7 @@
             @case('select') {
               <ion-select #editInput interface="action-sheet" color="light" class="custom select-input" (ionFocus)="controlFocus.emit()" (ionChange)="selectChange.emit()">
                 @for (option of selectOptions(); track option.iso2) {
-                  <ion-select-option [value]="option.iso2">{{ option.nameES }}</ion-select-option>
+                  <ion-select-option [value]="option.nameES">{{ option.nameES }}</ion-select-option>
                 }
               </ion-select>
             }
@@ -31,7 +31,7 @@
         </form>
       </div>
       <div class="edit-buttons-wrapper">
-        <ion-text 
+        <!-- <ion-text 
           class="inline-link-save"
           [class.inline-link-disabled]="disabledSaveButtonPending() || disabledSaveButtonManual()" 
           (click)="
@@ -45,13 +45,40 @@
           (click)="!disabledSaveButtonPending()
             && editable() 
             && toggleEditingState.emit()"
-        >Cancelar</ion-text>
+        >Cancelar</ion-text> -->
+        <div class="save-icon-wrapper">
+          <ion-icon 
+            name="save-outline"
+            [class.icon-disabled]="disabledSaveButtonPending() || disabledSaveButtonManual()"
+            size="large"
+            (click)="
+              !disabledSaveButtonPending()
+              && !disabledSaveButtonManual()
+              && save.emit(editInput()?.value)
+            "
+          ></ion-icon>
+        </div>
+
+        <div class="cancel-icon-wrapper">
+          <ion-icon 
+            name="close-outline"
+            [class.icon-disabled]="disabledSaveButtonPending()"
+            (click)="
+              !disabledSaveButtonPending()
+              && editable() 
+              && toggleEditingState.emit()
+            "
+          ></ion-icon>
+        </div>
       </div>
     } @else {
       <div class="data-display-wrapper" [class.min-height-wrapper]="editable()">
         <ion-text color="light">{{ data() }}</ion-text>
         @if (editable()) {
-          <ion-text class="inline-link-edit" (click)="toggleEditingState.emit()">Editar</ion-text>
+          <!-- <ion-text class="inline-link-edit" (click)="toggleEditingState.emit()">Editar</ion-text> -->
+          <div class="edit-icon-wrapper" (click)="toggleEditingState.emit()">
+            <ion-icon name="create-outline" size="large"></ion-icon>
+          </div>
         }
       </div>
     }
