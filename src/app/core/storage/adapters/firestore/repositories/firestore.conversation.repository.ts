@@ -1,20 +1,16 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 
-import { ConversationRepository } from '../conversation.repository'; 
-import { Storage } from '../../../storage/storage.interface';
-import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
-import { ConversationModel, Conversation } from '../../models/conversation.model'; 
-import { FirestoreConversationConverter } from '../../../storage/adapters/converters/firestore.conversation.converter'; 
+import { ConversationRepository } from '../../../../domain/repositories/conversation.repository'; 
+import { Storage } from '../../../storage.interface';
+import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
+import { ConversationModel, Conversation } from '../../../../domain/models/conversation.model'; 
+import { FirestoreConversationConverter } from '../converters/firestore.conversation.converter'; 
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreConversationRepository implements ConversationRepository {
-  private storage = inject<Storage<Conversation>>(FirebaseFirestoreAdapter<ConversationModel>);
-  private conversationConverter: FirestoreConversationConverter;
-
-  constructor() {
-    this.conversationConverter = new FirestoreConversationConverter();
-  }
+  private storage: Storage<Conversation> = inject(FirebaseFirestoreAdapter<ConversationModel>);
+  private conversationConverter: FirestoreConversationConverter = new FirestoreConversationConverter();
 
   async getConversationById(id: string): Promise<Conversation | null> {
     try {

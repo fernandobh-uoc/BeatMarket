@@ -9,15 +9,16 @@ import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { ActivePost, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { ArticleCategory, ArticleModel } from 'src/app/core/domain/models/article.model';
+import { CloudStorage } from 'src/app/core/services/cloud-storage/cloudStorage.interface';
 
 @Injectable({
   providedIn: 'root'
 })
 export class SellService {
-  #cloudStorage = inject(environment.cloudStorageToken);
+  #authService = inject(AuthService);
   #postRepository = inject(PostRepository);
   #userRepository = inject(UserRepository);
-  #authService = inject(AuthService);
+  #cloudStorage = inject(CloudStorage);
 
   imagesDataURLs = signal<string[]>([]);
   //imagesDownloadURLs = signal<string[]>([]);

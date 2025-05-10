@@ -2,22 +2,17 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { combineLatestWith, map, of, switchMap } from 'rxjs';
 
-import { UserRepository } from '../user.repository';
-import { Storage } from '../../../storage/storage.interface';
-import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
-import { UserModel, User, ActivePost } from '../../models/user.model';
-import { FirestoreActivePostConverter, FirestoreUserConverter } from '../../../storage/adapters/converters/firestore.user.converter';
+import { UserRepository } from '../../../../domain/repositories/user.repository';
+import { Storage } from '../../../storage.interface';
+import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
+import { UserModel, User, ActivePost } from '../../../../domain/models/user.model';
+import { FirestoreActivePostConverter, FirestoreUserConverter } from '../converters/firestore.user.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreUserRepository implements UserRepository {
-  private storage = inject<Storage<User>>(FirebaseFirestoreAdapter<UserModel>);
-  private userConverter: FirestoreUserConverter;
-  private activePostConverter: FirestoreActivePostConverter;
-
-  constructor() {
-    this.userConverter = new FirestoreUserConverter();
-    this.activePostConverter = new FirestoreActivePostConverter();
-  }
+  private storage: Storage<User> = inject(FirebaseFirestoreAdapter<UserModel>);
+  private userConverter: FirestoreUserConverter = new FirestoreUserConverter();
+  private activePostConverter: FirestoreActivePostConverter = new FirestoreActivePostConverter();
 
   async getUserById(id: string, includeActivePosts: boolean = true): Promise<User | null> {
     try {

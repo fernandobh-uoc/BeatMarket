@@ -1,7 +1,7 @@
 import { Observable } from "rxjs";
 import { AppModel } from "src/app/core/domain/models/appModel.type";
 
-export interface Storage<T extends { _id: string } & AppModel> {
+export interface Storage<T extends AppModel & { _id: string }> { 
   getById(id: string, params?: any): Promise<T | null>;
   getById$?(id: string, params?: any): Observable<T | null>;
 

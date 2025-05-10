@@ -13,14 +13,8 @@ import {
   updateProfile, 
   updatePassword
 } from '@angular/fire/auth';
-import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './auth.interface';
-import { User, UserModel } from "../../../domain/models/user.model";
+import { Auth, AuthProvider, AuthReturnType, UserAuthData } from '../auth.interface';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
-
-export const FIREBASE_AUTH_TOKEN = new InjectionToken<Auth>('FirebaseAuth', {
-  providedIn: 'root',
-  factory: () => new FirebaseAuthAdapter()
-})
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthAdapter implements Auth {

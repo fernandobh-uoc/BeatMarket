@@ -1,7 +1,7 @@
 import { EnvironmentInjector, Inject, Injectable, InjectionToken, Provider, Signal, Type, WritableSignal, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
 import { UserRepository } from '../../domain/repositories/user.repository'; 
 import { Role, User, UserModel, isUserModel } from 'src/app/core/domain/models/user.model';
-import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './adapters/auth.interface';
+import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './auth.interface';
 import { environment } from 'src/environments/environment.dev';
 import { LocalStorageService } from '../../storage/local-storage.service';
 import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
@@ -32,7 +32,7 @@ export class AuthService {
   #errorMessage = signal<string | null>(null);
 
   userRepository = inject(UserRepository);
-  cloudStorage = inject(environment.cloudStorageToken);
+  cloudStorage = inject(CloudStorage);
   cache = inject(LocalStorageService);
   authMethod!: AuthMethod;
 
@@ -259,7 +259,8 @@ export abstract class AuthMethod {
 @Injectable({ providedIn: 'root' })
 export class EmailAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  constructor(@Inject(environment.authToken) private auth: Auth) { }
+  //constructor(@Inject(environment.authToken) private auth: Auth) { }
+  private auth = inject(Auth);
 
   async register(userData: UserAuthData): Promise<AuthReturnType> {
     //return new Promise(res => res(null));
@@ -300,7 +301,8 @@ export class EmailAuth implements AuthMethod {
 @Injectable({ providedIn: 'root' })
 export class GoogleAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  constructor(@Inject(environment.authToken) private auth: Auth) { }
+  //constructor(@Inject(environment.authToken) private auth: Auth) { }
+  private auth = inject(Auth);
 
   async register(): Promise<AuthReturnType> {
     try {
@@ -338,7 +340,8 @@ export class GoogleAuth implements AuthMethod {
 @Injectable({ providedIn: 'root' })
 export class AppleAuth implements AuthMethod {
   //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  constructor(@Inject(environment.authToken) private auth: Auth) { }
+  //constructor(@Inject(environment.authToken) private auth: Auth) { }
+  private auth = inject(Auth);
 
   async register(): Promise<AuthReturnType> {
     try {

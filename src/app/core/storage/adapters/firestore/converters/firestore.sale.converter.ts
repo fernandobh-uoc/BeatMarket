@@ -1,7 +1,7 @@
 import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
 import { Sale, SaleModel, SalePostData, SaleUserData } from "src/app/core/domain/models/sale.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
-import { FirestoreSaleRepository } from "src/app/core/domain/repositories/firestore/firestore.sale.repository";
+import { FirestoreSaleRepository } from "src/app/core/storage/adapters/firestore/repositories/firestore.sale.repository";
 import { ArticleCondition } from "src/app/core/domain/models/article.model";
 
 export interface FirestoreSaleModel {

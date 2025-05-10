@@ -2,11 +2,6 @@ import { inject, Injectable, InjectionToken } from '@angular/core';
 import { Storage as FirebaseStorage, getDownloadURL, ref, uploadBytes, deleteObject, getMetadata, listAll } from '@angular/fire/storage';
 import { CloudStorage } from '../cloudStorage.interface';
 
-export const FIREBASE_CLOUD_STORAGE_TOKEN = new InjectionToken<CloudStorage>('FirebaseCloudStorage', {
-  providedIn: 'root',
-  factory: () => new FirebaseCloudStorageAdapter(inject(FirebaseStorage))
-})
-
 @Injectable({ providedIn: 'root' })
 export class FirebaseCloudStorageAdapter implements CloudStorage {
   constructor(private storage: FirebaseStorage) {}

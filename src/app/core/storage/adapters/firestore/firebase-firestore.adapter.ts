@@ -21,10 +21,8 @@ import {
   FirestoreErrorCode,
 } from '@angular/fire/firestore';
 
-import { Storage } from '../storage.interface';
+import { Storage } from '../../storage.interface';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
-import { ConversationModel } from "src/app/core/domain/models/conversation.model";
-
 
 
 /**
@@ -45,15 +43,6 @@ export async function runAsyncInInjectionContext<T>(injector: Injector, fn: () =
       fn().then(resolve).catch(reject);
     });
   });
-}
-
-const FIREBASE_FIRESTORE_CONVERSATION_TOKEN = new InjectionToken<Storage<ConversationModel>>('FirebaseFirestoreConversation', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<ConversationModel>(inject(Firestore))
-})
-
-export const FIREBASE_FIRESTORE_TOKENS = {
-  conversation: FIREBASE_FIRESTORE_CONVERSATION_TOKEN
 }
 
 type FirestoreFilter =

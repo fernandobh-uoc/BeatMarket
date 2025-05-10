@@ -2,16 +2,16 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 import { map } from 'rxjs';
 
-import { CartRepository } from '../cart.repository';
-import { Storage } from '../../../storage/storage.interface';
-import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
-import { CartModel, Cart } from '../../models/cart.model';
-import { FirestoreCartConverter } from '../../../storage/adapters/converters/firestore.cart.converter';
+import { CartRepository } from '../../../../domain/repositories/cart.repository';
+import { Storage } from '../../../storage.interface';
+import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
+import { CartModel, Cart } from '../../../../domain/models/cart.model';
+import { FirestoreCartConverter } from '../converters/firestore.cart.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreCartRepository implements CartRepository {
-  private storage = inject<Storage<Cart>>(FirebaseFirestoreAdapter<CartModel>);
-  private cartConverter: FirestoreCartConverter;
+  private storage: Storage<Cart> = inject(FirebaseFirestoreAdapter<CartModel>); 
+  private cartConverter: FirestoreCartConverter = new FirestoreCartConverter();
 
   constructor() {
     this.cartConverter = new FirestoreCartConverter();
