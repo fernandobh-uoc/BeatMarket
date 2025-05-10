@@ -13,10 +13,6 @@ export class FirestoreCartRepository implements CartRepository {
   private storage: Storage<Cart> = inject(FirebaseFirestoreAdapter<CartModel>); 
   private cartConverter: FirestoreCartConverter = new FirestoreCartConverter();
 
-  constructor() {
-    this.cartConverter = new FirestoreCartConverter();
-  }
-
   async getCartById(id: string): Promise<Cart | null> {
     try {
       return await this.storage.getById(id, { collection: 'carts', converter: this.cartConverter });

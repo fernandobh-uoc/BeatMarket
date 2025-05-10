@@ -319,10 +319,10 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     }
   };
 
-  async exists(id: string, params: FirestoreParams): Promise<boolean> {
+  async exists(id: string, params?: FirestoreParams): Promise<boolean> {
     if (params && !params.collection) throw new Error("You must provide the collection.");
     try {
-      const docRef: DocumentReference = doc(this.firestore, `${params.collection}/${id}`);
+      const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
       const docSnapshot = await getDoc(docRef);
       return docSnapshot.exists();  // Returns true if the document exists, false otherwise
     } catch (firestoreError: any) {
