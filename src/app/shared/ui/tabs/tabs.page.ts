@@ -13,7 +13,7 @@ import { Router } from '@angular/router';
   templateUrl: './tabs.page.html',
   styleUrls: ['./tabs.page.scss'],
   standalone: true,
-  imports: [MenuComponent, IonLabel, IonTabBar, IonTabButton, IonTabs, IonIcon, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [MenuComponent, IonLabel, IonTabBar, IonTabButton, IonTabs, IonIcon, CommonModule, FormsModule]
 })
 export class TabsPage {
   router = inject(Router);
