@@ -1,26 +1,20 @@
-import { inject, Injectable, InjectionToken } from '@angular/core';
-import { Cart, CartModel } from '../../models/cart.model';
-import { Storage } from '../../../services/storage/storage.interface';
-import { environment } from 'src/environments/environment.dev';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { CartConverter } from '../../../services/storage/adapters/converters/cart.converter';
-import { map, of } from 'rxjs';
-import { CartRepository } from '../cart.repository';
-import { FirebaseFirestoreAdapter } from '../../../services/storage/adapters/firebase-firestore.adapter';
-import { Firestore } from '@angular/fire/firestore';
+import { map } from 'rxjs';
 
-/* const FIRESTORE_CART_TOKEN = new InjectionToken<Storage<CartModel>>('FirebaseFirestoreCart', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<CartModel>(inject(Firestore))
-}); */
+import { CartRepository } from '../cart.repository';
+import { Storage } from '../../../storage/storage.interface';
+import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
+import { CartModel, Cart } from '../../models/cart.model';
+import { FirestoreCartConverter } from '../../../storage/adapters/converters/firestore.cart.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreCartRepository implements CartRepository {
   private storage = inject<Storage<Cart>>(FirebaseFirestoreAdapter<CartModel>);
-  private cartConverter: CartConverter;
+  private cartConverter: FirestoreCartConverter;
 
   constructor() {
-    this.cartConverter = new CartConverter();
+    this.cartConverter = new FirestoreCartConverter();
   }
 
   async getCartById(id: string): Promise<Cart | null> {

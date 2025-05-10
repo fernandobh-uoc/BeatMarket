@@ -4,7 +4,7 @@ import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/co
 import { FirestoreSaleRepository } from "src/app/core/domain/repositories/firestore/firestore.sale.repository";
 import { ArticleCondition } from "src/app/core/domain/models/article.model";
 
-export interface SaleFirestoreModel {
+export interface FirestoreSaleModel {
   postData: {
     postId: string;
     title: string;
@@ -24,23 +24,26 @@ export interface SaleFirestoreModel {
   updatedAt: Timestamp;
 }
 
-export class SaleConverter implements FirestoreDataConverter<SaleModel, SaleFirestoreModel> {
-  toFirestore(sale: WithFieldValue<SaleModel>): WithFieldValue<SaleFirestoreModel> {
+export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel, FirestoreSaleModel> {
+  toFirestore(sale: WithFieldValue<SaleModel>): WithFieldValue<FirestoreSaleModel> {
     return {
-      postData: {
+      postData: sale.postData,
+      /* postData: {
         postId: (<SalePostData>sale.postData).postId,
         title: (<SalePostData>sale.postData).title,
         articleCondition: (<SalePostData>sale.postData).articleCondition,
         price: (<SalePostData>sale.postData).price,
-      },
-      buyerData: {
+      } */
+      buyerData: sale.buyerData,
+      /* buyerData: {
         userId: (<SaleUserData>sale.buyerData).userId,
         username: (<SaleUserData>sale.buyerData).username,
-      },
-      sellerData: {
+      }, */
+      sellerData: sale.sellerData,
+      /* sellerData: {
         userId: (<SaleUserData>sale.sellerData).userId,
         username: (<SaleUserData>sale.sellerData).username,
-      },
+      }, */
       saleDate: isValidDateInput(sale.saleDate)
         ? Timestamp.fromDate(new Date(sale.saleDate))
         : isFieldValue(sale.saleDate)
@@ -59,7 +62,7 @@ export class SaleConverter implements FirestoreDataConverter<SaleModel, SaleFire
     }
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot<SaleFirestoreModel>, options?: SnapshotOptions): SaleModel {
+  fromFirestore(snapshot: QueryDocumentSnapshot<FirestoreSaleModel>, options?: SnapshotOptions): SaleModel {
     const data = snapshot.data(options);
 
     return Sale.Build({

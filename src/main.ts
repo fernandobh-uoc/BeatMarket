@@ -21,6 +21,10 @@ import { CartRepository } from './app/core/domain/repositories/cart.repository';
 import { FirestoreCartRepository } from './app/core/domain/repositories/firestore/firestore.cart.repository';
 import { UserRepository } from './app/core/domain/repositories/user.repository';
 import { FirestoreUserRepository } from './app/core/domain/repositories/firestore/firestore.user.repository';
+import { SaleRepository } from './app/core/domain/repositories/sale.repository';
+import { FirestoreSaleRepository } from './app/core/domain/repositories/firestore/firestore.sale.repository';
+import { ConversationRepository } from './app/core/domain/repositories/conversation.repository';
+import { FirestoreConversationRepository } from './app/core/domain/repositories/firestore/firestore.conversation.repository';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -52,6 +56,8 @@ bootstrapApplication(AppComponent, {
 
     { provide: UserRepository, useClass: FirestoreUserRepository },
     { provide: PostRepository, useClass: FirestorePostRepository },
-    { provide: CartRepository, useClass: FirestoreCartRepository }
+    { provide: CartRepository, useClass: FirestoreCartRepository },
+    { provide: SaleRepository, useClass: FirestoreSaleRepository },
+    { provide: ConversationRepository, useClass: FirestoreConversationRepository }
   ],
 });

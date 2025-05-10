@@ -1,5 +1,5 @@
 import { FIREBASE_AUTH_TOKEN } from "src/app/core/services/auth/adapters/firebase-auth.adapter";
-import { FIREBASE_FIRESTORE_TOKENS } from "src/app/core/services/storage/adapters/firebase-firestore.adapter";
+import { FIREBASE_FIRESTORE_TOKENS } from "src/app/core/storage/adapters/firebase-firestore.adapter";
 import { FIREBASE_CLOUD_STORAGE_TOKEN } from "src/app/core/services/cloud-storage/adapters/firebase-cloudStorage.adapter";
 
 export const environment = {

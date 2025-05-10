@@ -84,10 +84,10 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
       return;
     }
 
-    console.log({
+    /* console.log({
       ...publishForm?.value.commonData,
       characteristics: publishForm?.value.specificData,
-    });
+    }); */
 
     this.disabledPublishButton.set(true);
 

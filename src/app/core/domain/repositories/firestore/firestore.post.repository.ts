@@ -1,25 +1,19 @@
-import { inject, Injectable, InjectionToken } from '@angular/core';
-import { Post, PostModel } from '../../models/post.model';
-import { Storage } from '../../../services/storage/storage.interface';
-import { environment } from 'src/environments/environment.dev';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { PostConverter } from '../../../services/storage/adapters/converters/post.converter';
-import { PostRepository } from '../post.repository';
-import { FirebaseFirestoreAdapter, FirestoreParams } from '../../../services/storage/adapters/firebase-firestore.adapter';
-import { Firestore } from '@angular/fire/firestore';
 
-/* const FIRESTORE_POST_TOKEN = new InjectionToken<Storage<PostModel>>('FirebaseFirestorePost', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<PostModel>(inject(Firestore))
-}) */
+import { PostRepository } from '../post.repository';
+import { Storage } from '../../../storage/storage.interface';
+import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
+import { PostModel, Post } from '../../models/post.model';
+import { FirestorePostConverter } from '../../../storage/adapters/converters/firestore.post.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestorePostRepository implements PostRepository {
   private storage = inject<Storage<Post>>(FirebaseFirestoreAdapter<PostModel>);
-  private postConverter: PostConverter;
+  private postConverter: FirestorePostConverter;
 
   constructor() {
-    this.postConverter = new PostConverter();
+    this.postConverter = new FirestorePostConverter();
   }
 
   async getPostById(id: string): Promise<Post | null> {

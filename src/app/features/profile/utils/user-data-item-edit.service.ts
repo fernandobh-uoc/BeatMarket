@@ -1,7 +1,7 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
-import { LocalStorageService } from 'src/app/core/services/storage/local-storage.service';
+import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 
 @Injectable()
 export class UserDataItemEditService {

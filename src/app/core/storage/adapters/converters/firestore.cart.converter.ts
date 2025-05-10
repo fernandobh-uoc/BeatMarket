@@ -2,7 +2,7 @@ import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, Snapsho
 import { Cart, CartItem, CartModel } from "src/app/core/domain/models/cart.model";
 import { isValidDateInput, isFieldValue, isFirestoreTimestamp } from "./utils/converter.utils";
 
-export interface CartFirestoreModel {
+export interface FirestoreCartModel {
   userId: string;
   items: {
     postId: string;
@@ -14,16 +14,17 @@ export interface CartFirestoreModel {
   updatedAt: Timestamp;
 }
 
-export class CartConverter implements FirestoreDataConverter<CartModel, CartFirestoreModel> {
-  toFirestore(cart: WithFieldValue<CartModel>): WithFieldValue<CartFirestoreModel> {
+export class FirestoreCartConverter implements FirestoreDataConverter<CartModel, FirestoreCartModel> {
+  toFirestore(cart: WithFieldValue<CartModel>): WithFieldValue<FirestoreCartModel> {
     return {
       userId: cart.userId,
-      items: (cart.items as CartItem[]).map(item => ({
+      items: cart.items,
+      /* items: (cart.items as CartItem[]).map(item => ({
         postId: item.postId,
         title: item.title,
         price: item.price,
         shipping: item.shipping
-      })),
+      })), */
       createdAt: isValidDateInput(cart.createdAt)
         ? Timestamp.fromDate(new Date(cart.createdAt))
         : isFieldValue(cart.createdAt)
@@ -37,7 +38,7 @@ export class CartConverter implements FirestoreDataConverter<CartModel, CartFire
     };
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot<CartFirestoreModel>, options?: SnapshotOptions): CartModel {
+  fromFirestore(snapshot: QueryDocumentSnapshot<FirestoreCartModel>, options?: SnapshotOptions): CartModel {
     const data = snapshot.data(options);
 
     return Cart.Build({

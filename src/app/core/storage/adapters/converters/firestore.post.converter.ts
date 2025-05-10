@@ -4,7 +4,7 @@ import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/m
 import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
-export interface PostFirestoreModel {
+export interface FirestorePostModel {
   title: string;
   description: string;
   mainImageURL: string;
@@ -78,8 +78,8 @@ export interface PostFirestoreModel {
   updatedAt: Timestamp;
 }
 
-export class PostConverter implements FirestoreDataConverter<PostModel, PostFirestoreModel> {
-  toFirestore(post: WithFieldValue<PostModel>): WithFieldValue<PostFirestoreModel> {
+export class FirestorePostConverter implements FirestoreDataConverter<PostModel, FirestorePostModel> {
+  toFirestore(post: WithFieldValue<PostModel>): WithFieldValue<FirestorePostModel> {
     let article: Partial<ArticleModel> = post.article as Partial<ArticleModel>;
 
     let category: string = ArticleCategory.None;
@@ -158,11 +158,12 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
       description: post.description,
       mainImageURL: post.mainImageURL,
       imagesURLs: post.imagesURLs,
-      user: {
+      user: post.user,
+      /* user: {
         userId: (<PostUserData>post.user).userId,
         username: (<PostUserData>post.user).username,
         profilePictureURL: (<PostUserData>post.user).profilePictureURL,
-      },
+      }, */
       price: post.price,
       //shipping: post.shipping,
       status: post.status,
@@ -189,7 +190,7 @@ export class PostConverter implements FirestoreDataConverter<PostModel, PostFire
     }
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot<PostFirestoreModel>, options?: SnapshotOptions): PostModel {
+  fromFirestore(snapshot: QueryDocumentSnapshot<FirestorePostModel>, options?: SnapshotOptions): PostModel {
     const data = snapshot.data(options);
 
     return Post.Build({

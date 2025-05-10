@@ -1,11 +1,10 @@
 import { FieldValue, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
 import { ActivePost, Role, User, UserModel } from "src/app/core/domain/models/user.model";
-import { Post, PostModel } from "src/app/core/domain/models/post.model";
+import { PostModel } from "src/app/core/domain/models/post.model";
 import { ArticleCategory, ArticleModel } from "src/app/core/domain/models/article.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
-import { onSnapshotsInSync } from "firebase/firestore";
 
-export interface UserFirestoreModel {
+export interface FirestoreUserModel {
   email: string;
   username: string;
   profilePictureURL: string;
@@ -28,15 +27,15 @@ export interface UserFirestoreModel {
   updatedAt: Timestamp | FieldValue;
 }
 
-export interface ActivePostFirestoreModel {
+export interface FirestoreActivePostModel {
   title: string;
   category: string;
   price: number;
   mainImageURL: string;
 }
 
-export class UserConverter implements FirestoreDataConverter<UserModel, UserFirestoreModel> {
-  toFirestore(user: WithFieldValue<UserModel>): WithFieldValue<UserFirestoreModel> {
+export class FirestoreUserConverter implements FirestoreDataConverter<UserModel, FirestoreUserModel> {
+  toFirestore(user: WithFieldValue<UserModel>): WithFieldValue<FirestoreUserModel> {
     return {
       email: user.email,
       username: user.username,
@@ -61,7 +60,7 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
     };
   }
 
-  fromFirestore(snapshot: QueryDocumentSnapshot<UserFirestoreModel>, options?: SnapshotOptions): UserModel {
+  fromFirestore(snapshot: QueryDocumentSnapshot<FirestoreUserModel>, options?: SnapshotOptions): UserModel {
     const data = snapshot.data(options);
 
     return User.Build({
@@ -89,8 +88,8 @@ export class UserConverter implements FirestoreDataConverter<UserModel, UserFire
   }
 }
 
-export class ActivePostConverter implements FirestoreDataConverter<Partial<PostModel> & Partial<ArticleModel>, ActivePostFirestoreModel> {
-  toFirestore(activePost: WithFieldValue<ActivePost>): WithFieldValue<ActivePostFirestoreModel> {
+export class FirestoreActivePostConverter implements FirestoreDataConverter<Partial<PostModel> & Partial<ArticleModel>, FirestoreActivePostModel> {
+  toFirestore(activePost: WithFieldValue<ActivePost>): WithFieldValue<FirestoreActivePostModel> {
     return {
       title: typeof activePost.title === 'string' ? activePost.title : '',
       category: activePost?.category?.toString() ?? ArticleCategory.None,

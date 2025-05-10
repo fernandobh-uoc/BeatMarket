@@ -1,19 +1,20 @@
-import { inject, Injectable } from "@angular/core";
-import { SaleRepository } from "../sale.repository";
-import { SaleModel, Sale } from "../../models/sale.model";
-import { Storage } from "src/app/core/services/storage/storage.interface";
-import { FirebaseFirestoreAdapter } from "src/app/core/services/storage/adapters/firebase-firestore.adapter";
-import { SaleConverter } from "src/app/core/services/storage/adapters/converters/sale.converter";
+import { Injectable, inject } from "@angular/core";
 import { Observable } from "rxjs/internal/Observable";
 import { map } from "rxjs/operators";
+
+import { SaleRepository } from "../sale.repository";
+import { Storage } from "src/app/core/storage/storage.interface";
+import { FirebaseFirestoreAdapter } from "src/app/core/storage/adapters/firebase-firestore.adapter";
+import { SaleModel, Sale } from "../../models/sale.model";
+import { FirestoreSaleConverter } from "src/app/core/storage/adapters/converters/firestore.sale.converter";
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreSaleRepository implements SaleRepository {
   private storage = inject<Storage<Sale>>(FirebaseFirestoreAdapter<SaleModel>);
-  private saleConverter: SaleConverter;
+  private saleConverter: FirestoreSaleConverter;
 
   constructor() {
-    this.saleConverter = new SaleConverter();
+    this.saleConverter = new FirestoreSaleConverter();
   }
 
   async getSaleById(id: string): Promise<Sale | null> {

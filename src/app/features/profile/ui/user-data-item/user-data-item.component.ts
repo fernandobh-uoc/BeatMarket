@@ -12,7 +12,6 @@ import { CountryData } from 'src/app/shared/utils/countries';
   imports: [IonIcon, IonAvatar, IonInput, IonLabel, IonText, IonInputPasswordToggle, IonSelect, IonSelectOption]
 })
 export class UserDataItemComponent  implements OnInit {
-  
   keyTag = input<string>('');
   type = input<'text' | 'password' | 'number' | 'avatar' | 'select'>('text');
   editable = input<boolean>(true);

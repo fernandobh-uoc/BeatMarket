@@ -1,6 +1,7 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
-import { PostModel } from "./post.model";
+import { PostStatus } from "./post.model";
+import { Timestamps } from "./appModel.type";
 
 export enum MessageStatus {
   Pending = 'Pendiente',
@@ -8,7 +9,15 @@ export enum MessageStatus {
   Received = 'Recibido'
 }
 
-interface MessageModel {
+export interface RelatedPostModel {
+  _id: string;
+  title: string;
+  price: number;
+  status: PostStatus;
+  mainImageURL: string;
+}
+
+export interface MessageModel {
   _id: string;
   text: string;
   timestamp: Date;
@@ -17,15 +26,15 @@ interface MessageModel {
   status: MessageStatus;
 }
 
-interface ParticipantModel {
-  participantId: UserModel["_id"];
+export interface ParticipantModel {
+  userId: UserModel["_id"];
   username: UserModel["username"];
   profilePictureURL: UserModel["profilePictureURL"];
 }
 
-export interface ConversationModel extends JSONSerializable<ConversationModel> {
+export interface ConversationModel extends JSONSerializable<ConversationModel>, Timestamps {
   _id: string;
-  relatedPost: Partial<PostModel>;
+  relatedPost: RelatedPostModel;
   initiatedBy: UserModel["_id"];
   initiatedAt: Date;
   lastUpdatedAt: Date;
@@ -36,12 +45,21 @@ export interface ConversationModel extends JSONSerializable<ConversationModel> {
 
 export class Conversation implements ConversationModel {
   public _id: string = '';
-  public relatedPost: Partial<PostModel> = {};
+  public relatedPost: RelatedPostModel = { 
+    _id: '', 
+    title: '', 
+    price: 0, 
+    status: PostStatus.Active, 
+    mainImageURL: '' 
+  };
   public initiatedBy: UserModel["_id"] = '';
   public initiatedAt: Date = new Date();
   public lastUpdatedAt: Date = new Date();
   public lastMessage: MessageModel | null = null;
-  public participants: [ParticipantModel, ParticipantModel] = [{ participantId: '', username: '', profilePictureURL: '' }, { participantId: '', username: '', profilePictureURL: '' }];
+  public participants: [ParticipantModel, ParticipantModel] = [
+    { userId: '', username: '', profilePictureURL: '' }, 
+    { userId: '', username: '', profilePictureURL: '' }
+  ];
   public messages: MessageModel[] | null = null;
 
   private constructor(conversation: Partial<ConversationModel> = {}) {
@@ -73,4 +91,16 @@ export class Conversation implements ConversationModel {
     }
     return null;
   }
+}
+
+export function isConversationModel(obj: any): obj is ConversationModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.relatedPost === 'object' &&
+    typeof obj.initiatedBy === 'string' &&
+    typeof obj.initiatedAt === 'object' &&
+    typeof obj.lastUpdatedAt === 'object' &&
+    typeof obj.lastMessage === 'object' &&
+    Array.isArray(obj.participants);
 }

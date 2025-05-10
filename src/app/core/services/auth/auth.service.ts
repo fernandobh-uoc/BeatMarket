@@ -3,7 +3,7 @@ import { UserRepository } from '../../domain/repositories/user.repository';
 import { Role, User, UserModel, isUserModel } from 'src/app/core/domain/models/user.model';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './adapters/auth.interface';
 import { environment } from 'src/environments/environment.dev';
-import { LocalStorageService } from '../storage/local-storage.service';
+import { LocalStorageService } from '../../storage/local-storage.service';
 import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
 import { user } from '@angular/fire/auth';
 

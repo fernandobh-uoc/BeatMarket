@@ -1,7 +1,7 @@
 import { signal, computed, inject, Injectable } from '@angular/core';
 import { CartItem, CartModel } from 'src/app/core/domain/models/cart.model';
 import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
-import { LocalStorageService } from 'src/app/core/services/storage/local-storage.service';
+import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { AuthStatus } from 'src/app/core/services/auth/auth.service';
 import { firstValueFrom } from 'rxjs';
 

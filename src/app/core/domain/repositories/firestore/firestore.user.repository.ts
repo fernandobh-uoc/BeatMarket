@@ -1,26 +1,22 @@
-import { inject, Injectable, InjectionToken } from '@angular/core';
-import { ActivePost, User, UserModel } from '../../models/user.model';
-import { Storage } from '../../../services/storage/storage.interface';
+import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { ActivePostConverter, UserConverter } from '../../../services/storage/adapters/converters/user.converter';
 import { combineLatestWith, map, of, switchMap } from 'rxjs';
-import { FirebaseFirestoreAdapter } from '../../../services/storage/adapters/firebase-firestore.adapter';
-import { UserRepository } from '../user.repository';
 
-/* const FIREBASE_FIRESTORE_USER_TOKEN = new InjectionToken<Storage<UserModel>>('FirebaseFirestoreUser', {
-  providedIn: 'root',
-  factory: () => new FirebaseFirestoreAdapter<UserModel>(inject(Firestore))
-}) */
+import { UserRepository } from '../user.repository';
+import { Storage } from '../../../storage/storage.interface';
+import { FirebaseFirestoreAdapter } from '../../../storage/adapters/firebase-firestore.adapter';
+import { UserModel, User, ActivePost } from '../../models/user.model';
+import { FirestoreActivePostConverter, FirestoreUserConverter } from '../../../storage/adapters/converters/firestore.user.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreUserRepository implements UserRepository {
   private storage = inject<Storage<User>>(FirebaseFirestoreAdapter<UserModel>);
-  private userConverter: UserConverter;
-  private activePostConverter: ActivePostConverter;
+  private userConverter: FirestoreUserConverter;
+  private activePostConverter: FirestoreActivePostConverter;
 
   constructor() {
-    this.userConverter = new UserConverter();
-    this.activePostConverter = new ActivePostConverter();
+    this.userConverter = new FirestoreUserConverter();
+    this.activePostConverter = new FirestoreActivePostConverter();
   }
 
   async getUserById(id: string, includeActivePosts: boolean = true): Promise<User | null> {
