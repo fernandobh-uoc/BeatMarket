@@ -4,8 +4,8 @@ import { ArticleCategory, ArticleCondition, ArticleModel } from "./article.model
 import { Timestamps } from "./appModel.type";
 
 export enum PostStatus {
-  Active = 'active',
-  Finished = 'finished'
+  Active = 'Activo',
+  Finished = 'Finalizado'
 }
 
 export interface PostUserData {

@@ -102,14 +102,34 @@ export enum RecordingFormat {
   Other = 'Otros'
 }
 
+export enum RecordingGenre {
+  None = '',
+  Pop = 'Pop',
+  Rock = 'Rock',
+  Jazz = 'Jazz',
+  Classical = 'Clásica',
+  HipHop = 'Hip hop',
+  Reggae = 'Reggae',
+  Blues = 'Blues',
+  Electronic = 'Electrónica',
+  Metal = 'Metal',
+  Country = 'Country',
+  Folk = 'Folk',
+  Latin = 'Latina',
+  Funk = 'Funk',
+  Soul = 'Soul',
+  RnB = 'R&B',
+  Other = 'Otros'
+}
+
 export enum BookTheme {
   None = 'none',
-  Music_sheets = 'Partituras',
-  Music_theory = 'Teoría musical',
-  Study_method = 'Métodos de estudio',
+  MusicSheets = 'Partituras',
+  MusicTheory = 'Teoría musical',
+  StudyMethod = 'Métodos de estudio',
   Composition = 'Composición',
   Analysis = 'Análisis',
-  Music_history = 'Historia de la música',
+  MusicHistory = 'Historia de la música',
   Other = 'Otros'
 }
 
@@ -138,9 +158,9 @@ export interface InstrumentCharacteristics {
 export interface RecordingCharacteristics {
   category: ArticleCategory.Recordings;
   format: RecordingFormat;
-  recordingTitle: string;
   artist: string;
-  genre: string;
+  genre: RecordingGenre;
+  recordingTitle?: string;
   year?: string;
   duration?: string;
   label?: string;
@@ -151,7 +171,6 @@ export interface RecordingCharacteristics {
   releaseCountry?: string;
   releaseFormat?: string;
   trackCount?: string;
-  trackNumber?: string;
 }
 
 export interface AccessoryCharacteristics {
@@ -159,6 +178,7 @@ export interface AccessoryCharacteristics {
   type: AccesoryType;
   name: string;
   brand?: string;
+  color?: string;
   associatedInstrument?: string;
 }
 
@@ -166,16 +186,14 @@ export interface ProfessionalCharacteristics {
   category: ArticleCategory.Professional;
   name: string;
   brand: string;
-  model?: string;
+  model: string;
+  serialNumber: string;
   color?: string;
   fabricationYear?: string;
-  serialNumber?: string;
   accessories?: string[];
   warranty?: string;
   warrantyDuration?: string;
   warrantyType?: string;
-  warrantyDate?: string;
-  warrantyCountry?: string;
 }
 
 export interface BookCharacteristics {

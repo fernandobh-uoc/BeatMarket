@@ -3,6 +3,7 @@ import { ArticleCategory, ArticleCondition, ArticleModel, isArticleModel } from 
 import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/models/post.model";
 import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics, BookCharacteristics, RecordingCharacteristics, AccessoryCharacteristics, ProfessionalCharacteristics, OtherCharacteristics, isNoneCharacteristics, isOtherCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
+import { parseFormattedCurrency } from "src/app/shared/utils/currencyParser.service";
 
 export interface FirestorePostModel {
   title: string;
@@ -125,7 +126,6 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
           releaseCountry: c.releaseCountry,
           releaseFormat: c.releaseFormat,
           trackCount: c.trackCount,
-          trackNumber: c.trackNumber,
         }
       } else if (isAccessoryCharacteristics(c, category)) {
         characteristics = {
@@ -145,8 +145,6 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
           warranty: c.warranty,
           warrantyDuration: c.warrantyDuration,
           warrantyType: c.warrantyType,
-          warrantyDate: c.warrantyDate,
-          warrantyCountry: c.warrantyCountry,
         }
       } else if (isOtherCharacteristics(c, category)) {
         characteristics = {

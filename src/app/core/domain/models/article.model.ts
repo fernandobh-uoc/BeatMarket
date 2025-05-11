@@ -16,7 +16,7 @@ export enum ArticleCondition {
   None = '',
   New = 'Nuevo',
   Good = 'Bueno',
-  Fair = 'Normal',
+  Used = 'Usado',
   Bad = 'Malo',
   Refurbished = 'Restaurado'
 }
