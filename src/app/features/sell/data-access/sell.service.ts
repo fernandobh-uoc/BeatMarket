@@ -33,8 +33,6 @@ export class SellService {
 
   constructor() { }
 
-  
-
   loadImages = async (): Promise<string[]> => {
     const result = await Camera.pickImages({
       quality: 80,
@@ -184,7 +182,7 @@ export class SellService {
       reader.readAsDataURL(blob);
     });
   }
-
+  
   #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
     //const imageDataURLs = this.imagesDataURLs();
     //if (!imageDataURLs) return;
