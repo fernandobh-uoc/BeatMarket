@@ -1,5 +1,6 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
+import { postDetailResolver } from './features/post-detail/utils/resolvers/post-detail.resolver';
 
 export const routes: Routes = [
   {
@@ -21,5 +22,12 @@ export const routes: Routes = [
   {
     path: 'splash',
     loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
+  },
+  {
+    path: 'post-detail/:postId',
+    loadComponent: () => import('./features/post-detail/post-detail.page').then(m => m.PostDetailPage),
+    resolve: {
+      postData: postDetailResolver
+    }
   }
 ];
