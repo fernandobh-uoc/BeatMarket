@@ -92,7 +92,7 @@
         </ion-radio-group>
       </div>
       @if (submitAttempted()) {
-        @if (publishForm.get('commonData.category')?.errors?.['required']) {
+        @if (publishForm.get('commonData.condition')?.errors?.['required']) {
           <ion-text class="error-text" color="danger">Debes seleccionar un estado</ion-text>
         }
       }
@@ -128,7 +128,7 @@
       @case (categoriesEnum.Instruments) {
         <div class="input-wrapper">
           <ion-label class="custom" color="light">Tipo de instrumento</ion-label>
-          <ion-select formControlName="type" aria-label="Instrument type" interface="popover" color="light"
+          <ion-select formControlName="type" aria-label="Tipo de instrumento" interface="popover" color="light"
             class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" (ionChange)="onInstrumentTypeChange($event)"> …
             @for (type of instrumentTypes; track type) {
               <ion-select-option [value]="type">{{ type }}</ion-select-option>
@@ -143,7 +143,7 @@
 
         <div class="input-wrapper">
           <ion-label class="custom" color="light">Marca</ion-label>
-          <ion-select formControlName="brand" aria-label="Instrument brand" interface="popover" color="light"
+          <ion-select formControlName="brand" aria-label="Marca de instrumento" interface="popover" color="light"
             class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" > …
             @for (brand of instrumentBrands(); track brand) {
               <ion-select-option [value]="brand">{{ brand }}</ion-select-option>
@@ -178,12 +178,312 @@
 
         <div class="input-wrapper">
           <ion-label class="custom" color="light">Nivel de instrumento (opcional)</ion-label>
-          <ion-select formControlName="instrumentLevel" aria-label="Instrument level" interface="popover" color="light"
+          <ion-select formControlName="instrumentLevel" aria-label="Nivel de instrumento" interface="popover" color="light"
             class="custom select-input" (ionFocus)="controlFocus.emit('specificData')" > …
             @for (level of instrumentLevels; track level) {
               <ion-select-option [value]="level">{{ level }}</ion-select-option>
             }
           </ion-select>
+        </div>
+      }
+      @case (categoriesEnum.Recordings) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Formato de grabación</ion-label>
+          <ion-select formControlName="format" aria-label="Formato de grabación" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')"> …
+            @for (format of recordingFormats; track format) { 
+              <ion-select-option [value]="format">{{ format }}</ion-select-option> 
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.format')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El formato de grabación es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Artista o banda</ion-label>
+          <ion-input formControlName="artist" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.artist')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El artista o banda es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Género musical</ion-label>
+          <ion-select formControlName="genre" aria-label="Género musical" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')"> …
+            @for (genre of recordingGenres; track genre) { 
+              <ion-select-option [value]="genre">{{ genre }}</ion-select-option> 
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.genre')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El género musical es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Título de la grabación (opcional)</ion-label>
+          <ion-input formControlName="recordingTitle" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Año de la grabación (opcional)</ion-label>
+          <ion-input formControlName="year" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.year')?.errors?.['maxLength']) {
+              <ion-text class="error-text" color="danger">Máximo 4 cifras</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Duración (opcional)</ion-label>
+          <ion-input formControlName="duration" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Discográfica (opcional)</ion-label>
+          <ion-input formControlName="label" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Número de catálogo (opcional)</ion-label>
+          <ion-input formControlName="catalogNumber" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input> 
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">ISRC (opcional)</ion-label>
+          <ion-input formControlName="isrc" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Código de barras (opcional)</ion-label>
+          <ion-input formControlName="barcode" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Fecha de publicación (opcional)</ion-label>
+          <ion-input formControlName="releaseDate" type="text" class="custom" inputmode="datetime-local" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">País de publicación (opcional)</ion-label>
+          <ion-input formControlName="releaseCountry" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Formato de publicación (opcional)</ion-label>
+          <ion-input formControlName="releaseFormat" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Número de canciones (opcional)</ion-label>
+          <ion-input formControlName="trackCount" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>   
+        </div>
+      }
+      @case (categoriesEnum.Accessories) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Tipo de accesorio</ion-label>
+          <ion-select formControlName="type" aria-label="Tipo de accesorio" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')"> …
+            @for (type of accesoryTypes; track type) {
+              <ion-select-option [value]="type">{{ type }}</ion-select-option>
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.type')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El tipo de accesorio es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Nombre del accesorio</ion-label>
+          <ion-input formControlName="name" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.name')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El nombre del accesorio es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Marca del accesorio (opcional)</ion-label>
+          <ion-input formControlName="brand" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Color del accesorio (opcional)</ion-label>
+          <ion-input formControlName="color" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Instrumento asociado (opcional)</ion-label>
+          <ion-input formControlName="associatedInstrument" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+      }
+      @case (categoriesEnum.Professional) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Nombre</ion-label>
+          <ion-input formControlName="name" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.name')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El nombre es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Marca</ion-label>
+          <ion-input formControlName="brand" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.brand')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">La marca es obligatoria</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Modelo</ion-label>
+          <ion-input formControlName="model" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.model')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El modelo es obligatoria</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Número de serie</ion-label>
+          <ion-input formControlName="serialNumber" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.serialNumber')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El número de serie es obligatorio</ion-text> 
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Color (opcional)</ion-label>
+          <ion-input formControlName="color" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Año de fabricación (opcional)</ion-label>
+          <ion-input formControlName="fabricationYear" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Accesorios (opcional)</ion-label>
+          <ion-input formControlName="accessories" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Garantía (opcional)</ion-label>
+          <ion-input formControlName="warranty" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Duración de la garantía (opcional)</ion-label>
+          <ion-input formControlName="warrantyDuration" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Tipo de garantía (opcional)</ion-label>
+          <ion-input formControlName="warrantyType" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+      }
+      @case (categoriesEnum.Books) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Título del libro</ion-label>
+          <ion-input formControlName="title" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.title')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El título del libro es obligatorio</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Autor del libro</ion-label>
+          <ion-input formControlName="author" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.author')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El autor del libro es obligatorio</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Tema del libro</ion-label>
+          <ion-select formControlName="theme" aria-label="Tema del libro" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')"> …
+            @for (theme of bookThemes; track theme) {
+              <ion-select-option [value]="theme">{{ theme }}</ion-select-option>
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.theme')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El tema del libro es obligatorio</ion-text>
+            }
+          }
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Edición del libro (opcional)</ion-label>
+          <ion-input formControlName="edition" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Editorial del libro (opcional)</ion-label>
+          <ion-input formControlName="publisher" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Año del libro (opcional)</ion-label>
+          <ion-input formControlName="year" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Número de páginas del libro (opcional)</ion-label>
+          <ion-input formControlName="pages" type="text" class="custom" inputmode="numeric" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Idioma del libro (opcional)</ion-label>
+          <ion-input formControlName="language" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">ISBN del libro (opcional)</ion-label>
+          <ion-input formControlName="isbn" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Serie del libro (opcional)</ion-label>
+          <ion-input formControlName="series" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+        
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Volumen del libro (opcional)</ion-label>
+          <ion-input formControlName="volume" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
+        </div>
+      }
+      @case (categoriesEnum.Other) {
+        <div class="input-wrapper">
+          <ion-label class="custom" color="light">Descripción del artículo</ion-label>
+          <ion-textarea formControlName="description" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-textarea>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.description')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">La descripción del artículo es obligatoria</ion-text>
+            }
+          }
         </div>
       }
     }

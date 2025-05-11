@@ -10,6 +10,7 @@ import { UserRepository } from 'src/app/core/domain/repositories/user.repository
 import { ActivePost, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { ArticleCategory, ArticleModel } from 'src/app/core/domain/models/article.model';
 import { CloudStorage } from 'src/app/core/services/cloud-storage/cloudStorage.interface';
+import { parseFormattedCurrency } from 'src/app/shared/utils/currencyParser.service';
 
 @Injectable({
   providedIn: 'root'
@@ -113,6 +114,7 @@ export class SellService {
     if (!currentUser) return;
 
     try {
+      console.log(postFormData.price);
       console.log({
         title: postFormData.title,
         description: postFormData.description,
@@ -121,8 +123,7 @@ export class SellService {
           username: currentUser?.username ?? '',
           profilePictureURL: currentUser?.profilePictureURL ?? '',
         },
-        price: postFormData.price,
-        shipping: postFormData.shipping,
+        price: typeof postFormData.price === 'number' ? postFormData.price : parseFormattedCurrency(postFormData.price),
         status: PostStatus.Active,
         finishedAt: null,
         article: {
@@ -140,7 +141,7 @@ export class SellService {
           username: currentUser?.username ?? '',
           profilePictureURL: currentUser?.profilePictureURL ?? '',
         },
-        price: typeof postFormData.price === 'number' ? postFormData.price : Number(postFormData.price),
+        price: typeof postFormData.price === 'number' ? postFormData.price : parseFormattedCurrency(postFormData.price),
         status: PostStatus.Active,
         finishedAt: null,
         article: {

@@ -1,15 +1,15 @@
-import { Component, computed, effect, inject, input, OnInit, output, signal, ViewChild, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, output, Signal, signal, ViewChild, viewChild } from '@angular/core';
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ViewDidEnter } from '@ionic/angular';
 import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/article.model';
 import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
-import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, RecordingFormat } from 'src/app/core/domain/models/articleCharacteristics.interface';
+import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, RecordingFormat, RecordingGenre } from 'src/app/core/domain/models/articleCharacteristics.interface';
 import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.pipe';
 
 @Component({
-  selector: 'app-sell-form',
+  selector: 'app-publish-form',
   templateUrl: './publish-form.component.html',
   styleUrls: ['./publish-form.component.scss'],
   imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule],
@@ -20,7 +20,8 @@ export class PublishFormComponent {
   currencyPipe = inject(FormatCurrencyPipe);
 
   publishForm!: FormGroup;
-  @ViewChild('titleInput') titleInput!: IonInput;
+  //@ViewChild('titleInput') titleInput!: IonInput;
+  titleInput: Signal<IonInput | undefined> = viewChild('titleInput');
 
   formSubmit = output<void>();
   submitAttempted = input<boolean>(false);
@@ -44,9 +45,9 @@ export class PublishFormComponent {
   instrumentTypes: string[] = Object.values(InstrumentType).filter(type => type !== InstrumentType.None);
   instrumentBrands = signal<string[]>([]);
   instrumentLevels: string[] = Object.values(InstrumentLevel).filter(type => type !== InstrumentLevel.None);
-
   accesoryTypes: string[] = Object.values(AccesoryType).filter(type => type !== AccesoryType.None);
   recordingFormats: string[] = Object.values(RecordingFormat).filter(type => type !== RecordingFormat.None);
+  recordingGenres: string[] = Object.values(RecordingGenre).filter(type => type !== RecordingGenre.None);
   bookThemes: string[] = Object.values(BookTheme).filter(type => type !== BookTheme.None);
 
   disabledPublishButton = input<boolean>(false);
@@ -70,10 +71,10 @@ export class PublishFormComponent {
   }
 
   ngOnInit() {
-    this.#initForm();
+    this.initForm();
   }
 
-  #initForm() {
+  initForm() {
     this.publishForm = this.fb.group({
       commonData: this.fb.group({
         title: this.fb.control('', { 
@@ -83,8 +84,7 @@ export class PublishFormComponent {
         price: this.fb.control('', { 
           validators: [
             Validators.required, 
-            Validators.min(0), 
-            Validators.pattern(/^\d+(\.\d{1,2})?$/)
+            Validators.min(0)
           ],
           updateOn: 'blur'
         }),
@@ -106,11 +106,12 @@ export class PublishFormComponent {
   }
 
   resetForm() {
+    this.selectedCategory.set(this.categoriesEnum.None);
     this.publishForm.reset();
   } 
 
   focusTitleInput() {
-    this.titleInput.setFocus();
+    this.titleInput()?.setFocus();
   }
 
   formatPrice() {
@@ -201,18 +202,15 @@ export class PublishFormComponent {
             validators: [Validators.required],
             updateOn: 'blur'
           }),
-          recordingTitle: this.fb.control('', {
-            validators: [Validators.required],
-            updateOn: 'blur'
-          }),
           artist: this.fb.control('', {
             validators: [Validators.required],
             updateOn: 'blur'
           }),
           genre: this.fb.control('', {
-            validators: [Validators.required],
+            validators: [Validators.required, Validators.maxLength(4)],
             updateOn: 'blur'
           }),
+          recordingTitle: this.fb.control(''),
           year: this.fb.control(''),
           duration: this.fb.control(''),
           label: this.fb.control(''),
@@ -222,21 +220,21 @@ export class PublishFormComponent {
           releaseDate: this.fb.control(''),
           releaseCountry: this.fb.control(''),
           releaseFormat: this.fb.control(''),
-          trackCount: this.fb.control(''),
-          trackNumber: this.fb.control(''),
+          trackCount: this.fb.control('')
         });
         break;
       case ArticleCategory.Accessories:
         specificGroup = this.fb.group({
-          name: this.fb.control('', { 
-            validators: [Validators.required],
-            updateOn: 'blur'
-          }),
           type: this.fb.control('', { 
             validators: [Validators.required],
             updateOn: 'blur'
           }),
+          name: this.fb.control('', { 
+            validators: [Validators.required],
+            updateOn: 'blur'
+          }),
           brand: this.fb.control(''),
+          color: this.fb.control(''),
           associatedInstrument: this.fb.control('')
         });
         break;
@@ -250,16 +248,20 @@ export class PublishFormComponent {
             validators: [Validators.required],
             updateOn: 'blur'
           }),
-          model: this.fb.control(''),
+          model: this.fb.control('', {
+            validators: [Validators.required],
+            updateOn: 'blur'
+          }),
+          serialNumber: this.fb.control('', {
+            validators: [Validators.required],
+            updateOn: 'blur'
+          }),
           color: this.fb.control(''),
           fabricationYear: this.fb.control(''),
-          serialNumber: this.fb.control(''),
           accessories: this.fb.control(''),
           warranty: this.fb.control(''),
           warrantyDuration: this.fb.control(''),
           warrantyType: this.fb.control(''),
-          warrantyDate: this.fb.control(''),
-          warrantyCountry: this.fb.control(''),
         });
         break;
       case ArticleCategory.Books:

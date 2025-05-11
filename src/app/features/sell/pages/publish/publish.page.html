@@ -1,6 +1,6 @@
 <ion-header [translucent]="true">
   <app-toolbar 
-    type="arrow-back"
+    type="menu"
     [title]="'Vender'"
   ></app-toolbar>
 </ion-header>
@@ -13,14 +13,14 @@
   </ion-header> -->
 
   <div class="container">
-    <app-sell-form
+    <app-publish-form
       [submitAttempted]="submitAttempted()"
       [uploadedImagesURLs]="uploadedImagesURLs()"
       [disabledPublishButton]="disabledPublishButton()"
       (controlFocus)="onControlFocus($event)"
       (uploadImages)="onImagesUpload()"
       (formSubmit)="handleFormSubmit()"
-    ></app-sell-form>
+    ></app-publish-form>
     <input 
       #fileInput 
       type="file" 

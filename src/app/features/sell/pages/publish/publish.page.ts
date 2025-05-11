@@ -10,7 +10,7 @@ import { Router } from '@angular/router';
 import { ViewWillEnter, ViewDidEnter, ViewWillLeave } from '@ionic/angular';
 
 @Component({
-  selector: 'app-sell',
+  selector: 'app-publish',
   templateUrl: './publish.page.html',
   styleUrls: ['./publish.page.scss'],
   standalone: true,
@@ -37,6 +37,7 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
   } */
 
   ionViewDidEnter(): void {
+    //this.publishFormComponent()?.initForm();
     this.publishFormComponent()?.focusTitleInput();
   }
 
