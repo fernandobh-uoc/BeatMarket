@@ -30,6 +30,8 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
 
   disabledPublishButton = signal<boolean>(false);
 
+  ngOnInit() {}
+
   /* ionViewWillEnter(): void {
     this.submitAttempted.set(false);
     this.disabledPublishButton.set(false);
@@ -130,9 +132,6 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
     }
 
     return invalid;
-  }
-
-  ngOnInit() {
   }
 
 }
