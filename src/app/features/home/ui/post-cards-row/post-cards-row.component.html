@@ -1,15 +1,19 @@
 <div class="carousel-container">
   <div class="carousel">
     @for (post of posts(); track post._id) {
-      <ion-card>
-        <img [src]="post.mainImageURL" alt="Imagen principal del anuncio {{ post.title }}">
-        <ion-card-header>
-          <ion-card-title>{{ post.title }}</ion-card-title>
-          <ion-card-subtitle>{{ post.article?.category }}</ion-card-subtitle>
-        </ion-card-header>
-        <ion-card-content>
-          {{ post.price }}
-        </ion-card-content>
+      <ion-card class="card" [routerLink]="['/post-detail/' + post._id]">
+        <div class="card-image" style="background-image: url('{{ post.mainImageURL }}')">
+          <!-- <img [src]="post.mainImageURL" class="card-image" alt="Imagen principal del anuncio {{ post.title }}"/> -->
+        </div>
+        <div class="card-content-wrapper">
+          <ion-card-header>
+            <ion-card-title class="card-title">{{ post.article?.category }}</ion-card-title>
+            <ion-card-subtitle class="card-subtitle">{{ post.title ?? '' | truncateTextLines: 2 }}</ion-card-subtitle>
+          </ion-card-header>
+          <ion-card-content class="card-price">
+            {{ post.price ?? 0 | formatCurrency }}
+          </ion-card-content>
+        </div>
       </ion-card>
     } 
   </div>

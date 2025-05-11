@@ -23,6 +23,13 @@ export class HomeService {
   async getLatestPosts({ orderBy, limit }: { orderBy?: { field: string, direction?: 'asc' | 'desc' }, limit?: number }): Promise<Post[] | null> {
     if (this.#cachedLatestPosts) return this.#cachedLatestPosts;
     const posts = await this.postRepository.queryPosts({
+      filters: [
+        {
+          field: 'user.userId',
+          operator: '!=',
+          value: this.authService.currentUser()?._id
+        }
+      ],
       orderBy: {
         field: orderBy ? orderBy.field : 'createdAt',
         direction: orderBy ? orderBy.direction : 'desc',
@@ -39,10 +46,10 @@ export class HomeService {
 
   async getRecommendedPosts({ orderBy, limit }: { orderBy?: { field: string, direction?: 'asc' | 'desc' }, limit?: number }): Promise<Post[] | null> {
     if (this.#cachedRecommendedPosts) return this.#cachedRecommendedPosts;
-    
+
     let queryConstraints: Record<string, any> = {};
     let roleFilters = new Set<string>();
-    
+
     const categories = Object.values(ArticleCategory).filter(category => category !== ArticleCategory.None);
 
     if (this.userRoles().includes(Role.Amateur)) {
@@ -64,26 +71,36 @@ export class HomeService {
     if (roleFilters.size > 0) {
       queryConstraints['filters'] = [
         {
-          or: Array.from(roleFilters).map(category => ({
+          and: [
+            {
+              field: 'user.userId',
+              operator: '!=',
+              value: this.authService.currentUser()?._id
+            },
+            {
+              or: Array.from(roleFilters).map(category => ({
                 field: 'article.category',
                 operator: '==',
                 value: category
               }))
-        }
+            }
+          ]
+        },
+
       ];
     }
 
     if (orderBy) {
-      queryConstraints['orderBy'] = { 
-        field: orderBy.field, 
-        direction: orderBy.direction 
+      queryConstraints['orderBy'] = {
+        field: orderBy.field,
+        direction: orderBy.direction
       };
     }
 
     if (limit) {
       queryConstraints['limit'] = limit;
     }
-    
+
     // Query the posts from Firestore
     const posts = await this.postRepository.queryPosts(queryConstraints);
 

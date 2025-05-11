@@ -10,12 +10,18 @@
   </ion-header>
 
   <div class="container">
-    <app-post-cards-row
-      [posts]="latestPosts"
-    ></app-post-cards-row>
+    <div class="title-cards-row-container">
+      <ion-text class="title-cards-row">Últimos anuncios</ion-text> 
+      <app-post-cards-row
+        [posts]="latestPosts"
+      ></app-post-cards-row>
+    </div>
 
-    <app-post-cards-row
-      [posts]="recommendedPosts"
-    ></app-post-cards-row>
+    <div class="title-cards-row-container">
+      <ion-text class="title-cards-row">Anuncios destacados</ion-text>
+      <app-post-cards-row
+        [posts]="recommendedPosts"
+      ></app-post-cards-row>
+    </div>
   </div>
 </ion-content>

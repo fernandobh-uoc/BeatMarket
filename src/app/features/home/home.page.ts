@@ -1,5 +1,5 @@
 import { Component, inject, OnInit, signal } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton } from '@ionic/angular/standalone';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonText } from '@ionic/angular/standalone';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { Role } from 'src/app/core/domain/models/user.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -16,7 +16,7 @@ import { firstValueFrom, map } from 'rxjs';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
+  imports: [IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
 })
 export class HomePage implements OnInit {
   route = inject(ActivatedRoute);
@@ -34,8 +34,11 @@ export class HomePage implements OnInit {
   }
 
   async ngOnInit(): Promise<void> {
-    this.#latestPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['latestPosts']))));
-    this.#recommendedPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['recommendedPosts']))));
+    //this.#latestPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['latestPosts']))));
+    //this.#recommendedPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['recommendedPosts']))));
+    this.#latestPosts.set(await this.route.snapshot.data['latestPosts']);
+    this.#recommendedPosts.set(await this.route.snapshot.data['recommendedPosts']);
+
 
     console.log({ latestPosts: this.#latestPosts(), recommendedPosts: this.#recommendedPosts() });
   }
