@@ -33,16 +33,27 @@ export class SellService {
 
   constructor() { }
 
+  
+
   loadImages = async (): Promise<string[]> => {
     const result = await Camera.pickImages({
       quality: 80,
       limit: 10
     });
 
-    result.photos.forEach(photo => {
+    /* result.photos.forEach(photo => {
       this.imagesDataURLs.set([...this.imagesDataURLs(), photo.webPath]);
-    });
+    }); */
 
+    const dataUrls = await Promise.all(
+      result.photos.map(async (photo) => {
+        const response = await fetch(photo.webPath);
+        const blob = await response.blob();
+        return await this.#convertBlobToDataURL(blob);
+      })
+    )
+    
+    this.imagesDataURLs.set(dataUrls);
     return this.imagesDataURLs();
   }
 
@@ -74,27 +85,6 @@ export class SellService {
 
   removeImages = async (): Promise<void> => {
     this.imagesDataURLs.set([]);
-  }
-
-  #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
-    //const imageDataURLs = this.imagesDataURLs();
-    //if (!imageDataURLs) return;
-
-    const promises = imagesDataURLs.map(async (imageDataURL, index) => new Promise(async (resolve, reject) => {
-      const downloadURL = await this.#cloudStorage.upload(`postImages/${postId}/image_${index}`, dataUrlToBlob(imageDataURL));
-      if (downloadURL) {
-        resolve(downloadURL);
-      }
-      reject(new Error('Error uploading image to cloud storage'));
-    }));
-
-    try {
-      const result = await Promise.all(promises);
-      return result as string[];
-    } catch (error) {
-      console.error(error);
-      return null;
-    }
   }
 
   publishPost = async (postFormData: any): Promise<void> => {
@@ -170,10 +160,10 @@ export class SellService {
       };
 
       //await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
-      await this.#userRepository.saveActivePost({ 
-        userId: currentUser._id, 
-        postId: post._id, 
-        activePostData: activePostData 
+      await this.#userRepository.saveActivePost({
+        userId: currentUser._id,
+        postId: post._id,
+        activePostData: activePostData
       });
 
       this.latestPublishedPostId.set(post._id);
@@ -183,6 +173,36 @@ export class SellService {
     } catch (errorMessage: any) {
       console.error(errorMessage);
       this.#errorMessage.set(errorMessage);
+    }
+  }
+
+  #convertBlobToDataURL = async (blob: Blob): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onloadend = () => resolve(reader.result as string);
+      reader.onerror = reject;
+      reader.readAsDataURL(blob);
+    });
+  }
+
+  #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
+    //const imageDataURLs = this.imagesDataURLs();
+    //if (!imageDataURLs) return;
+
+    const promises = imagesDataURLs.map(async (imageDataURL, index) => new Promise(async (resolve, reject) => {
+      const downloadURL = await this.#cloudStorage.upload(`postImages/${postId}/image_${index}`, dataUrlToBlob(imageDataURL));
+      if (downloadURL) {
+        resolve(downloadURL);
+      }
+      reject(new Error('Error uploading image to cloud storage'));
+    }));
+
+    try {
+      const result = await Promise.all(promises);
+      return result as string[];
+    } catch (cloudStorageError) {
+      console.error(cloudStorageError);
+      throw cloudStorageError;
     }
   }
 }
