@@ -135,7 +135,7 @@ export interface InstrumentCharacteristics {
   instrumentLevel?: InstrumentLevel;
 }
 
-interface RecordingCharacteristics {
+export interface RecordingCharacteristics {
   category: ArticleCategory.Recordings;
   format: RecordingFormat;
   recordingTitle: string;
@@ -154,7 +154,7 @@ interface RecordingCharacteristics {
   trackNumber?: string;
 }
 
-interface AccessoryCharacteristics {
+export interface AccessoryCharacteristics {
   category: ArticleCategory.Accessories;
   type: AccesoryType;
   name: string;
@@ -162,7 +162,7 @@ interface AccessoryCharacteristics {
   associatedInstrument?: string;
 }
 
-interface ProfessionalCharacteristics {
+export interface ProfessionalCharacteristics {
   category: ArticleCategory.Professional;
   name: string;
   brand: string;
@@ -178,7 +178,7 @@ interface ProfessionalCharacteristics {
   warrantyCountry?: string;
 }
 
-interface BookCharacteristics {
+export interface BookCharacteristics {
   category: ArticleCategory.Books;
   title: string;
   author: string;
@@ -193,7 +193,7 @@ interface BookCharacteristics {
   volume?: string;
 }
 
-interface OtherCharacteristics {
+export interface OtherCharacteristics {
   category: ArticleCategory.Other;
   description: string;
 }
@@ -207,26 +207,30 @@ export type ArticleCharacteristics =
   OtherCharacteristics |
   NoneCharacteristics;
 
-export function isInstrumentCharacteristics(c: ArticleCharacteristics): c is InstrumentCharacteristics {
-  return c.category === ArticleCategory.Instruments;
+export function isInstrumentCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is InstrumentCharacteristics {
+  return category === ArticleCategory.Instruments;
 }
 
-export function isBookCharacteristics(c: ArticleCharacteristics): c is BookCharacteristics {
-  return c.category === ArticleCategory.Books;
+export function isBookCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is BookCharacteristics {
+  return category === ArticleCategory.Books;
 }
 
-export function isRecordingCharacteristics(c: ArticleCharacteristics): c is RecordingCharacteristics {
-  return c.category === ArticleCategory.Recordings;
+export function isRecordingCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is RecordingCharacteristics {
+  return category === ArticleCategory.Recordings;
 }
 
-export function isAccessoryCharacteristics(c: ArticleCharacteristics): c is AccessoryCharacteristics {
-  return c.category === ArticleCategory.Accessories;
+export function isAccessoryCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is AccessoryCharacteristics {
+  return category === ArticleCategory.Accessories;
 }
 
-export function isProfessionalCharacteristics(c: ArticleCharacteristics): c is ProfessionalCharacteristics {
-  return c.category === ArticleCategory.Professional;
+export function isProfessionalCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is ProfessionalCharacteristics {
+  return category === ArticleCategory.Professional;
 }
 
-export function isNoneCharacteristics(c: ArticleCharacteristics): c is NoneCharacteristics {
-  return c.category === ArticleCategory.None;
+export function isOtherCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is OtherCharacteristics {
+  return category === ArticleCategory.Other;
+}
+
+export function isNoneCharacteristics(characteristics: ArticleCharacteristics, category: string): characteristics is NoneCharacteristics {
+  return category === ArticleCategory.None;
 }

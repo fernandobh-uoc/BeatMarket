@@ -1,7 +1,7 @@
 import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
 import { ArticleCategory, ArticleCondition, ArticleModel, isArticleModel } from "src/app/core/domain/models/article.model";
 import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/models/post.model";
-import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
+import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics, BookCharacteristics, RecordingCharacteristics, AccessoryCharacteristics, ProfessionalCharacteristics, OtherCharacteristics, isNoneCharacteristics, isOtherCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface FirestorePostModel {
@@ -22,8 +22,6 @@ export interface FirestorePostModel {
     category: string;
     condition: string;
     characteristics: {
-      category: string;
-
       // Instrument
       type?: string;
       brand?: string;
@@ -88,7 +86,89 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
       category = article.category;
       const c = article.characteristics;
 
-      if (isInstrumentCharacteristics(c)) {
+      if (isInstrumentCharacteristics(c, category)) {
+        characteristics = {
+          type: c.type,
+          brand: c.brand,
+          model: c.model,
+          color: c.color,
+          fabricationYear: c.fabricationYear,
+          serialNumber: c.serialNumber,
+          instrumentLevel: c.instrumentLevel,
+        }
+      } else if (isBookCharacteristics(c, category)) {
+        characteristics = {
+          author: c.author,
+          theme: c.theme,
+          edition: c.edition,
+          publisher: c.publisher,
+          year: c.year,
+          pages: c.pages,
+          language: c.language,
+          isbn: c.isbn,
+          series: c.series,
+          volume: c.volume,
+        }
+      } else if (isRecordingCharacteristics(c, category)) {
+        characteristics = {
+          format: c.format,
+          recordingTitle: c.recordingTitle,
+          artist: c.artist,
+          genre: c.genre,
+          year: c.year,
+          duration: c.duration,
+          label: c.label,
+          catalogNumber: c.catalogNumber,
+          isrc: c.isrc,
+          barcode: c.barcode,
+          releaseDate: c.releaseDate,
+          releaseCountry: c.releaseCountry,
+          releaseFormat: c.releaseFormat,
+          trackCount: c.trackCount,
+          trackNumber: c.trackNumber,
+        }
+      } else if (isAccessoryCharacteristics(c, category)) {
+        characteristics = {
+          name: c.name,
+          brand: c.brand,
+          associatedInstrument: c.associatedInstrument,
+        }
+      } else if (isProfessionalCharacteristics(c, category)) {
+        characteristics = {
+          name: c.name,
+          brand: c.brand,
+          model: c.model,
+          color: c.color,
+          fabricationYear: c.fabricationYear,
+          serialNumber: c.serialNumber,
+          accessories: c.accessories,
+          warranty: c.warranty,
+          warrantyDuration: c.warrantyDuration,
+          warrantyType: c.warrantyType,
+          warrantyDate: c.warrantyDate,
+          warrantyCountry: c.warrantyCountry,
+        }
+      } else if (isOtherCharacteristics(c, category)) {
+        characteristics = {
+          description: c.description
+        }
+      }
+      
+      /* if (category === ArticleCategory.Instruments) {
+        characteristics = c as InstrumentCharacteristics;
+      } else if (category === ArticleCategory.Books) {
+        characteristics = c as BookCharacteristics;
+      } else if (category === ArticleCategory.Recordings) {
+        characteristics = c as RecordingCharacteristics;
+      } else if (category === ArticleCategory.Accessories) {
+        characteristics = c as AccessoryCharacteristics;
+      } else if (category === ArticleCategory.Professional) {
+        characteristics = c as ProfessionalCharacteristics;
+      } else if (category === ArticleCategory.Other) {
+        characteristics = c as OtherCharacteristics;
+      } */
+
+      /* if (isInstrumentCharacteristics(c)) {
         characteristics = {
           type: c.type,
           brand: c.brand,
@@ -150,7 +230,7 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
           warrantyDate: c.warrantyDate,
           warrantyCountry: c.warrantyCountry,
         }
-      }
+      } */
     }
 
     return {
