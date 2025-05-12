@@ -25,6 +25,7 @@ ion-list.posts-list {
     display: flex;
     flex-direction: column;
     align-items: flex-start;
+    cursor: pointer;
     
     ion-thumbnail.post-image {
       --border-radius: 4px;

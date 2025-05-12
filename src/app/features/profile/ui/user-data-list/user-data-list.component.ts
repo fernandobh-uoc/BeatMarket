@@ -1,6 +1,6 @@
 import { Component, input, OnInit } from '@angular/core';
 import { User } from 'src/app/core/domain/models/user.model';
-import { UserDataItemWrapperComponent } from '../smart-wrappers/user-data-item-smart-wrapper/user-data-item-wrapper.component';
+import { UserDataItemWrapperComponent } from '../user-data-item/user-data-item-wrapper/user-data-item-wrapper.component';
 import { CountryCodeToNamePipe } from 'src/app/shared/utils/pipes/country-code-to-name.pipe';
 
 @Component({
