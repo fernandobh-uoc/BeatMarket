@@ -1,0 +1,5 @@
+<div class="cart-items-list">
+  @for (item of items(); track item.postId) {
+    <app-cart-item-wrapper [item]="item"></app-cart-item-wrapper>
+  }
+</div>

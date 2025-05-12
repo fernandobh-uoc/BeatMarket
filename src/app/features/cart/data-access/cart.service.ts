@@ -1,9 +1,9 @@
 import { signal, computed, inject, Injectable } from '@angular/core';
-import { CartItem, CartModel } from 'src/app/core/domain/models/cart.model';
+import { CartItemModel, CartModel } from 'src/app/core/domain/models/cart.model';
 import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { AuthStatus } from 'src/app/core/services/auth/auth.service';
-import { firstValueFrom } from 'rxjs';
+import { firstValueFrom, Observable } from 'rxjs';
 
 @Injectable({
   providedIn: 'root'
@@ -46,12 +46,33 @@ export class CartService {
     this.#cart.set(cart);
   }
 
-  async addItemToCart(item: CartItem): Promise<void> {
+  async getCart$(): Promise<Observable<CartModel | null> | null> {
+    if (!this.cartRepository.getCartByUserId$) return null;
+    const userId = (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '';
+    return this.cartRepository.getCartByUserId$(userId);
+  }
+
+  async addItemToCart(item: CartItemModel): Promise<void> {
     const cart: CartModel | null = this.#cart();
     if (!cart) return;
+
+    if (cart.items.find(i => i.postId === item.postId)) {
+      console.warn(`Item with postId ${item.postId} already exists in cart`);
+      return; // Item already exists in cart
+    }
+
     cart.items.push(item);
     await this.cartRepository.updateCart(cart);
   }
 
-  constructor() { }
+  async removeItemFromCart(postId: string): Promise<void> {
+    const cart: CartModel | null = this.#cart();
+    if (!cart) return;
+
+    const index = cart.items.findIndex(i => i.postId === postId);
+    if (index === -1) return;
+
+    cart.items.splice(index, 1);
+    await this.cartRepository.updateCart(cart);
+  }
 }

@@ -1,0 +1,21 @@
+<div class="item-container" [routerLink]="['/tabs/post-detail/' + item()?.postId]">
+  <div class="item-image" style="background-image: url('{{ item()?.mainImageURL }}')"></div>
+  <div class="item-data">
+    <div class="title-icon-wrapper">
+      <ion-text class="item-title">{{ item()?.title }}</ion-text>
+      <div class="remove-icon-wrapper">
+        <ion-icon name="trash-bin-outline" color="danger" size="large" (click)="removeItem.emit($event)"></ion-icon>
+      </div>
+    </div>
+    <div class="item-price-rows">
+      <div class="item-price-row">
+        <ion-text class="item-price">Precio</ion-text>
+        <ion-text class="item-price">{{ item()?.price | formatCurrency }}</ion-text> 
+      </div>
+      <div class="item-price-row">
+        <ion-text class="item-shipping">Envío</ion-text>
+        <ion-text class="item-shipping">{{ item()?.shipping | formatCurrency }}</ion-text>
+      </div>
+    </div>
+  </div>
+</div>
