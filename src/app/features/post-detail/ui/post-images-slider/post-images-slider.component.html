@@ -1,0 +1,12 @@
+<div class="big-image-container" style="background-image: url('{{ selectedImageURL() }}')">
+</div>
+<div class="images-row">
+  @for (imageURL of imagesURLs(); track imageURL) {
+    <div 
+      class="image-container" 
+      style="background-image: url('{{ imageURL }}')"
+      (click)="selectedImageURL.set(imageURL)"
+      [class.selected]="selectedImageURL() === imageURL"
+    ></div>
+  }
+</div>

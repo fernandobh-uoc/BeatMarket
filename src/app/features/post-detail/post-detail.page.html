@@ -5,7 +5,84 @@
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">post_detail</ion-title>
+      <ion-title size="large">{{ postData()?.title ?? '' }}</ion-title> 
     </ion-toolbar>
   </ion-header>
+
+  <div class="container">
+
+    <app-post-images-slider class="images-slider"
+      [imagesURLs]="postData()?.imagesURLs ?? []"
+    ></app-post-images-slider>
+  
+    <div class="title-user-container">
+      <ion-text class="title">
+        {{ postData()?.title ?? '' }}
+      </ion-text>
+    
+      <div class="user-data-row">
+        <div class="user-data-container" [routerLink]="['/tabs/user-detail/' + postData()?.user?.userId]">
+          <ion-avatar class="user-avatar">
+            <img src="{{ postData()?.user?.profilePictureURL ?? '' }}" alt="Avatar del usuario">
+          </ion-avatar>
+          <ion-text class="user-username">
+            {{ postData()?.user?.username ?? '' }}
+          </ion-text>
+        </div>
+        @if (!isOwnPost()) {
+          <div class="message-icon-container">
+            <ion-icon name="chatbubble-ellipses" color="light" size="large"></ion-icon>
+          </div>
+        }
+      </div>
+    </div>
+    
+    <div class="price-container">
+      <ion-text class="price-text">
+        {{ postData()?.price ?? 0 | formatCurrency }}
+      </ion-text>
+      <ion-text class="shipping-text">
+        + envío {{ Math.max((postData()?.price ?? 0) / 100, 5) | formatCurrency}}       
+      </ion-text>
+    </div>
+  
+    <div class="buttons-container">
+      @if (!isOwnPost()) {
+        @if (itemAdded()) {
+          <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
+        } @else {
+          <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>
+        }
+        <ion-button class="custom" fill="clear" [routerLink]="['/tabs/home']">Seguir comprando</ion-button>
+      } 
+    </div>
+  
+    <div class="condition-container">
+      <ion-text class="condition-label">Estado</ion-text>
+      <ion-text class="condition-text">
+        {{ postData()?.article?.condition ?? '' }}
+      </ion-text>
+    </div>
+  
+    <div class="description-container">
+      <ion-text class="description-label">Descripción</ion-text>
+      <ion-text class="description-text">
+        {{ postData()?.description ?? '' }}
+      </ion-text>
+    </div>
+
+    <div class="characteristics-container">
+      <ion-text class="characteristics-label">Características</ion-text>
+      <div class="characteristics-list">
+        @for (characteristic of (postData()?.article?.characteristics || {}) | keyValuePairs; track characteristic.key) { 
+          @if (characteristic.value !== '') {
+            <ion-text class="characteristic-text">
+              <span class="characteristics-key">{{ characteristic.key | articleCharacteristicsTranslate }}</span>: {{ characteristic.value }}
+            </ion-text>
+          }
+        }
+      </div>
+    </div>
+
+  </div>
 </ion-content>
