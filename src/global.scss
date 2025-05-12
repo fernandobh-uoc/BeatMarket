@@ -154,6 +154,15 @@ ion-button {
 	}
 }
 
+// Alert buttons
+
+.cancel-button {
+  color: var(--ion-color-light) !important;
+}
+.delete-button {
+  color: var(--ion-color-danger) !important;
+}
+
 ion-item.custom {
 	display: flex;
 	flex-direction: column;
