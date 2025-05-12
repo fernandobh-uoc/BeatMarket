@@ -31,6 +31,10 @@ export const routes: Routes = [
   },
   {
     path: 'user-detail',
-    loadComponent: () => import('./features/user-detail/user-detail.page').then( m => m.UserDetailPage)
+    loadComponent: () => import('./features/user-detail/user-detail.page').then(m => m.UserDetailPage)
+  },
+  {
+    path: 'checkout',
+    loadComponent: () => import('./features/checkout/checkout.page').then(m => m.CheckoutPage)
   }
 ];
