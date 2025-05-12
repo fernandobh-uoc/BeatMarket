@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from "rxjs/internal/Observable";
-import { CartModel, Cart } from "../models/cart.model";
+import { CartModel, Cart, CartItemModel } from "../models/cart.model";
 
 export const CartRepository = new InjectionToken<CartRepository>('CartRepository');
 
@@ -11,8 +11,8 @@ export interface CartRepository {
   getCartByUserId$?(userId: string): Observable<Cart | null> | null;  
   getAllCarts(): Promise<Cart[] | null>;
   getAllCarts$?(): Observable<Cart[] | null> | null;
-  saveCart(cartData: Partial<CartModel>): Promise<Cart | boolean | null>;
-  updateCart(cartData: Partial<CartModel> & { _id: string }): Promise<Cart | boolean | null>;  
+  saveCart(cartData: Partial<CartModel>): Promise<Cart | null>;
+  updateCart(cartData: Partial<CartModel> & { _id: string }): Promise<Cart | null>;  
   deleteCart(id: string): Promise<boolean>;
   cartExists(id: string): Promise<boolean>;
 }
