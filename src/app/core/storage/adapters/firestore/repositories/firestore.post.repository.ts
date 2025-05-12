@@ -14,7 +14,7 @@ export class FirestorePostRepository implements PostRepository {
 
   async getPostById(id: string): Promise<Post | null> {
     try {
-      return await this.storage.getById(id, { collection: 'posts' });
+      return await this.storage.getById(id, { collection: 'posts', converter: this.postConverter });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -24,7 +24,7 @@ export class FirestorePostRepository implements PostRepository {
   getPostById$(id: string): Observable<Post | null> | null {
     if (!this.storage.getById$) return null;
     try {
-      return this.storage.getById$(id, { collection: 'posts' });
+      return this.storage.getById$(id, { collection: 'posts', converter: this.postConverter });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
