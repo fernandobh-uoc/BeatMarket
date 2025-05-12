@@ -7,7 +7,13 @@
       <ion-searchbar></ion-searchbar>
     } @else {
       @if (type() === 'arrow-back') {
-        <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button> 
+        @if (backActionType() === 'default') {
+          <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button> 
+        } @else if (backActionType() === 'emit') {
+          <ion-button (click)="backPressed.emit()">
+            <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
+          </ion-button>
+        }
       } @else if (type() === 'menu') {
         <ion-menu-toggle>
           <ion-button>
@@ -39,4 +45,3 @@
     <ion-progress-bar color="light" [value]="progressBarValue()"></ion-progress-bar>
   }
 </ion-toolbar>
-<!-- </ion-header>-->

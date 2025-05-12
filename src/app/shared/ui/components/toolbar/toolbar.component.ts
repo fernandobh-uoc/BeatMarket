@@ -1,4 +1,4 @@
-import { Component, inject, input, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, input, OnInit, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonMenuToggle, IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar, IonBadge } from '@ionic/angular/standalone';
@@ -20,6 +20,11 @@ export class ToolbarComponent implements OnInit {
   public router = inject(Router);
   
   public type = input<'arrow-back' | 'menu'>('arrow-back');
+  //public backActionCallback = input<(() => void) | null>(null);
+
+  // Default uses the default Ion Back Button, emit just emits the event
+  public backActionType = input<'emit' | 'default'>('default');
+  public backPressed = output<void>();
 
   public largeTitle = input<boolean>(false);
   public title = input<string>('');
