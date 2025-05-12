@@ -1,6 +1,7 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { postDetailResolver } from './features/post-detail/utils/resolvers/post-detail.resolver';
+import { postDetailResolver, postDetailResolver$ } from './features/post-detail/utils/resolvers/post-detail.resolver';
+import { cartItemsResolver, cartItemsResolver$ } from './features/cart/utils/resolvers/cart-items.resolver';
 
 export const routes: Routes = [
   {
@@ -17,17 +18,19 @@ export const routes: Routes = [
   },
   {
     path: 'cart',
-    loadComponent: () => import('src/app/features/cart/cart.page').then(m => m.CartPage)
+    loadComponent: () => import('src/app/features/cart/cart.page').then(m => m.CartPage),
+    canMatch: [authGuard],
+    data: { authStatusMustBe: true },
+    resolve: {
+      cartItems$: cartItemsResolver$
+    }
   },
   {
     path: 'splash',
     loadComponent: () => import('src/app/features/sell/pages/splash/splash.page').then(m => m.SplashPage)
   },
   {
-    path: 'post-detail/:postId',
-    loadComponent: () => import('./features/post-detail/post-detail.page').then(m => m.PostDetailPage),
-    resolve: {
-      postData: postDetailResolver
-    }
+    path: 'user-detail',
+    loadComponent: () => import('./features/user-detail/user-detail.page').then( m => m.UserDetailPage)
   }
 ];
