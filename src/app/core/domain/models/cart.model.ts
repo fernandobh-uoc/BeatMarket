@@ -3,23 +3,24 @@ import { Timestamps } from "./appModel.type";
 import { PostModel } from "./post.model";
 import { UserModel } from "./user.model";
 
-export interface CartItem {
+export interface CartItemModel {
   postId: PostModel["_id"],
   title: PostModel["title"],
   price: PostModel["price"],
   shipping: number,
+  mainImageURL: PostModel["mainImageURL"]
 }
 
 export interface CartModel extends JSONSerializable<CartModel>, Timestamps {
   _id: string;
   userId: UserModel["_id"] | string;
-  items: CartItem[]; // Map (should not be excessively large)
+  items: CartItemModel[]; // Map (should not be excessively large)
 }
 
 export class Cart implements CartModel {
   public _id: string = '';
   public userId: UserModel["_id"] = '';
-  public items: CartItem[] = [];
+  public items: CartItemModel[] = [];
 
   private constructor(cart: Partial<CartModel> = {}) {
     Object.assign(this, { ...cart });
@@ -60,11 +61,12 @@ export function isCartModel(obj: any): obj is CartModel {
     Array.isArray(obj.items);
 }
 
-export function isCartItem(obj: any): obj is CartItem {
+export function isCartItemModel(obj: any): obj is CartItemModel {
   return typeof obj === 'object' &&
     obj !== null &&
     typeof obj.postId === 'string' &&
     typeof obj.title === 'string' &&
     typeof obj.price === 'number' &&
-    typeof obj.shipping === 'number';
+    typeof obj.shipping === 'number' &&
+    typeof obj.mainImageURL === 'string';
 }
