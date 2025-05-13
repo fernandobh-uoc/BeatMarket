@@ -46,12 +46,6 @@ export class CartService {
     this.#cart.set(cart);
   }
 
-  async getCart$(): Promise<Observable<CartModel | null> | null> {
-    if (!this.cartRepository.getCartByUserId$) return null;
-    const userId = (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '';
-    return this.cartRepository.getCartByUserId$(userId);
-  }
-
   async addItemToCart(item: CartItemModel): Promise<void> {
     const cart: CartModel | null = this.#cart();
     if (!cart) return;

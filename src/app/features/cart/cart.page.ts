@@ -16,29 +16,12 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
   standalone: true,
   imports: [RouterLink, IonButton, IonText, CartItemsListComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
-export class CartPage implements OnInit {
-  private route = inject(ActivatedRoute);
-  //private cartService = inject(CartService);
+export class CartPage {
+  private cartService = inject(CartService);
 
-  cartItems = signal<CartItemModel[]>([]);
+  cartItems = computed<CartItemModel[]>(() => this.cartService.cart()?.items ?? []);
 
   itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));
   itemsShippingTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.shipping, 0));
   totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
-
-  constructor() {
-    /* effect(() => {
-      this.cartItems.set(this.cartService.cart()?.items ?? []);
-    }) */
-  }
-
-  ngOnInit() {
-    const cartItems$ = this.route.snapshot.data['cartItems$']; 
-    if (cartItems$) {
-      cartItems$.subscribe((cartItems: CartItemModel[] | null) => {
-        this.cartItems.set(cartItems ?? []);
-      });
-    }
-  }
-
 }
