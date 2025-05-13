@@ -48,7 +48,7 @@
   
     <div class="buttons-container">
       @if (!isOwnPost()) {
-        @if (itemAdded()) {
+        @if (itemIsAdded()) {
           <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
         } @else {
           <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>

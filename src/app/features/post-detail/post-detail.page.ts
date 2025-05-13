@@ -15,6 +15,7 @@ import { KeyValuePairsPipe } from 'src/app/shared/utils/pipes/key-value-pairs.pi
 import { ArticleCharacteristicsTranslatePipe } from 'src/app/shared/utils/pipes/article-characteristics-translate.pipe';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { CartService } from '../cart/data-access/cart.service';
 
 @Component({
   selector: 'app-post-detail',
@@ -27,17 +28,14 @@ export class PostDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
   private postDetailService = inject(PostDetailService);
   private authService = inject(AuthService);
+  private cartService = inject(CartService);
 
   #postData = signal<Post | null>(null);
-  #itemAdded = signal<boolean>(false);
+  itemIsAdded = computed<boolean>(() => this.cartService.cart()?.items.some(item => item.postId === this.#postData()?._id) ?? false);
   isOwnPost = signal<boolean>(true);     
 
   get postData() {
     return this.#postData.asReadonly();
-  }
-
-  get itemAdded() {
-    return this.#itemAdded.asReadonly();
   }
 
   get Math() {
@@ -53,7 +51,6 @@ export class PostDetailPage implements OnInit {
   }
 
   ngOnInit() {
-    //this.#postData.set(this.route.snapshot.data['postData']);
     const postData$ = this.route.snapshot.data['postData$'];
     if (postData$) {
       postData$.subscribe((postData: Post | null) => {
@@ -63,8 +60,6 @@ export class PostDetailPage implements OnInit {
   }
 
   addToCart() {
-    this.#itemAdded.set(true);
-
     const shipping = Math.max((this.postData()?.price ?? 0) / 100, 5);
     console.log(this.postData());
 
