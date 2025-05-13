@@ -11,8 +11,8 @@ $ git clone https://gitlab.com/tfg5261618/beatmarket.git
 $ cd beatmarket
 $ npm install
 $ npx ionic build
-$ npx ionic cap add android
-$ npx ionic cap add ios
+$ npx ionic cap add android  # Build Android
+$ npx ionic cap add ios      # Build iOS
 ```
 
 Para abrir el proyecto en Android Studio:
