@@ -16,8 +16,6 @@ export class PostCardsRowComponent implements OnInit {
 
   constructor() { }
 
-  ngOnInit() {
-    computed(() => console.log({ posts: this.posts() }));
-  }
+  ngOnInit() {}
 
 }

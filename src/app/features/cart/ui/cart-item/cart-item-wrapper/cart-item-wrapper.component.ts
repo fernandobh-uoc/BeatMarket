@@ -43,16 +43,12 @@ export class CartItemWrapperComponent implements OnInit {
         {
           text: 'Cancelar',
           role: 'cancel',
-          cssClass: 'cancel-button',
-          handler: () => {
-            console.log('Cancel clicked');
-          }
+          cssClass: 'cancel-button'
         },
         {
           text: 'Eliminar',
           cssClass: 'delete-button',
           handler: () => {
-            console.log('Delete clicked');
             this.cartService.removeItemFromCart(this.item()?.postId || '');
           }
         }

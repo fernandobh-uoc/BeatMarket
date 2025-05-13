@@ -159,11 +159,6 @@ export class AuthService {
         let user$: Observable<User | null> | null = this.userRepository.getUserById$(result.uid, true);
 
         if (user$) {
-          /* runInInjectionContext(this.injector, () => {
-            this.currentUser = toSignal(user$!);
-            console.log({ currentUser: this.currentUser() });
-            this.#updateAuthStatus(this.currentUser() ?? null);
-          }); */
           user$.subscribe(user => {
             this.#currentUser.set(user);
           });

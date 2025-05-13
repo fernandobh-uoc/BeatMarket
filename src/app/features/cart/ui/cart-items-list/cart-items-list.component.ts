@@ -11,9 +11,7 @@ import { CartItemWrapperComponent } from '../cart-item/cart-item-wrapper/cart-it
 export class CartItemsListComponent  implements OnInit {
   items = input<CartItemModel[]>([]);
 
-  constructor() {
-    effect(() => console.log(this.items()));
-  }
+  constructor() {}
 
   ngOnInit() {}
 

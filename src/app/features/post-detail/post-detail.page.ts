@@ -61,7 +61,6 @@ export class PostDetailPage implements OnInit {
 
   addToCart() {
     const shipping = Math.max((this.postData()?.price ?? 0) / 100, 5);
-    console.log(this.postData());
 
     this.postDetailService.addToCart({
       postId: this.postData()?._id ?? '',

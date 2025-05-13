@@ -31,8 +31,6 @@ export class ProfilePage implements OnInit, ViewDidLeave {
     this.userDataEditService.resetEditingInputStates();
   }
 
-  ngOnInit() {
-    console.log(this.authService.currentUser());
-  }
+  ngOnInit() {}
 
 }

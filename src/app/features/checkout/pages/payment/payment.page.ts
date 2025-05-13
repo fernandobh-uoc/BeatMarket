@@ -67,8 +67,6 @@ export class PaymentPage implements OnInit {
   }
 
   async handleCheckout() {
-    console.log(this.checkoutFormData());
-
     try {
       this.disabledCheckoutButton.set(true);
       await this.checkoutService.checkout({

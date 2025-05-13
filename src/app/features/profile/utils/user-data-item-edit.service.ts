@@ -20,9 +20,8 @@ export class UserDataItemEditService {
   constructor() {}
 
   async editUserData(key: string, data: string | number | object | null | undefined): Promise<boolean> {
-    console.log({ key, data });
-
     this.pending.set(true);
+
     try {
       if (key === 'username') {
         if (await this.usernameExists(data as string)) {
@@ -101,10 +100,8 @@ export class UserDataItemEditService {
   }
 
   async usernameExists(username: string): Promise<boolean> {
-    console.log({username});
     try {
       const user = await this.#userRepository.getUserByUsername(username);
-      console.log(Boolean(user));
       return Boolean(user);
     } catch (storageError) {
       this.usernameErrorMessage.set(storageError as string);

@@ -49,7 +49,6 @@ export class RegisterService {
   }
 
   registerUser = async (userFormData: any): Promise<void> => {
-    //console.log(userFormData);
     try {
       const user: User | null = await this.#authService.register({
         method: 'email',

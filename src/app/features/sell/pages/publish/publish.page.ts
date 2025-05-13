@@ -75,10 +75,6 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
     const publishForm: FormGroup<any> | undefined = this.publishFormComponent()?.publishForm;
     publishForm?.updateValueAndValidity();
 
-    console.log('Invalid controls:', this.findInvalidControls(publishForm));
-
-    console.log(publishForm?.value);
-
     if (publishForm?.invalid) {
       return;
     }
@@ -86,11 +82,6 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewWillLeave {
     if (this.uploadedImagesURLs().length === 0) {
       return;
     }
-
-    /* console.log({
-      ...publishForm?.value.commonData,
-      characteristics: publishForm?.value.specificData,
-    }); */
 
     this.disabledPublishButton.set(true);
 

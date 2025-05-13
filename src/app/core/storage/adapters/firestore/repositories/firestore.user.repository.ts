@@ -174,7 +174,6 @@ export class FirestoreUserRepository implements UserRepository {
       const _user: User = User.Build(userData);
       let user: User | null;
       if (user = await this.storage.create(_user, { collection: 'users', converter: this.userConverter })) {
-        console.log({ user });
         return user; // Return the created user with timestamps
       }
       return null;
@@ -206,7 +205,6 @@ export class FirestoreUserRepository implements UserRepository {
           converter: this.activePostConverter 
         })
       ) {
-        console.log({ activePost });
         return activePost;
       }
       return null;

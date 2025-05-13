@@ -50,8 +50,8 @@ export class CheckoutService {
   }
 
   async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<void> {
-    console.log({saleFormData});
-    // Stripe checkout
+
+    // TODO: Stripe checkout
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     try {

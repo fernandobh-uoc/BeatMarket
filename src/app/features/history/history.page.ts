@@ -22,14 +22,7 @@ export class HistoryPage implements OnInit {
 
   selectedTab = signal<string>('boughtItems')
 
-  constructor() {
-    effect(() => {
-      console.log({
-        boughtItems: this.boughtItems(),
-        soldItems: this.soldItems()
-      })
-    })
-  }
+  constructor() {}
 
   ngOnInit() {
     this.boughtItems.set(this.route.snapshot.data['boughtItems']);

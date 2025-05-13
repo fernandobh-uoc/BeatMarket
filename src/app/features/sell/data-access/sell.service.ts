@@ -86,41 +86,10 @@ export class SellService {
   }
 
   publishPost = async (postFormData: any): Promise<void> => {
-    /* _id: string;
-      title: string;
-      description: string;
-      mainImageURL: string;
-      imagesURLs: string[];
-      user: Partial<UserModel>;
-      price: number;
-      shipping: number;
-      status: PostStatus;
-      finishedAt: Date | null;
-      article: Partial<ArticleModel>; */
-
     const currentUser: User | null = this.#authService.currentUser();
     if (!currentUser) return;
 
     try {
-      console.log(postFormData.price);
-      console.log({
-        title: postFormData.title,
-        description: postFormData.description,
-        user: {
-          userId: currentUser?._id ?? '',
-          username: currentUser?.username ?? '',
-          profilePictureURL: currentUser?.profilePictureURL ?? '',
-        },
-        price: typeof postFormData.price === 'number' ? postFormData.price : parseFormattedCurrency(postFormData.price),
-        status: PostStatus.Active,
-        finishedAt: null,
-        article: {
-          category: postFormData.category,
-          condition: postFormData.condition,
-          characteristics: postFormData.characteristics
-        }
-      });
-
       const post: Post | null = await this.#postRepository.savePost({
         title: postFormData.title,
         description: postFormData.description,
@@ -140,7 +109,6 @@ export class SellService {
       });
 
       if (!post) return;
-      console.log({ post });
 
       const downloadURLs: string[] | null = await this.#uploadImagesToCloudStorage(post._id);
       await this.#postRepository.updatePost({

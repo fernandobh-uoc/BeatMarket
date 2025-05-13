@@ -217,9 +217,4 @@ export class RegisterPage {
       this.#router.navigate(['/auth/welcome']);
     }
   }
-
-  /* checkEmailValidity() {
-    this.emailValid.set(this.registerFormComponent()?.registerForm?.get('email')?.valid ?? false);
-    console.log(`email validity: ${this.emailValid()}`)
-  } */
 }

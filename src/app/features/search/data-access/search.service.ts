@@ -14,7 +14,6 @@ export class SearchService {
 
   async search(constraints: any): Promise<Post[] | null> {
     try {
-      console.log(constraints);
       return await this.postRepository.queryPosts(constraints);
     } catch (error) {
       console.error(error);
