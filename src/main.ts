@@ -29,6 +29,7 @@ import { FirebaseAuthAdapter } from './app/core/services/auth/adapters/firebase-
 import { Auth } from './app/core/services/auth/auth.interface';
 import { FirebaseCloudStorageAdapter } from './app/core/services/cloud-storage/adapters/firebase-cloudStorage.adapter';
 import { CloudStorage } from './app/core/services/cloud-storage/cloudStorage.interface';
+import { CartService } from './app/features/cart/data-access/cart.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -53,17 +54,22 @@ bootstrapApplication(AppComponent, {
 
     importProvidersFrom(IonicStorageModule.forRoot()),
 
-    provideAppInitializer(() => {
-      const authService = inject(AuthService);
-      return authService.init();
-    }),
-
     { provide: Auth, useClass: FirebaseAuthAdapter },
     { provide: UserRepository, useClass: FirestoreUserRepository },
     { provide: PostRepository, useClass: FirestorePostRepository },
     { provide: CartRepository, useClass: FirestoreCartRepository },
     { provide: SaleRepository, useClass: FirestoreSaleRepository },
     { provide: ConversationRepository, useClass: FirestoreConversationRepository },
-    { provide: CloudStorage, useClass: FirebaseCloudStorageAdapter }
+    { provide: CloudStorage, useClass: FirebaseCloudStorageAdapter },
+
+    provideAppInitializer(async () => {
+      const authService = inject(AuthService);
+      const cartService = inject(CartService);
+
+      await authService.init();
+      if (authService.authStatus().isAuthenticated) {
+        await cartService.loadCart();
+      } 
+    }),
   ],
 });
