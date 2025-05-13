@@ -1,7 +1,7 @@
-import { Component, signal, input, output, computed, Signal, WritableSignal, inject, OnInit } from '@angular/core';
+import { Component, signal, input, output, WritableSignal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl, FormArray } from '@angular/forms';
-import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonItem, IonList, IonLabel, IonAvatar, IonText, IonIcon, IonDatetime, IonModal, IonDatetimeButton, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
+import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
+import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonLabel, IonAvatar, IonText, IonIcon, IonModal, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
 
 import { EmailValidator } from '../../utils/validators/email.validator';
 import { UsernameValidator } from '../../utils/validators/username.validator';
@@ -10,13 +10,12 @@ import { calendarOutline, checkmarkCircleOutline, closeCircleOutline, globeOutli
 
 import { countries } from "../../../../../shared/utils/countries" ;
 import { Role } from 'src/app/core/domain/models/user.model';
-import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 
 @Component({
   selector: 'app-register-form',
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
-  imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonDatetimeButton, IonModal, IonDatetime, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonList, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
+  imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent implements OnInit {
   //#userRepository = inject(UserRepository);
