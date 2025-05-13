@@ -6,7 +6,8 @@ export interface FirestoreConversationModel {
   relatedPost: {
     title: string;
     price: number;
-    status: string;
+    //status: string;
+    isActive: boolean;
     mainImageURL: string;
   },
   initiatedBy: string;

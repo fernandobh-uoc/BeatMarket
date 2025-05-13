@@ -1,6 +1,5 @@
 import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
-import { PostStatus } from "./post.model";
 import { Timestamps } from "./appModel.type";
 
 export enum MessageStatus {
@@ -13,7 +12,8 @@ export interface RelatedPostModel {
   _id: string;
   title: string;
   price: number;
-  status: PostStatus;
+  //status: PostStatus;
+  isActive: boolean;
   mainImageURL: string;
 }
 
@@ -49,7 +49,8 @@ export class Conversation implements ConversationModel {
     _id: '', 
     title: '', 
     price: 0, 
-    status: PostStatus.Active, 
+    //status: PostStatus.Active, 
+    isActive: true,
     mainImageURL: '' 
   };
   public initiatedBy: UserModel["_id"] = '';

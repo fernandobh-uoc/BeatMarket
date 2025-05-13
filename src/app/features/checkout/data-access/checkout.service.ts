@@ -4,7 +4,7 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { SaleRepository } from 'src/app/core/domain/repositories/sale.repository';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
-import { Post, PostModel, PostStatus } from 'src/app/core/domain/models/post.model';
+import { Post, PostModel } from 'src/app/core/domain/models/post.model';
 import { catchError, combineLatest, forkJoin, Observable, of } from 'rxjs';
 import { User } from 'src/app/core/domain/models/user.model';
 import { Sale } from 'src/app/core/domain/models/sale.model';
@@ -64,7 +64,7 @@ export class CheckoutService {
         if (!postData) return;
         
         // Just in case someone bought the product before
-        if (postData.status !== PostStatus.Active) throw new Error('Post is inactive'); 
+        if (!postData.isActive) throw new Error('Post is inactive'); 
 
         const saleData = {
           postData: {
@@ -99,7 +99,7 @@ export class CheckoutService {
           // Mark post as inactive
           this.postRepository.updatePost({
             _id: postData._id,
-            status: PostStatus.Finished,
+            isActive: false,
             finishedAt: saleDate
           })
 

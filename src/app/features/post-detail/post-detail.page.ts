@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, OnInit, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonAvatar, IonIcon, IonButton } from '@ionic/angular/standalone';
-import { Post, PostStatus } from 'src/app/core/domain/models/post.model';
+import { Post } from 'src/app/core/domain/models/post.model';
 import { PostDetailService } from './data-access/post-detail.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';

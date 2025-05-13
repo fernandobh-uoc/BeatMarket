@@ -1,6 +1,6 @@
 import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
 import { ArticleCategory, ArticleCondition, ArticleModel, isArticleModel } from "src/app/core/domain/models/article.model";
-import { Post, PostModel, PostStatus, PostUserData } from "src/app/core/domain/models/post.model";
+import { Post, PostModel, PostUserData } from "src/app/core/domain/models/post.model";
 import { isInstrumentCharacteristics, isBookCharacteristics, isRecordingCharacteristics, isAccessoryCharacteristics, isProfessionalCharacteristics, ArticleCharacteristics, InstrumentCharacteristics, BookCharacteristics, RecordingCharacteristics, AccessoryCharacteristics, ProfessionalCharacteristics, OtherCharacteristics, isNoneCharacteristics, isOtherCharacteristics } from "src/app/core/domain/models/articleCharacteristics.interface";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 import { parseFormattedCurrency } from "src/app/shared/utils/currencyParser.service";
@@ -17,7 +17,8 @@ export interface FirestorePostModel {
   },
   price: number;
   //shipping: number;
-  status: string;
+  //status: string;
+  isActive: boolean;
   finishedAt: Timestamp | null;
   article: {
     category: string;
@@ -244,7 +245,8 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
       }, */
       price: post.price,
       //shipping: post.shipping,
-      status: post.status,
+      //status: post.status,
+      isActive: post.isActive,
       finishedAt: isValidDateInput(post.finishedAt) 
         ? Timestamp.fromDate(new Date(post.finishedAt)) 
         : isFieldValue(post.finishedAt)
@@ -280,9 +282,10 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
       user: data.user,
       price: data.price,
       //shipping: data.shipping ?? 0,
-      status: Object.values(PostStatus).includes(data.status as PostStatus) 
+      /* status: Object.values(PostStatus).includes(data.status as PostStatus) 
         ? (data.status as PostStatus)
-        : PostStatus.Active,
+        : PostStatus.Active, */
+      isActive: data.isActive,
       finishedAt: isFirestoreTimestamp(data.finishedAt) 
         ? data.finishedAt.toDate() 
         : null,

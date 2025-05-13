@@ -1,5 +1,5 @@
 import { inject, Injectable, signal } from '@angular/core';
-import { Post, PostModel, PostStatus } from 'src/app/core/domain/models/post.model';
+import { Post, PostModel } from 'src/app/core/domain/models/post.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { Camera, CameraResultType } from '@capacitor/camera';
 import { images } from 'ionicons/icons';
@@ -99,7 +99,7 @@ export class SellService {
           profilePictureURL: currentUser?.profilePictureURL ?? '',
         },
         price: typeof postFormData.price === 'number' ? postFormData.price : parseFormattedCurrency(postFormData.price),
-        status: PostStatus.Active,
+        isActive: true,
         finishedAt: null,
         article: {
           category: postFormData.category,

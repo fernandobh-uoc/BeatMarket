@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ArticleCategory } from 'src/app/core/domain/models/article.model';
-import { Post, PostStatus } from 'src/app/core/domain/models/post.model';
+import { Post } from 'src/app/core/domain/models/post.model';
 import { Role } from 'src/app/core/domain/models/user.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -30,9 +30,9 @@ export class HomeService {
           value: this.authService.currentUser()?._id
         },
         {
-          field: 'status',
+          field: 'isActive',
           operator: '==',
-          value: PostStatus.Active
+          value: true
         }
       ],
       orderBy: {
