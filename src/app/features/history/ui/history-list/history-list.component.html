@@ -1,0 +1,35 @@
+@if (sales()?.length === 0) {
+  <div class="container-empty">
+    <ion-text class="text-empty">Aún no has {{ type() === 'bought' ? 'comprado' : 'vendido' }} ningún artículo</ion-text> 
+  </div>
+} @else {
+  <ion-list lines="none" class="sales-list">
+    @for(sale of sales(); track sale._id) {
+      <div class="sale-item"> 
+        <div class="post-data">
+          <ion-thumbnail slot="start" class="post-image">
+            <img [src]="sale.postData.mainImageURL" alt="Imagen principal del anuncio">
+          </ion-thumbnail>
+          <div class="labels-container">
+            <ion-text class="post-title">{{ sale.postData.title }}</ion-text>
+            <ion-label class="post-condition">{{ sale.postData.articleCondition }}</ion-label> 
+            <ion-text class="post-price">{{ sale.postData.price | formatCurrency }}</ion-text>
+          </div>
+        </div>
+
+        <div class="sale-data">
+          <ion-text class="sale-date">{{ sale.saleDate | date: 'dd/MM/yyyy' }}</ion-text>
+          <div class="user-data-wrapper">
+            <ion-text class="user-data-label">{{ type() === 'bought' ? 'Comprado a' : 'Vendido a' }}</ion-text>
+            <div class="user-data">
+              <ion-avatar class="user-avatar">
+                <img [src]="type() === 'bought' ? sale.sellerData.profilePictureURL : sale.buyerData.profilePictureURL" alt="Avatar del usuario"> 
+              </ion-avatar>
+              <ion-text class="user-name">{{ type() === 'bought' ? sale.sellerData.username : sale.buyerData.username }}</ion-text>
+            </div>
+          </div>
+        </div>
+      </div>
+    }
+  </ion-list>
+}

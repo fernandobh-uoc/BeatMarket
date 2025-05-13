@@ -4,6 +4,7 @@ import { authGuard } from 'src/app/core/guards/auth.guard';
 import { latestPostsResolver, recommendedPostsResolver } from 'src/app/features/home/utils/resolvers/home.resolver';
 import { postDetailResolver, postDetailResolver$ } from 'src/app/features/post-detail/utils/resolvers/post-detail.resolver';
 import { userDetailResolver, userDetailResolver$ } from 'src/app/features/user-detail/utils/resolvers/user-detail.resolver';
+import { boughtItemsResolver, soldItemsResolver } from 'src/app/features/history/utils/resolvers/history.resolver';
 //import { AuthGuard } from '../core/guards/auth.guard';
 
 export const TabsRoutes: Routes = [
@@ -41,6 +42,14 @@ export const TabsRoutes: Routes = [
         resolve: {
           userData: userDetailResolver,
           userData$: userDetailResolver$
+        }
+      },
+      {
+        path: 'history',
+        loadComponent: () => import('src/app/features/history/history.page').then(m => m.HistoryPage),
+        resolve: {
+          boughtItems: boughtItemsResolver,
+          soldItems: soldItemsResolver
         }
       },
       {

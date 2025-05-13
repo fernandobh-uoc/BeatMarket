@@ -31,5 +31,9 @@ export const routes: Routes = [
   {
     path: 'user-detail',
     loadComponent: () => import('./features/user-detail/user-detail.page').then(m => m.UserDetailPage)
+  },
+  {
+    path: 'history',
+    loadComponent: () => import('./features/history/history.page').then( m => m.HistoryPage)
   }
 ];

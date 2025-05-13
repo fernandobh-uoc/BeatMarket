@@ -1,0 +1,30 @@
+<ion-header [translucent]="true">
+  <app-toolbar type="menu" title="Historial"></app-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">Historial</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <div class="top-tabs-container">
+      <div class="bought-tab" (click)="selectedTab.set('boughtItems')">
+        <ion-text [class.selected]="selectedTab() === 'boughtItems'">Compras</ion-text>
+      </div>
+      <div class="sold-tab" (click)="selectedTab.set('soldItems')">
+        <ion-text [class.selected]="selectedTab() === 'soldItems'">Ventas</ion-text>
+      </div>
+    </div>
+
+    @if (selectedTab() === 'boughtItems') {
+      <app-history-list [sales]="boughtItems()" type="bought"></app-history-list>
+    }
+
+    @if (selectedTab() === 'soldItems') {
+      <app-history-list [sales]="soldItems()" type="sold"></app-history-list>
+    }
+  </div>
+</ion-content>

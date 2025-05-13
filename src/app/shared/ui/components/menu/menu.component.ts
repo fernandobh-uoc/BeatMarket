@@ -24,6 +24,14 @@ export class MenuComponent  implements OnInit {
     addIcons({ time, settings, logOut });
   }
 
+  async goToHistory() {
+    try {
+      this.router.navigate(['/tabs/history']);
+    } catch (error) {
+      console.error(error);
+    }
+  }
+
   async logout() {
     try {
       await this.authService.logout();
