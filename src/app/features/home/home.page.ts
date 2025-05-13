@@ -21,7 +21,6 @@ import { ViewDidEnter } from '@ionic/angular';
 })
 export class HomePage implements ViewDidEnter {
   route = inject(ActivatedRoute);
-  homeService = inject(HomeService);
 
   #latestPosts = signal<Post[]>([]);
   #recommendedPosts = signal<Post[]>([]);
