@@ -21,7 +21,7 @@
           <ion-text class="sale-date">{{ sale.saleDate | date: 'dd/MM/yyyy' }}</ion-text>
           <div class="user-data-wrapper">
             <ion-text class="user-data-label">{{ type() === 'bought' ? 'Comprado a' : 'Vendido a' }}</ion-text>
-            <div class="user-data">
+            <div class="user-data" [routerLink]="['/tabs/user-detail/' + (type() === 'bought' ? sale.sellerData.userId : sale.buyerData.userId)]">
               <ion-avatar class="user-avatar">
                 <img [src]="type() === 'bought' ? sale.sellerData.profilePictureURL : sale.buyerData.profilePictureURL" alt="Avatar del usuario"> 
               </ion-avatar>
