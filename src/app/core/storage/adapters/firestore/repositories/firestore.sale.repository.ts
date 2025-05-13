@@ -7,6 +7,7 @@ import { Storage } from "src/app/core/storage/storage.interface";
 import { FirebaseFirestoreAdapter } from "src/app/core/storage/adapters/firestore/firebase-firestore.adapter";
 import { SaleModel, Sale } from "../../../../domain/models/sale.model";
 import { FirestoreSaleConverter } from "src/app/core/storage/adapters/firestore/converters/firestore.sale.converter";
+import { query } from "firebase/firestore";
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreSaleRepository implements SaleRepository {
@@ -34,7 +35,15 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesByBuyerId(userId: string): Promise<Sale[] | null> {
     try {
-      const sales: Sale[] | null = await this.storage.getByField('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
+      //const sales: Sale[] | null = await this.storage.getByField('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
+      const sales: Sale[] | null = await this.storage.query({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'buyerData.userId', operator: '==', value: userId }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
       return sales;
     } catch (storageError) {
       console.error(storageError);
@@ -43,12 +52,23 @@ export class FirestoreSaleRepository implements SaleRepository {
   }
 
   getSalesByBuyerId$(userId: string): Observable<Sale[] | null> | null {
-    if (!this.storage.getByField$) return null;
+    //if (!this.storage.getByField$) return null;
+    if (!this.storage.query$) return null;
 
     try {
-      return this.storage.getByField$('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
+      /* return this.storage.getByField$('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
         map(sales => sales && sales.length > 0 ? sales : null)
-      );
+      ); */
+      const sales$: Observable<Sale[] | null> | null = this.storage.query$({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'buyerData.userId', operator: '==', value: userId }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
+
+      return sales$;
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -57,7 +77,15 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesByBuyerUsername(username: string): Promise<Sale[] | null> {
     try {
-      const sales: Sale[] | null = await this.storage.getByField('buyerData.username', username, { collection: 'sales', converter: this.saleConverter });
+      //const sales: Sale[] | null = await this.storage.getByField('buyerData.username', username, { collection: 'sales', converter: this.saleConverter });
+      const sales: Sale[] | null = await this.storage.query({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'buyerData.username', operator: '==', value: username }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
       return sales;
     } catch (storageError) {
       console.error(storageError);
@@ -66,12 +94,23 @@ export class FirestoreSaleRepository implements SaleRepository {
   }
 
   getSalesByBuyerUsername$(username: string): Observable<Sale[] | null> | null {
-    if (!this.storage.getByField$) return null;
+    //if (!this.storage.getByField$) return null;
+    if (!this.storage.query$) return null;
 
     try {
-      return this.storage.getByField$('buyerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
+      /* return this.storage.getByField$('buyerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
         map(sales => sales && sales.length > 0 ? sales : null)
-      );
+      ); */
+      const sales$: Observable<Sale[] | null> | null = this.storage.query$({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'buyerData.username', operator: '==', value: username }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
+
+      return sales$;
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -80,7 +119,15 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesBySellerId(userId: string): Promise<Sale[] | null> {
     try {
-      const sales: Sale[] | null = await this.storage.getByField('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
+      //const sales: Sale[] | null = await this.storage.getByField('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
+      const sales: Sale[] | null = await this.storage.query({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'sellerData.userId', operator: '==', value: userId }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
       return sales;
     } catch (storageError) {
       console.error(storageError);
@@ -89,12 +136,23 @@ export class FirestoreSaleRepository implements SaleRepository {
   }
 
   getSalesBySellerId$(userId: string): Observable<Sale[] | null> | null {
-    if (!this.storage.getByField$) return null;
+    //if (!this.storage.getByField$) return null;
+    if (!this.storage.query$) return null;
 
     try {
-      return this.storage.getByField$('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
+      /* return this.storage.getByField$('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
         map(sales => sales && sales.length > 0 ? sales : null)
-      );
+      ); */
+      const sales$: Observable<Sale[] | null> | null = this.storage.query$({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'sellerData.userId', operator: '==', value: userId }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
+
+      return sales$;
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
@@ -103,7 +161,15 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesBySellerUsername(username: string): Promise<Sale[] | null> {
     try {
-      const sales: Sale[] | null = await this.storage.getByField('sellerData.username', username, { collection: 'sales', converter: this.saleConverter });
+      //const sales: Sale[] | null = await this.storage.getByField('sellerData.username', username, { collection: 'sales', converter: this.saleConverter });
+      const sales: Sale[] | null = await this.storage.query({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'sellerData.username', operator: '==', value: username }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
       return sales;
     } catch (storageError) {
       console.error(storageError);
@@ -112,12 +178,23 @@ export class FirestoreSaleRepository implements SaleRepository {
   }
 
   getSalesBySellerUsername$(username: string): Observable<Sale[] | null> | null {
-    if (!this.storage.getByField$) return null;
+    //if (!this.storage.getByField$) return null;
+    if (!this.storage.query$) return null;
 
     try {
-      return this.storage.getByField$('sellerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
+      /* return this.storage.getByField$('sellerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
         map(sales => sales && sales.length > 0 ? sales : null)
-      );
+      ); */
+      const sales$: Observable<Sale[] | null> | null = this.storage.query$({
+        collection: 'sales',
+        converter: this.saleConverter,
+        queryConstraints: {
+          filters: [{ field: 'sellerData.username', operator: '==', value: username }], 
+          orderBy: { field: 'saleDate', direction: 'desc' }, 
+        }
+      });
+
+      return sales$;
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
