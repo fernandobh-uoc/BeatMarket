@@ -15,7 +15,7 @@ $ npx ionic cap add android
 $ npx ionic cap add ios
 ```
 
-Para ejecutar un servidor local de la aplicación:
+Para ejecutar un servidor local de la aplicación en el navegador:
 
 ```bash
 $ npx ionic serve
