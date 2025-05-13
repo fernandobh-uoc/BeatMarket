@@ -1,7 +1,7 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable } from 'rxjs';
 import { ArticleCategory } from 'src/app/core/domain/models/article.model';
-import { Post } from 'src/app/core/domain/models/post.model';
+import { Post, PostStatus } from 'src/app/core/domain/models/post.model';
 import { Role } from 'src/app/core/domain/models/user.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -15,19 +15,24 @@ export class HomeService {
 
   userRoles = computed(() => this.authService.currentUser()?.roles ?? []);
 
-  #cachedLatestPosts: Post[] | null = null;
-  #cachedRecommendedPosts: Post[] | null = null;
+  //#cachedLatestPosts: Post[] | null = null;
+  //#cachedRecommendedPosts: Post[] | null = null;
 
   constructor() { }
 
   async getLatestPosts({ orderBy, limit }: { orderBy?: { field: string, direction?: 'asc' | 'desc' }, limit?: number }): Promise<Post[] | null> {
-    if (this.#cachedLatestPosts) return this.#cachedLatestPosts;
+    //if (this.#cachedLatestPosts) return this.#cachedLatestPosts;
     const posts = await this.postRepository.queryPosts({
       filters: [
         {
           field: 'user.userId',
           operator: '!=',
           value: this.authService.currentUser()?._id
+        },
+        {
+          field: 'status',
+          operator: '==',
+          value: PostStatus.Active
         }
       ],
       orderBy: {
@@ -36,7 +41,7 @@ export class HomeService {
       },
       limit: limit ?? undefined,
     });
-    this.#cachedLatestPosts = posts;
+    //this.#cachedLatestPosts = posts;
     return posts;
   }
 
@@ -45,7 +50,7 @@ export class HomeService {
   }
 
   async getRecommendedPosts({ orderBy, limit }: { orderBy?: { field: string, direction?: 'asc' | 'desc' }, limit?: number }): Promise<Post[] | null> {
-    if (this.#cachedRecommendedPosts) return this.#cachedRecommendedPosts;
+    //if (this.#cachedRecommendedPosts) return this.#cachedRecommendedPosts;
 
     let queryConstraints: Record<string, any> = {};
     let roleFilters = new Set<string>();
@@ -104,7 +109,7 @@ export class HomeService {
     // Query the posts from Firestore
     const posts = await this.postRepository.queryPosts(queryConstraints);
 
-    this.#cachedLatestPosts = posts;
+    //this.#cachedLatestPosts = posts;
     return posts;
   }
 }

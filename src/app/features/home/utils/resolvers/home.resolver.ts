@@ -2,6 +2,7 @@ import { inject } from '@angular/core';
 import { ResolveFn } from '@angular/router';
 import { HomeService } from '../../data-access/home.service';
 import { Post } from 'src/app/core/domain/models/post.model';
+import { Observable } from 'rxjs';
 
 export const latestPostsResolver: ResolveFn<Promise<Post[] | null>> = async (route, state) => {
   const homeService = inject(HomeService);

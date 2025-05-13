@@ -10,6 +10,7 @@ import { PostRepository } from 'src/app/core/domain/repositories/post.repository
 import { HomeService } from './data-access/home.service';
 import { Post } from 'src/app/core/domain/models/post.model';
 import { firstValueFrom, map } from 'rxjs';
+import { ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -18,7 +19,7 @@ import { firstValueFrom, map } from 'rxjs';
   standalone: true,
   imports: [IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
 })
-export class HomePage implements OnInit {
+export class HomePage implements ViewDidEnter {
   route = inject(ActivatedRoute);
   homeService = inject(HomeService);
 
@@ -33,13 +34,12 @@ export class HomePage implements OnInit {
     return this.#recommendedPosts();
   }
 
-  async ngOnInit(): Promise<void> {
-    //this.#latestPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['latestPosts']))));
-    //this.#recommendedPosts.set(await firstValueFrom(this.route.data.pipe(map(data => data['recommendedPosts']))));
+
+  async ionViewDidEnter(): Promise<void> {
     this.#latestPosts.set(await this.route.snapshot.data['latestPosts']);
     this.#recommendedPosts.set(await this.route.snapshot.data['recommendedPosts']);
 
-
     console.log({ latestPosts: this.#latestPosts(), recommendedPosts: this.#recommendedPosts() });
+
   }
 }
