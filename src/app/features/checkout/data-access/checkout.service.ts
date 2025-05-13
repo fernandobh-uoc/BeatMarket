@@ -103,8 +103,8 @@ export class CheckoutService {
             finishedAt: saleDate
           })
 
-          // Empty user's cart
-          this.cartService.clearCart();
+          // Empty user's cart (not necessary since the carts are handled with firebase functions)
+          // this.cartService.clearCart();
         }
       }
     } catch (error) {
