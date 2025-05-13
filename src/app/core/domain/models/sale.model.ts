@@ -9,11 +9,13 @@ export interface SalePostData {
   title: PostModel["title"];
   articleCondition: PostModel["article"]["condition"];
   price: PostModel["price"];
+  mainImageURL: PostModel["mainImageURL"];
 }
 
 export interface SaleUserData {
   userId: UserModel["_id"];
   username: UserModel["username"];
+  profilePictureURL: UserModel["profilePictureURL"];
 }
 
 export interface SalePaymentData {
@@ -35,14 +37,15 @@ export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
 
 export class Sale implements SaleModel {
   public _id: string = '';
-  public postData: { postId: PostModel["_id"], title: PostModel["title"], articleCondition: PostModel["article"]["condition"], price: PostModel["price"] } = {
+  public postData: { postId: PostModel["_id"], title: PostModel["title"], articleCondition: PostModel["article"]["condition"], price: PostModel["price"], mainImageURL: PostModel["mainImageURL"] } = {
     postId: '',
     title: '',
     articleCondition: ArticleCondition.None,
-    price: 0
+    price: 0,
+    mainImageURL: ''
   };
-  public buyerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
-  public sellerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
+  public buyerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
+  public sellerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
   public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
   public saleDate: Date = new Date();
 

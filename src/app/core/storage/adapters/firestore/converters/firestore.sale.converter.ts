@@ -10,14 +10,17 @@ export interface FirestoreSaleModel {
     title: string;
     articleCondition: string;
     price: number;
+    mainImageURL: string;
   };
   buyerData: {
     userId: string;
     username: string;
+    profilePictureURL: string;
   };
   sellerData: {
     userId: string;
     username: string;
+    profilePictureURL: string;
   };
   paymentData: {
     cardName: string;
@@ -80,14 +83,17 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         title: data.postData.title,
         articleCondition: data.postData.articleCondition as ArticleCondition,
         price: data.postData.price,
+        mainImageURL: data.postData.mainImageURL,
       },
       buyerData: {
         userId: data.buyerData.userId,
         username: data.buyerData.username,
+        profilePictureURL: data.buyerData.profilePictureURL,
       },
       sellerData: {
         userId: data.sellerData.userId,
         username: data.sellerData.username,
+        profilePictureURL: data.sellerData.profilePictureURL,
       },
       paymentData: {
         cardName: data.paymentData.cardName,

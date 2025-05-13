@@ -71,15 +71,18 @@ export class CheckoutService {
             postId: item.postId,
             title: item.title,
             articleCondition: postData.article.condition,
-            price: item.price
+            price: item.price,
+            mainImageURL: postData.mainImageURL
           },
           buyerData: {
             userId: currentUser?._id ?? '',
             username: currentUser?.username ?? '',
+            profilePictureURL: currentUser?.profilePictureURL ?? '',
           },
           sellerData: {
             userId: postData.user.userId,
             username: postData.user.username,
+            profilePictureURL: postData.user.profilePictureURL,
           },
           paymentData: {
             cardName: saleFormData.paymentData.cardName,
