@@ -3,27 +3,29 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
-import { CheckoutFormComponent } from './ui/checkout-form/checkout-form.component';
+import { CheckoutFormComponent } from '../../ui/checkout-form/checkout-form.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { CheckoutService } from './data-access/checkout.service';
+import { CheckoutService } from '../../data-access/checkout.service';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
-import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
+import { FormatCurrencyPipe } from "../../../../shared/utils/pipes/format-currency.pipe";
 import { Router } from '@angular/router';
 
 @Component({
-  selector: 'app-checkout',
-  templateUrl: './checkout.page.html',
-  styleUrls: ['./checkout.page.scss'],
+  selector: 'app-payment',
+  templateUrl: './payment.page.html',
+  styleUrls: ['./payment.page.scss'],
   standalone: true,
   imports: [ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
-export class CheckoutPage implements OnInit {
+export class PaymentPage implements OnInit {
   router = inject(Router);
   checkoutService = inject(CheckoutService);
 
   step = signal<number>(2);
   totalSteps = 2;
   progressBarValue = computed(() => this.step() / this.totalSteps);
+
+  disabledCheckoutButton = signal<boolean>(false);
 
   userFullName = computed<string>(() => this.checkoutService.userFullName() ?? '');
   cartItems = computed<CartItemModel[]>(() => this.checkoutService.cartItems() ?? []);
@@ -65,7 +67,11 @@ export class CheckoutPage implements OnInit {
 
   async handleCheckout() {
     try {
-      await this.checkoutService.checkout();
+      this.disabledCheckoutButton.set(true);
+      await this.checkoutService.checkout({
+        items: this.cartItems(),
+        paymentData: this.checkoutFormComponent()?.checkoutForm?.value
+      });
       this.router.navigate(['/checkout/splash']);
     } catch (error) {
       console.error(error);

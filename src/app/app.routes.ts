@@ -23,7 +23,10 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
-    loadComponent: () => import('./features/checkout/checkout.page').then(m => m.CheckoutPage)
+    //loadComponent: () => import('./features/checkout/checkout.page').then(m => m.CheckoutPage
+    loadChildren: () => import('./features/checkout/checkout.routes').then(m => m.CheckoutRoutes),
+    canMatch: [authGuard],
+    data: { authStatusMustBe: true }
   },
   {
     path: 'user-detail',
