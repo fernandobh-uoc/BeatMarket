@@ -377,24 +377,47 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     }
   }
 
-  query$(params?: FirestoreParams): Observable<T[]> {
-    if (!params || !params.collection) {
+  query$(params: FirestoreParams): Observable<T[] | null> {
+    if (!params.collection) {
       throw new Error("You must provide the collection.");
+    }
+
+    if (!params.queryConstraints) {
+      throw new Error("You must provide the query constraints.");
     }
 
     try {
       let collectionRef: CollectionReference = collection(this.firestore, params.collection);
       collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
-      let q: Query = collectionRef;
 
-      // Apply constraints
-      if (params.queryConstraints && Array.isArray(params.queryConstraints)) {
-        params.queryConstraints.forEach((queryConstraint: QueryConstraint) => {
-          q = query(q, queryConstraint);
-        });
+      const constraints: QueryConstraint[] = [];
+      const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
+
+      if (filters?.length) {
+        constraints.push(...buildQueryConstraints(filters));
+      }
+      if (order) {
+        constraints.push(orderBy(order.field, order.direction || 'asc'));
+      }
+      if (limit !== undefined) {
+        constraints.push(queryLimit(limit));
+      }
+      if (startAt !== undefined) {
+        constraints.push(queryStartAt(startAt));
+      }
+      if (startAfter !== undefined) {
+        constraints.push(queryStartAfter(startAfter));
+      }
+      if (endAt !== undefined) {
+        constraints.push(queryEndAt(endAt));
+      }
+      if (endBefore !== undefined) {
+        constraints.push(queryEndBefore(endBefore));
       }
 
-      return collectionData(q, { idField: '_id' }) as Observable<any[]>;
+      const firestoreQuery: Query = query(collectionRef, ...constraints);
+
+      return collectionData(firestoreQuery, { idField: '_id' }) as Observable<T[]>;
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }
