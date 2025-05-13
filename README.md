@@ -10,7 +10,13 @@ Proyecto TFG - UOC - Ingenieria Informática
 $ git clone https://gitlab.com/tfg5261618/beatmarket.git
 $ cd beatmarket
 $ npm install
-$ ionic build
-$ ionic cap add android
-$ ionic cap add ios
+$ npx ionic build
+$ npx ionic cap add android
+$ npx ionic cap add ios
+```
+
+Para ejecutar un servidor local de la aplicación:
+
+```bash
+$ npx ionic serve
 ```
