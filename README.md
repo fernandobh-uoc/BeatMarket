@@ -15,6 +15,12 @@ $ npx ionic cap add android
 $ npx ionic cap add ios
 ```
 
+Para abrir el proyecto en Android Studio:
+
+```bash
+$ npx ionic cap open android
+```
+
 Para ejecutar un servidor local de la aplicación en el navegador:
 
 ```bash
