@@ -34,12 +34,10 @@ export class HomePage implements ViewDidEnter {
     return this.#recommendedPosts();
   }
 
-
   async ionViewDidEnter(): Promise<void> {
     this.#latestPosts.set(await this.route.snapshot.data['latestPosts']);
     this.#recommendedPosts.set(await this.route.snapshot.data['recommendedPosts']);
 
     console.log({ latestPosts: this.#latestPosts(), recommendedPosts: this.#recommendedPosts() });
-
   }
 }
