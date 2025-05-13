@@ -29,9 +29,12 @@ export class ToolbarComponent {
   public largeTitle = input<boolean>(false);
   public title = input<string>('');
 
-  public searchActive = signal<boolean>(false);
-
   public showSearch = input<boolean>(true);
+  public searchDefaultActive = input<boolean>(false);
+  public searchDefaultValue = input<string>('');
+  public searchQuery = signal<string | null>('');
+  public searchActive = signal<boolean>(this.searchDefaultActive());
+
   public showCart = input<boolean>(true);
   public cartItemsAmount = computed<number>(() => this.cartService.cartItemsAmount());
 
@@ -42,7 +45,25 @@ export class ToolbarComponent {
     addIcons({ menu, arrowBackOutline, searchOutline, cartOutline });
   }
 
+  ngOnInit() {
+    this.searchActive.set(this.searchDefaultActive());
+  }
+
   openSearchBar() {
     this.searchActive.set(true);
+  }
+
+  closeSearchBar() {
+    this.searchActive.set(false);
+  }
+
+  submitSearch() {
+    if (this.searchQuery()?.trim()) {
+      this.router.navigate(['/tabs/search'], {
+        queryParams: {
+          query: this.searchQuery()?.trim()
+        }
+      })
+    }
   }
 }

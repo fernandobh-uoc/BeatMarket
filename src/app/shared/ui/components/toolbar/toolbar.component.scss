@@ -2,6 +2,16 @@ ion-title {
   margin-left: 0.5rem;
 }
 
+.searchbar {
+  --background: var(--ion-color-light-shade);
+  --color: var(--ion-color-dark);
+  --icon-color: var(--ion-color-dark);
+  --cancel-button-color: var(--ion-color-dark);
+  --clear-button-color: var(--ion-color-dark);
+  --placeholder-color: var(--ion-color-dark-shade);
+  --border-radius: 4px;
+}
+
 .cart-icon-wrapper {
   position: relative;
   display: inline-block;

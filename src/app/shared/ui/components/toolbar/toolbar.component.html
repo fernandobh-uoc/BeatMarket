@@ -4,7 +4,15 @@
       <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
     </ion-button>    -->
     @if (searchActive()) {
-      <ion-searchbar></ion-searchbar>
+      <ion-searchbar
+        class="searchbar"
+        showCancelButton="always"
+        placeholder="Buscar..."
+        [value]="searchDefaultValue()"
+        (ionInput)="searchQuery.set($event.target.value ?? '')"
+        (keyup.enter)="submitSearch()"
+        (ionCancel)="closeSearchBar()"
+      ></ion-searchbar>
     } @else {
       @if (type() === 'arrow-back') {
         @if (backActionType() === 'default') {

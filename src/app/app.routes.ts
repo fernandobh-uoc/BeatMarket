@@ -35,5 +35,9 @@ export const routes: Routes = [
   {
     path: 'history',
     loadComponent: () => import('./features/history/history.page').then( m => m.HistoryPage)
+  },
+  {
+    path: 'search',
+    loadComponent: () => import('./features/search/search.page').then( m => m.SearchPage)
   }
 ];

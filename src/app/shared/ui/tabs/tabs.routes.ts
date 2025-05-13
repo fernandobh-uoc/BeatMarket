@@ -21,6 +21,10 @@ export const TabsRoutes: Routes = [
         }
       },
       {
+        path: 'search',
+        loadComponent: () => import('src/app/features/search/search.page').then(m => m.SearchPage)
+      },
+      {
         path: 'profile',
         loadComponent: () => import('src/app/features/profile/profile.page').then(m => m.ProfilePage)
       },

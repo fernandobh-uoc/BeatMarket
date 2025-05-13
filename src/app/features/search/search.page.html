@@ -1,0 +1,52 @@
+<ion-header [translucent]="true">
+  <app-toolbar
+    title="Buscar"
+    type="menu"
+    [searchDefaultActive]="true"
+    [searchDefaultValue]="searchQuery()"
+  ></app-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">search</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    <div class="filters-row">
+      <div class="order-container">
+        <ion-icon name="swap-vertical" color="light" size="small"></ion-icon>
+        <ion-text class="order-label">Ordenar</ion-text>
+      </div>
+      <div class="filters-container">
+        <ion-icon name="filter" color="light" size="small"></ion-icon>
+        <ion-text class="filters-label">Filtrar</ion-text>
+      </div>
+    </div>
+
+    <ion-text class="search-title">Resultados de búsqueda</ion-text>
+
+    <div class="search-results-list">
+      @if (searchResults()?.length === 0) {
+        <div class="container-empty">
+          <ion-text class="text-empty">No hay resultados</ion-text>
+        </div>
+      } @else {
+        @for (post of searchResults(); track post._id) {
+          <ion-item class="post-item" [routerLink]="['/tabs/post-detail/' + post._id]"> 
+            <ion-thumbnail slot="start" class="post-image">
+              <img [src]="post.mainImageURL" alt="Imagen principal del anuncio">
+            </ion-thumbnail>
+            <div class="labels-container">
+              <ion-text class="post-title">{{ post.title }}</ion-text>
+              <ion-label class="post-category">{{ post.article.category }}</ion-label>
+              <ion-text class="post-price">{{ post.price | formatCurrency }}</ion-text>
+            </div>  
+          </ion-item>
+        }
+      }
+    </div>
+  </div>
+</ion-content>
