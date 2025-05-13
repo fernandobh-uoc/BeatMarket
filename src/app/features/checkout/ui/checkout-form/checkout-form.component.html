@@ -1,0 +1,94 @@
+<form [formGroup]="checkoutForm">
+  <div class="input-wrapper">
+    <ion-label class="custom" color="light">Nombre del titular de la tarjeta</ion-label>
+    <ion-input 
+      formControlName="cardName" 
+      type="text" 
+      class="custom"
+      (ionFocus)="controlFocus.emit('cardName')"
+    ></ion-input>
+    @if (submitAttempted() && checkoutForm.get('cardName')?.errors) {
+      @if (checkoutForm.get('cardName')?.errors?.['required']) {
+        <ion-text class="error-text" color="danger">El nombre del titular de la tarjeta es obligatorio</ion-text>
+      }
+    }
+  </div>
+
+  <div class="input-wrapper">
+    <ion-label class="custom" color="light">Número de tarjeta</ion-label>
+    <ion-input 
+      formControlName="cardNumber"
+      type="text"
+      class="custom"
+      placeholder="XXXX - XXXX - XXXX - XXXX"
+      (ionInput)="onCardNumberInput($event)"
+      maxlength="25"
+      inputmode="numeric"
+      (ionFocus)="controlFocus.emit('cardNumber')"
+    ></ion-input>
+    @if (submitAttempted() && checkoutForm.get('cardNumber')?.errors) {
+      @if (checkoutForm.get('cardNumber')?.errors?.['required']) {
+        <ion-text class="error-text" color="danger">El número de tarjeta es obligatorio</ion-text>
+      }
+      @if (checkoutForm.get('cardNumber')?.errors?.['pattern']) {
+        <ion-text class="error-text" color="danger">El número de tarjeta es inválido</ion-text>
+      }
+    }
+  </div>
+
+  <div class="expiration-cvc-row">
+    <div class="expiration-wrapper">
+      <ion-label class="custom" color="light">Fecha de caducidad</ion-label>
+      <div class="expiration-inputs-wrapper">
+        <ion-input 
+          formControlName="expirationMonth"
+          class="custom expiration-input"
+          placeholder="MM"
+          maxlength="2"
+          inputmode="numeric"
+          type="text"
+          (ionFocus)="controlFocus.emit('expiration')"
+        ></ion-input>
+        <ion-input
+          formControlName="expirationYear"
+          class="custom expiration-input"
+          placeholder="AA"
+          maxlength="2"
+          inputmode="numeric"
+          type="text"
+          (ionFocus)="controlFocus.emit('expiration')"
+        ></ion-input>
+      </div>
+      @if (submitAttempted() 
+        && (checkoutForm.get('expirationMonth')?.errors || checkoutForm.get('expirationYear')?.errors)
+      ) { 
+        @if (checkoutForm.get('expirationMonth')?.errors?.['required']
+          || checkoutForm.get('expirationYear')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">La fecha de caducidad es obligatoria</ion-text>
+        }
+      }
+    </div>
+
+    <div class="cvc-wrapper">
+      <ion-label class="custom" color="light">CVC</ion-label>
+      <ion-input
+        formControlName="cvc"
+        placeholder="XXX" 
+        maxlength="3" 
+        inputmode="numeric" 
+        type="text" 
+        class="custom cvc-input"
+        (ionFocus)="controlFocus.emit('cvc')"
+      ></ion-input>
+      @if (submitAttempted() && checkoutForm.get('cvc')?.errors) {
+        @if (checkoutForm.get('cvc')?.errors?.['required']) {
+          <ion-text class="error-text" color="danger">El cvc es obligatorio</ion-text>
+        }
+      }
+    </div>
+  </div>
+</form>
+
+<div class="buttons-container">
+  <ion-button type="button" (click)="formSubmit.emit()">Continuar</ion-button>
+</div>

@@ -1,0 +1,45 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  justify-content: space-between;
+}
+
+.expiration-cvc-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  gap: 2rem;
+
+  .expiration-wrapper {
+    display: flex;
+    flex-direction: column;
+
+    .expiration-inputs-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 0.5rem;  
+  
+      .expiration-input {
+        width: 50%;
+        --highlight-color-focused: none;
+        --highlight-color-valid: none;
+        --highlight-color-invalid: none;
+        --highlight-height: 0px;
+      }
+    }
+  }
+
+  .cvc-wrapper {
+    display: flex;
+    flex-direction: column;
+    max-width: 4rem;
+
+    .cvc-input {
+      --highlight-color-focused: none;
+      --highlight-color-valid: none;
+      --highlight-color-invalid: none;
+      --highlight-height: 0px;
+    }
+  }
+}

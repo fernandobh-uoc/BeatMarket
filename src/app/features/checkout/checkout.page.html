@@ -1,0 +1,61 @@
+<ion-header [translucent]="true">
+  <app-toolbar
+    type="arrow-back"
+    title="Pagar"
+    [showSearch]="false"
+    [showProgressBar]="true"
+    [progressBarValue]="progressBarValue()"
+    [backActionType]="step() === 1 ? 'default' : 'emit'"
+    (backPressed)="prevStep()"
+  ></app-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <ion-header collapse="condense">
+    <ion-toolbar>
+      <ion-title size="large">checkout</ion-title>
+    </ion-toolbar>
+  </ion-header>
+
+  <div class="container">
+    @if (step() === 1) {
+      <div class="payment">
+        <ion-text class="payment-label">Datos de pago</ion-text>
+        <app-checkout-form
+          [userFullName]="userFullName()"
+          [submitAttempted]="submitAttempted()"
+          (nextStep)="nextStep()"
+          (controlFocus)="onControlFocus($event)"
+          (formSubmit)="handleFormSubmit()"
+        ></app-checkout-form>
+      </div>
+    }
+    @if (step() === 2) {
+      <div class="summary">
+        <ion-text class="summary-label">Resumen</ion-text>
+        <div class="summary-content">
+          <div class="summary-items-rows">
+            @for (cartItem of cartItems(); track cartItem.postId) {
+              <ion-text class="summary-row item-row">
+                <ion-text class="item-title">{{ cartItem.title }}</ion-text>
+                <ion-text class="item-price">{{ cartItem.price | formatCurrency }}</ion-text>
+              </ion-text>
+            }
+          </div>
+          <div class="summary-row shipping-row">
+            <ion-text class="shipping-label">Envío</ion-text>
+            <ion-text class="shipping-price">{{ itemsShippingTotal() | formatCurrency }}</ion-text>
+          </div>
+          <div class="summary-row total-row">
+            <ion-text class="total-label">Total</ion-text>
+            <ion-text class="total-price">{{ totalPrice() | formatCurrency }}</ion-text>
+          </div>
+        </div>
+      </div>
+      
+      <div class="buttons-container">
+        <ion-button class="custom" (click)="handleCheckout()">Pagar</ion-button>
+      </div>
+    }
+  </div>
+</ion-content>

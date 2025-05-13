@@ -7,18 +7,18 @@ import { CartItemsListComponent } from './ui/cart-items-list/cart-items-list.com
 import { CartService } from './data-access/cart.service';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',
   templateUrl: './cart.page.html',
   styleUrls: ['./cart.page.scss'],
   standalone: true,
-  imports: [IonButton, IonText, CartItemsListComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [RouterLink, IonButton, IonText, CartItemsListComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class CartPage implements OnInit {
   private route = inject(ActivatedRoute);
-  private cartService = inject(CartService);
+  //private cartService = inject(CartService);
 
   cartItems = signal<CartItemModel[]>([]);
 

@@ -75,4 +75,12 @@ export class CartService {
     cart.items.splice(index, 1);
     await this.cartRepository.updateCart(cart);
   }
+
+  async clearCart(): Promise<void> {
+    const cart: CartModel | null = this.#cart();
+    if (!cart) return;
+
+    cart.items = [];
+    await this.cartRepository.updateCart(cart);
+  }
 }
