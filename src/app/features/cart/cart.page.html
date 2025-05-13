@@ -18,30 +18,32 @@
       <ion-text class="text-empty">Tu carrito está vacío</ion-text>
     </div>
   } @else {
-    <app-cart-items-list
-      [items]="cartItems()"
-    ></app-cart-items-list>
+    <div class="container">
+      <app-cart-items-list
+        [items]="cartItems()"
+      ></app-cart-items-list>
+      
+      <div class="sticky-bottom-block">
+        <div class="total-prices-container">
+          <div class="subtotals-rows">
+            <div class="subtotal-row">
+              <ion-text class="subtotal-articles">Total de artículos</ion-text>
+              <ion-text class="subtotal-articles">{{ itemsArticlesTotal() | formatCurrency }}</ion-text>
+            </div>
+            <div class="subtotal-row"> 
+              <ion-text class="subtotal-shipping">Total de envío</ion-text>
+              <ion-text class="subtotal-shipping">{{ itemsShippingTotal() | formatCurrency }}</ion-text>
+            </div>
+          </div>
+          <div class="total-row">
+            <ion-text class="total-price">Total</ion-text>
+            <ion-text class="total-price">{{ totalPrice() | formatCurrency }}</ion-text>
+          </div>
+        </div>
     
-    <div class="sticky-bottom-block">
-      <div class="total-prices-container">
-        <div class="subtotals-rows">
-          <div class="subtotal-row">
-            <ion-text class="subtotal-articles">Total de artículos</ion-text>
-            <ion-text class="subtotal-articles">{{ itemsArticlesTotal() | formatCurrency }}</ion-text>
-          </div>
-          <div class="subtotal-row"> 
-            <ion-text class="subtotal-shipping">Total de envío</ion-text>
-            <ion-text class="subtotal-shipping">{{ itemsShippingTotal() | formatCurrency }}</ion-text>
-          </div>
+        <div class="buttons-container">
+          <ion-button class="custom" [routerLink]="['/checkout']">Pagar</ion-button>
         </div>
-        <div class="total-row">
-          <ion-text class="total-price">Total</ion-text>
-          <ion-text class="total-price">{{ totalPrice() | formatCurrency }}</ion-text>
-        </div>
-      </div>
-  
-      <div class="buttons-container">
-        <ion-button class="custom" [routerLink]="['/checkout']">Pagar</ion-button>
       </div>
     </div>
   }

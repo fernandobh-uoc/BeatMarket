@@ -21,7 +21,7 @@ export class PaymentPage implements OnInit {
   router = inject(Router);
   checkoutService = inject(CheckoutService);
 
-  step = signal<number>(2);
+  step = signal<number>(1);
   totalSteps = 2;
   progressBarValue = computed(() => this.step() / this.totalSteps);
 
@@ -34,6 +34,7 @@ export class PaymentPage implements OnInit {
   totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
 
   checkoutFormComponent = viewChild(CheckoutFormComponent);
+  checkoutFormData = signal<Record<string, any>>({})
 
   submitAttempted = signal<boolean>(false);
 
@@ -61,16 +62,18 @@ export class PaymentPage implements OnInit {
       return;
     }
 
-    console.log(this.checkoutFormComponent()?.checkoutForm?.value);
+    this.checkoutFormData.set(this.checkoutFormComponent()?.checkoutForm?.value);
     this.nextStep();
   }
 
   async handleCheckout() {
+    console.log(this.checkoutFormData());
+
     try {
       this.disabledCheckoutButton.set(true);
       await this.checkoutService.checkout({
         items: this.cartItems(),
-        paymentData: this.checkoutFormComponent()?.checkoutForm?.value
+        paymentData: this.checkoutFormData()
       });
       this.router.navigate(['/checkout/splash']);
     } catch (error) {

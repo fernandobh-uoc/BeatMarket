@@ -1,5 +1,5 @@
 import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
-import { Sale, SaleModel, SalePostData, SaleUserData } from "src/app/core/domain/models/sale.model";
+import { Sale, SaleModel, SalePaymentData, SalePostData, SaleUserData } from "src/app/core/domain/models/sale.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 import { FirestoreSaleRepository } from "src/app/core/storage/adapters/firestore/repositories/firestore.sale.repository";
 import { ArticleCondition } from "src/app/core/domain/models/article.model";
@@ -19,6 +19,13 @@ export interface FirestoreSaleModel {
     userId: string;
     username: string;
   };
+  paymentData: {
+    cardName: string;
+    cardNumber: string;
+    expirationMonth: string;
+    expirationYear: string;
+    cvc: string;
+  },
   saleDate: Timestamp;
   createdAt: Timestamp,
   updatedAt: Timestamp;
@@ -44,6 +51,7 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         userId: (<SaleUserData>sale.sellerData).userId,
         username: (<SaleUserData>sale.sellerData).username,
       }, */
+      paymentData: sale.paymentData,
       saleDate: isValidDateInput(sale.saleDate)
         ? Timestamp.fromDate(new Date(sale.saleDate))
         : isFieldValue(sale.saleDate)
@@ -80,6 +88,13 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
       sellerData: {
         userId: data.sellerData.userId,
         username: data.sellerData.username,
+      },
+      paymentData: {
+        cardName: data.paymentData.cardName,
+        cardNumber: data.paymentData.cardNumber,
+        expirationMonth: data.paymentData.expirationMonth,
+        expirationYear: data.paymentData.expirationYear,
+        cvc: data.paymentData.cvc,
       },
       saleDate: data.saleDate.toDate(),
       createdAt: isFirestoreTimestamp(data.createdAt) 

@@ -1,8 +1,13 @@
-import { computed, inject, Injectable } from '@angular/core';
+import { computed, effect, inject, Injectable, OutputEmitterRef, signal } from '@angular/core';
 import { CartService } from '../../cart/data-access/cart.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { SaleRepository } from 'src/app/core/domain/repositories/sale.repository';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
+import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
+import { Post, PostModel, PostStatus } from 'src/app/core/domain/models/post.model';
+import { catchError, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { User } from 'src/app/core/domain/models/user.model';
+import { Sale } from 'src/app/core/domain/models/sale.model';
 
 @Injectable({
   providedIn: 'root'
@@ -10,19 +15,104 @@ import { CartItemModel } from 'src/app/core/domain/models/cart.model';
 export class CheckoutService {
   authService = inject(AuthService);
   cartService = inject(CartService);
+
+  postRepository = inject(PostRepository);
   saleRepository = inject(SaleRepository);
 
   userFullName = computed<string>(() => this.authService.currentUser()?.fullName ?? '');
 
   cartItems = computed<CartItemModel[]>(() => this.cartService.cart()?.items ?? []);
+  cartItemsPosts = signal<Post[] | null>([]);
 
   itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));
   itemsShippingTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.shipping, 0));
   totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
 
-  constructor() { }
+  constructor() {
+    effect(() => {
+      const items = this.cartItems();
 
-  async checkout() {
-    console.log('checkout');
+      if (items.length === 0 || !this.postRepository.getPostById$) {
+        this.cartItemsPosts.set([]);
+        return;
+      }
+
+      const postObservables = items.map(item =>
+        this.postRepository.getPostById$!(item.postId)?.pipe(
+          catchError(() => of(null))
+        )
+      );
+
+      combineLatest([...postObservables]).subscribe(posts => {
+        this.cartItemsPosts.set(posts.filter(post => post !== null) as unknown as Post[]);
+      });
+    });
+  }
+
+  async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<void> {
+    console.log({saleFormData});
+    // Stripe checkout
+    await new Promise(resolve => setTimeout(resolve, 1000));
+
+    try {
+      const currentUser: User | null = this.authService.currentUser();
+      const saleDate = new Date();
+
+      for (let item of this.cartItems()) {
+        let sale: Sale | null;
+        const postData = this.cartItemsPosts()?.find(post => post._id === item.postId);
+        if (!postData) return;
+        
+        // Just in case someone bought the product before
+        if (postData.status !== PostStatus.Active) throw new Error('Post is inactive'); 
+
+        const saleData = {
+          postData: {
+            postId: item.postId,
+            title: item.title,
+            articleCondition: postData.article.condition,
+            price: item.price
+          },
+          buyerData: {
+            userId: currentUser?._id ?? '',
+            username: currentUser?.username ?? '',
+          },
+          sellerData: {
+            userId: postData.user.userId,
+            username: postData.user.username,
+          },
+          paymentData: {
+            cardName: saleFormData.paymentData.cardName,
+            cardNumber: saleFormData.paymentData.cardNumber,
+            expirationMonth: saleFormData.paymentData.expirationMonth,
+            expirationYear: saleFormData.paymentData.expirationYear,
+            cvc: saleFormData.paymentData.cvc,
+          },
+          saleDate: saleDate
+        }
+
+        console.log({ saleData });
+
+        if (sale = await this.saleRepository.saveSale(saleData)) {
+          console.log({ sale });
+
+          // Mark post as inactive
+          this.postRepository.updatePost({
+            _id: postData._id,
+            status: PostStatus.Finished,
+            finishedAt: saleDate
+          })
+
+          // Empty user's cart
+          this.cartService.clearCart();
+        }
+      }
+    } catch (error) {
+      console.error(error);
+      return;
+    }
+    // create sale
+
+    // 
   }
 }

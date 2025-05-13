@@ -16,11 +16,20 @@ export interface SaleUserData {
   username: UserModel["username"];
 }
 
+export interface SalePaymentData {
+  cardName: string;
+  cardNumber: string;
+  expirationMonth: string;
+  expirationYear: string;
+  cvc: string;
+}
+
 export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
   _id: string;
   postData: SalePostData;
   buyerData: SaleUserData;
   sellerData: SaleUserData;
+  paymentData: SalePaymentData;
   saleDate: Date;
 }
 
@@ -34,6 +43,7 @@ export class Sale implements SaleModel {
   };
   public buyerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
   public sellerData: { userId: UserModel["_id"], username: UserModel["username"] } = { userId: '', username: '' };
+  public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
   public saleDate: Date = new Date();
 
   private constructor(sale: Partial<SaleModel> = {}) {
