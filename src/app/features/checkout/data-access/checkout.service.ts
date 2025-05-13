@@ -91,10 +91,7 @@ export class CheckoutService {
           saleDate: saleDate
         }
 
-        console.log({ saleData });
-
         if (sale = await this.saleRepository.saveSale(saleData)) {
-          console.log({ sale });
 
           // Mark post as inactive
           this.postRepository.updatePost({
@@ -111,8 +108,5 @@ export class CheckoutService {
       console.error(error);
       return;
     }
-    // create sale
-
-    // 
   }
 }
