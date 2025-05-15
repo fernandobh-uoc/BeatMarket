@@ -96,14 +96,14 @@ export class CheckoutService {
 
         if (sale = await this.saleRepository.saveSale(saleData)) {
 
-          // Mark post as inactive
-          this.postRepository.updatePost({
+          // Mark post as inactive (handled in firebase trigger)
+          /* this.postRepository.updatePost({
             _id: postData._id,
             isActive: false,
             finishedAt: saleDate
-          })
+          }) */
 
-          // Empty user's cart (not necessary since the carts are handled with firebase functions)
+          // Empty user's cart (not necessary since the carts are handled in firebase trigger)
           // this.cartService.clearCart();
         }
       }
