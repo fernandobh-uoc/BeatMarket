@@ -18,7 +18,7 @@ import {
   WhereFilterOp, OrderByDirection,
   serverTimestamp, 
 
-  FirestoreErrorCode,
+  FirestoreErrorCode
 } from '@angular/fire/firestore';
 
 import { Storage } from '../../storage.interface';
@@ -37,7 +37,7 @@ import { AppModel } from "src/app/core/domain/models/appModel.type";
  * @param injector The injector, usually inject(EnvironmentInjector)
  * @param fn The async callback to be awaited
  */
-export async function runAsyncInInjectionContext<T>(injector: Injector, fn: () => Promise<T>): Promise<T> {
+export const runAsyncInInjectionContext = async <T>(injector: Injector, fn: () => Promise<T>): Promise<T> => {
   return await runInInjectionContext(injector, () => {
     return new Promise((resolve, reject) => {
       fn().then(resolve).catch(reject);
@@ -65,18 +65,18 @@ export interface FirestoreParams {
   };
 }
 
-function isFilterConstraint(c: any): c is QueryFilterConstraint {
+const isFilterConstraint = (c: any): c is QueryFilterConstraint => {
   return ['where', 'or', 'and'].includes(c.type);
 }
 
-function buildQueryConstraints(filters: FirestoreFilter[]): QueryConstraint[] {
+const buildQueryConstraints = (filters: FirestoreFilter[]): QueryConstraint[] => {
   const constraints: QueryConstraint[] = [];
 
   Array.from(filters).forEach(f => {
     if ('or' in f) {
       const sub = buildQueryConstraints(f.or);
       const filterConstraints = sub.filter(isFilterConstraint) as QueryFilterConstraint[];
-      constraints.push(or(...filterConstraints) as unknown as QueryConstraint); // <- key fix
+      constraints.push(or(...filterConstraints) as unknown as QueryConstraint);
     } else if ('and' in f) {
       const sub = buildQueryConstraints(f.and);
       const filterConstraints = sub.filter(isFilterConstraint) as QueryFilterConstraint[];
@@ -91,11 +91,12 @@ function buildQueryConstraints(filters: FirestoreFilter[]): QueryConstraint[] {
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> implements Storage<T> {
+  private firestore: Firestore = inject(Firestore);
   private injector = inject(EnvironmentInjector);
-  constructor(private firestore: Firestore) { }
+
+  constructor() { }
 
   async getById(id: string, params?: FirestoreParams): Promise<T | null> {
-
     return await runAsyncInInjectionContext(this.injector, async () => {
       if (params && !(params.collection)) throw new Error("You must specify the collection");
       try {

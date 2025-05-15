@@ -50,7 +50,7 @@ export class SellService {
         return await this.#convertBlobToDataURL(blob);
       })
     )
-    
+
     this.imagesDataURLs.set(dataUrls);
     return this.imagesDataURLs();
   }
@@ -150,7 +150,7 @@ export class SellService {
       reader.readAsDataURL(blob);
     });
   }
-  
+
   #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
     //const imageDataURLs = this.imagesDataURLs();
     //if (!imageDataURLs) return;
