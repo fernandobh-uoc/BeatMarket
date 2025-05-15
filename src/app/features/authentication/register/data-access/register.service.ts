@@ -3,14 +3,17 @@ import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera
 import { Capacitor } from '@capacitor/core';
 import { isUserModel, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { CartService } from 'src/app/features/cart/data-access/cart.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterService {
-  #authService = inject(AuthService);
-  #cartService = inject(CartService);
+  authService = inject(AuthService);
+  cartService = inject(CartService);
+  cache = inject(LocalStorageService);
+
   profilePictureDataURL = signal<string | undefined | null>(null);
 
   #errorMessage = signal<string>('');
@@ -50,7 +53,8 @@ export class RegisterService {
 
   registerUser = async (userFormData: any): Promise<void> => {
     try {
-      const user: User | null = await this.#authService.register({
+      const fcmToken = await this.cache.get<string | null>('fcmToken');
+      const user: User | null = await this.authService.register({
         method: 'email',
         userData: {
           email: userFormData.email ?? '',
@@ -69,13 +73,14 @@ export class RegisterService {
           },
           roles: userFormData.roles ?? [],
           bio: userFormData.bio ?? '',
+          fcmToken: fcmToken,
           profilePictureDataURL: this.profilePictureDataURL() ?? '',
         }
       });
 
       // Create cart for the user (before user has logged in)
       if (isUserModel(user)) {
-        await this.#cartService.createCart(user._id);
+        await this.cartService.createCart(user._id);
       }
     } catch (errorMessage: any) {
       console.error(errorMessage);

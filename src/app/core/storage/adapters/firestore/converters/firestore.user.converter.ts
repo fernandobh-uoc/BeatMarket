@@ -23,8 +23,9 @@ export interface FirestoreUserModel {
   };
   roles: string[];
   bio: string;
-  createdAt: Timestamp | FieldValue;
-  updatedAt: Timestamp | FieldValue;
+  fcmToken: string | null;
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface FirestoreActivePostModel {
@@ -47,6 +48,7 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
         ? user.roles.map(role => role.toString())
         : user.roles,
       bio: user.bio,
+      fcmToken: user.fcmToken,
       createdAt: isValidDateInput(user.createdAt)
         ? Timestamp.fromDate(new Date(user.createdAt))
         : isFieldValue(user.createdAt)
@@ -78,6 +80,7 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
       },
       roles: (data.roles ?? []).map(role => role as Role),
       bio: data.bio ?? '',
+      fcmToken: data.fcmToken,
       createdAt: isFirestoreTimestamp(data.createdAt) 
         ? data.createdAt.toDate() 
         : null,

@@ -30,6 +30,7 @@ import { Auth } from './app/core/services/auth/auth.interface';
 import { FirebaseCloudStorageAdapter } from './app/core/services/cloud-storage/adapters/firebase-cloudStorage.adapter';
 import { CloudStorage } from './app/core/services/cloud-storage/cloudStorage.interface';
 import { CartService } from './app/features/cart/data-access/cart.service';
+import { PushNotificationsService } from './app/core/services/push-notifications/push-notifications.service';
 
 bootstrapApplication(AppComponent, {
   providers: [
@@ -65,11 +66,13 @@ bootstrapApplication(AppComponent, {
     provideAppInitializer(async () => {
       const authService = inject(AuthService);
       const cartService = inject(CartService);
+      const pushNotificationsService = inject(PushNotificationsService);
 
       await authService.init();
       if (authService.authStatus().isAuthenticated) {
         await cartService.loadCart();
-      } 
+      }
+      pushNotificationsService.initPushNotifications();
     }),
   ],
 });
