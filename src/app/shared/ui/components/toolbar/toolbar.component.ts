@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
+import { Component, computed, effect, inject, input, OnInit, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonMenuToggle, IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar, IonBadge } from '@ionic/angular/standalone';
@@ -15,7 +15,7 @@ import { MenuComponent } from '../menu/menu.component';
   standalone: true,
   imports: [MenuComponent, IonMenuToggle, IonBadge, IonSearchbar, IonProgressBar, IonBackButton, IonButton, IonIcon, IonButtons, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class ToolbarComponent {
+export class ToolbarComponent implements OnInit {
   public cartService = inject(CartService);
   public router = inject(Router);
   

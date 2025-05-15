@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonLabel } from '@ionic/angular/standalone';
@@ -25,10 +25,13 @@ export class ProfilePage implements OnInit, ViewDidLeave {
 
   currentUser = computed(() => this.authService.currentUser());
 
+  toolbar = viewChild(ToolbarComponent);
+
   constructor() {}
 
   ionViewDidLeave(): void {
     this.userDataEditService.resetEditingInputStates();
+    this.toolbar()?.searchActive.set(false);
   }
 
   ngOnInit() {}

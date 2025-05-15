@@ -300,7 +300,7 @@ export const posts = [
     _id: '28',
     title: 'Tocadiscos Technics SL-1200 MK7',
     description: 'Tocadiscos profesional de alta calidad, ideal para DJs y audiófilos.',
-    price: 600,
+    price: 1300,
     status: 'active',
     finishedAt: null,
     mainImageURL: '',

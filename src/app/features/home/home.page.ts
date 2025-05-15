@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonText } from '@ionic/angular/standalone';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { Role } from 'src/app/core/domain/models/user.model';
@@ -10,7 +10,7 @@ import { PostRepository } from 'src/app/core/domain/repositories/post.repository
 import { HomeService } from './data-access/home.service';
 import { Post } from 'src/app/core/domain/models/post.model';
 import { firstValueFrom, map } from 'rxjs';
-import { ViewDidEnter } from '@ionic/angular';
+import { ViewDidEnter, ViewDidLeave } from '@ionic/angular';
 
 @Component({
   selector: 'app-home',
@@ -19,11 +19,13 @@ import { ViewDidEnter } from '@ionic/angular';
   standalone: true,
   imports: [IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
 })
-export class HomePage implements ViewDidEnter {
+export class HomePage implements ViewDidEnter, ViewDidLeave {
   route = inject(ActivatedRoute);
 
   #latestPosts = signal<Post[]>([]);
   #recommendedPosts = signal<Post[]>([]);
+
+  toolbar = viewChild(ToolbarComponent);
 
   get latestPosts() {
     return this.#latestPosts();
@@ -36,5 +38,9 @@ export class HomePage implements ViewDidEnter {
   async ionViewDidEnter(): Promise<void> {
     this.#latestPosts.set(await this.route.snapshot.data['latestPosts']);
     this.#recommendedPosts.set(await this.route.snapshot.data['recommendedPosts']);
+  }
+
+  async ionViewDidLeave(): Promise<void> {
+    this.toolbar()?.searchActive.set(false);
   }
 }

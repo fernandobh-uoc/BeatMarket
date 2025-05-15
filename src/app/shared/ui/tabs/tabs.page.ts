@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonIcon, IonTabs, IonTabButton, IonTabBar, IonLabel } from '@ionic/angular/standalone';
@@ -7,6 +7,7 @@ import { chatboxEllipses, home, musicalNotes, personCircle } from 'ionicons/icon
 import { MenuComponent } from '../components/menu/menu.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { Router } from '@angular/router';
+import { ToolbarComponent } from '../components/toolbar/toolbar.component';
 
 @Component({
   selector: 'app-tabs',

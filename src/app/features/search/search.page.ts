@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonItem, IonThumbnail, IonLabel, IonIcon } from '@ionic/angular/standalone';
@@ -9,6 +9,7 @@ import { Post } from 'src/app/core/domain/models/post.model';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
 import { addIcons } from 'ionicons';
 import { filter, swapVertical } from 'ionicons/icons';
+import { ViewWillLeave } from '@ionic/angular';
 
 @Component({
   selector: 'app-search',
@@ -23,6 +24,8 @@ export class SearchPage implements OnInit {
 
   searchQuery = signal<string>('');
   searchResults = signal<Post[] | null>(null);
+
+  toolbar = viewChild(ToolbarComponent);
 
   constructor() { 
     addIcons({ swapVertical, filter });
