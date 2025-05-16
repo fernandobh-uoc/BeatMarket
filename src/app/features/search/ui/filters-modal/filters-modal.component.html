@@ -1,0 +1,212 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <div class="close-icon-wrapper" (click)="cancel()">
+        <ion-icon name="close-outline" color="light" size="small" (click)="cancel()"></ion-icon>
+      </div>
+    </ion-buttons>
+    <ion-title>Filtros</ion-title>
+    <ion-buttons slot="end">
+      <ion-button class="custom" (click)="confirm()" [strong]="true">Aplicar</ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content>
+  <form>
+    <div class="filter-container category-container">
+      <ion-label class="custom" color="light">Categoría</ion-label>
+      <ion-text class="category-subtitle">Selecciona una categoría para acceder a filtros específicos</ion-text>
+      <div class="radiobuttons-group-wrapper">
+        <ion-radio-group 
+          #category 
+          (ionChange)="
+            onCategoryChange($event); 
+            addGeneralFilter({ key: 'category', value: category.value })
+          "
+        >
+          <ion-row>
+            @for (category of categories; track category) {
+              <ion-col>
+                <div class="radiobutton-wrapper">
+                  <ion-radio labelPlacement="end" [value]="category" color="light">
+                    {{ category }}
+                  </ion-radio>
+                </div>
+              </ion-col>
+            }
+          </ion-row>
+        </ion-radio-group>
+      </div>
+    </div> 
+  
+    <div class="price-container">
+      <ion-label>Precio</ion-label>
+      
+      <div class="price-row-wrapper">
+        <div class="price-label-input-wrapper">
+          <ion-text>Desde</ion-text>
+          <div class="price-input-row">
+            <ion-input #priceMin class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMin', value: priceMin.value }); formatPrice('priceMin', priceMin.value)"></ion-input>    
+            <ion-text class="price-currency" slot="end">€</ion-text>
+          </div>
+        </div>
+
+        <div class="price-label-input-wrapper">
+          <ion-text>Hasta</ion-text>
+          <div class="price-input-row">
+            <ion-input #priceMax class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMax', value: priceMax.value }); formatPrice('priceMax', priceMax.value)"></ion-input>  
+            <ion-text class="price-currency" slot="end">€</ion-text>
+          </div>
+        </div>
+      </div>
+      <!-- <ion-range 
+        [dualKnobs]="true" 
+        [ticks]="true"
+        [pin]="true"
+        [value]="{ lower: 0, upper: 500 }"
+        [snaps]="false"
+        [min]="0"
+        [max]="500"
+      ></ion-range> -->
+    </div>
+    @if (priceErrorMessage()) {
+      <ion-text class="error-text" color="danger">{{ priceErrorMessage() }}</ion-text>
+    }
+  
+    <div class="condition-container">
+      <ion-label>Estado del artículo</ion-label>
+      <div class="checkboxes-container">
+        @for (condition of conditions; track condition) {
+          <div class="checkbox-wrapper">
+            <ion-checkbox labelPlacement="end" [value]="condition" [checked]="generalFilters()['condition']?.includes(condition)" color="light" (ionChange)="onCheckboxChangeGeneral($event, { key: 'condition', value: condition })">
+              {{ condition }}
+            </ion-checkbox>
+          </div>
+        }
+      </div>
+    </div>
+  
+    @switch (this.selectedCategory()) {
+      @case (categoriesEnum.Instruments) {
+        <div class="label-checkboxes-container">
+          <ion-label class="custom" color="light">Tipo de instrumento</ion-label>
+          <div class="checkboxes-container">
+            @for (type of instrumentTypes; track type) {
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="type" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'type', value: type })">
+                  {{ type }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="label-checkboxes-container">
+          <ion-label>Marca</ion-label>
+          <div class="checkboxes-container">
+            @for (brand of instrumentBrands; track brand) {
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="brand" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'brand', value: brand })">
+                  {{ brand }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>  
+        </div>
+
+        <div class="label-checkboxes-container">
+          <ion-label>Nivel de instrumento</ion-label>
+          <div class="checkboxes-container">
+            @for (level of instrumentLevels; track level) {
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="level" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'instrumentLevel', value: level })">
+                  {{ level }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @case (categoriesEnum.Recordings) {
+        <div class="label-checkboxes-container">
+          <ion-label>Formato de grabación</ion-label>
+          <div class="checkboxes-container">
+            @for (format of recordingFormats; track format) { 
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="format" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'format', value: format })">
+                  {{ format }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="label-checkboxes-container">
+          <ion-label>Género musical</ion-label>
+          <div class="checkboxes-container">
+            @for (genre of recordingGenres; track genre) { 
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="genre" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'genre', value: genre })">
+                  {{ genre }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+
+        <div class="input-container">
+          <ion-label>Artista o banda</ion-label>
+          <ion-input #artist class="custom" type="text" (ionBlur)="addSpecificFilter({ key: 'artist', value: artist.value })"></ion-input>
+        </div>
+      }
+
+      @case (categoriesEnum.Accessories) {
+        <div class="label-checkboxes-container">
+          <ion-label>Tipo de accesorio</ion-label>
+          <div class="checkboxes-container">
+            @for (type of accesoryTypes; track type) {
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="type" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'type', value: type })">
+                  {{ type }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @case (categoriesEnum.Professional) {
+        <div class="label-checkboxes-container">
+          <ion-label>Tipo de artículo profesional</ion-label>
+          <div class="checkboxes-container">
+            @for (type of professionalTypes; track type) {
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="type" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'type', value: type })">
+                  {{ type }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+      }
+
+      @case (categoriesEnum.Books) {
+        <div class="label-checkboxes-container">
+          <ion-label>Tema del libro</ion-label>
+          <div class="checkboxes-container">
+            @for (theme of bookThemes; track theme) { 
+              <div class="checkbox-wrapper">
+                <ion-checkbox labelPlacement="end" [value]="theme" color="light" (ionChange)="onCheckboxChangeSpecific($event, { key: 'theme', value: theme })">
+                  {{ theme }}
+                </ion-checkbox>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    }
+  </form>
+
+
+</ion-content>

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, viewChild, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonItem, IonThumbnail, IonLabel, IonIcon } from '@ionic/angular/standalone';
@@ -8,8 +8,12 @@ import { SearchService } from './data-access/search.service';
 import { Post } from 'src/app/core/domain/models/post.model';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
 import { addIcons } from 'ionicons';
-import { filter, swapVertical } from 'ionicons/icons';
-import { ViewWillLeave } from '@ionic/angular';
+import { filter, key, swapVertical } from 'ionicons/icons';
+import { ModalController } from '@ionic/angular/standalone';
+import { FiltersModalComponent } from './ui/filters-modal/filters-modal.component';
+import { map, Subject } from 'rxjs';
+
+
 
 @Component({
   selector: 'app-search',
@@ -21,39 +25,50 @@ import { ViewWillLeave } from '@ionic/angular';
 export class SearchPage implements OnInit {
   private route = inject(ActivatedRoute);
   private searchService = inject(SearchService);
+  private modalController = inject(ModalController);
+     
+  //searchQuery = signal<string>('');
+  //searchResults = signal<Post[] | null>(null);
 
-  searchQuery = signal<string>('');
-  searchResults = signal<Post[] | null>(null);
+  //appliedFilters = signal<any>([]);
+  //appliedOrder = signal<Record<string, string>>({ field: 'createdAt', direction: 'desc' });
+  //appliedLimit = signal<number>(10);
 
-  toolbar = viewChild(ToolbarComponent);
+  searchQuery = computed<string>(() => this.searchService.searchState().query);
+  /* appliedFilters = computed<any[]>(() => this.searchService.searchState().constraints.filters);
+  appliedOrder = computed<{ field: string, direction: string }>(() => this.searchService.searchState().constraints.orderBy);
+  appliedLimit = computed<number>(() => this.searchService.searchState().constraints.limit); */
 
-  constructor() { 
+  searchResults = computed<Post[]>(() => this.searchService.searchState().searchResults);
+
+  query$ = this.route.queryParams.pipe(map(params => params['query']));
+
+  constructor() {
     addIcons({ swapVertical, filter });
   }
 
   ngOnInit() {
-    this.route.queryParams.subscribe(params => {
-      const query = params['query'];
+    this.query$.subscribe(query => {
       if (query) {
-        this.searchQuery.set(query);
-        this.search(query);
+        this.searchService.updateQuery(query);
       }
     });
   }
 
-  async search(query: string) {
-    let searchResults: Post[] | null = await this.searchService.search(query);
-    if (!searchResults) return;
+  async openFiltersModal() {
+    const modal = await this.modalController.create({
+      component: FiltersModalComponent,
+    });
+    modal.present();
 
-    // Manual filter since for some reason firestore doesn't support full-text search :<
-    searchResults = searchResults?.filter((result: Post) =>
-      (result.title
-        .toLowerCase()
-        .split(/\s+/)
-        .includes(query.toLowerCase()))
-    );
-
-    this.searchResults.set(searchResults);
+    const { data: filters, role } = await modal.onWillDismiss();
+    if (role === 'filters') {
+      console.log(filters);
+      /* const _filters = this.#buildFilters(filters, this.appliedFilters());
+      this.appliedFilters.set(_filters); */
+    }
   }
+
+  
 
 }

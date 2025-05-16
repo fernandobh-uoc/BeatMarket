@@ -1,0 +1,133 @@
+.close-icon-wrapper {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 3rem;
+  cursor: pointer;
+}
+
+ion-button.custom {
+  --border-radius: 8px;
+	display: block;
+	width: 100%;
+	text-transform: none;
+  cursor: pointer;
+
+	--background: var(--ion-color-light);
+	--color: var(--ion-color-dark);
+
+  --padding-start: 1rem;
+  --padding-end: 1rem;
+  --padding-top: 0.5rem;
+  --padding-bottom: 0.5rem;
+}
+
+form {
+  margin-top: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 2.5rem;
+
+  ion-label {
+    display: flex;
+    margin-bottom: 1rem;
+    font-size: var(--label-larger-size, 1rem);
+    font-style: normal;
+    font-weight: var(--label-larger-weight, 600);
+    line-height: var(--label-larger-line-height, 1.5rem);
+    letter-spacing: var(--label-larger-tracking, 0.03125rem);
+  }
+
+  ion-label.custom {
+    margin-bottom: 0rem;
+  }
+
+  .category-subtitle {
+    margin-bottom: 0.5rem;
+    color: var(--ion-color-light-shade);
+    font-size: var(--body-medium-size, 0.875rem);
+    font-style: normal;
+    font-weight: var(--body-medium-weight, 400);
+    line-height: var(--body-medium-line-height, 1.25rem);
+    letter-spacing: var(--body-medium-tracking, 0.01563rem);
+  }
+
+  .checkboxes-container {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 1rem;
+  
+    .checkbox-wrapper {
+      display: flex;
+      width: 10rem;
+    }
+  }
+  
+  .category-container {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  
+    ion-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.25rem;
+    }
+  
+    ion-col {
+      min-width: 10rem;
+      max-width: 10rem;
+    }
+  
+    ion-radio-group {
+      display: flex;
+      width: 100%;
+    }
+  
+    .radiobutton-wrapper {
+      display: flex;
+      gap: 1rem;
+  
+      ion-radio {
+        font-size: var(--body-large-size, 1rem);
+        font-style: normal;
+        font-weight: var(body-large-weight, 400);
+        line-height: var(--body-large-line-height, 1.5rem);
+        letter-spacing: var(--body-large-tracking, 0.03125rem);
+      }
+    }
+  }
+
+  .price-container {
+    display: flex;
+    flex-direction: column;
+
+    .price-row-wrapper {
+      display: flex;
+      flex-direction: row;
+      gap: 2rem;
+
+      .price-label-input-wrapper {
+        flex: 1 0 0;
+        display: flex;
+        flex-direction: column;
+        gap: 0.2rem;
+
+        .price-input-row {
+          display: flex;
+          flex-direction: row;
+          gap: 0.5rem;
+          align-items: center;
+
+          .price-currency {
+            color: var(--ion-color-light-shade);
+            font-size: var(--label-larger-size, 1.25rem);
+          }
+        }
+      }
+    }
+  }
+}
+
