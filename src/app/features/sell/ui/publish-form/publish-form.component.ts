@@ -5,7 +5,7 @@ import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/ar
 import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
-import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, RecordingFormat, RecordingGenre } from 'src/app/core/domain/models/articleCharacteristics.interface';
+import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, ProfessionalType, RecordingFormat, RecordingGenre } from 'src/app/core/domain/models/articleCharacteristics.interface';
 import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.pipe';
 
 @Component({
@@ -49,6 +49,7 @@ export class PublishFormComponent {
   recordingFormats: string[] = Object.values(RecordingFormat).filter(type => type !== RecordingFormat.None);
   recordingGenres: string[] = Object.values(RecordingGenre).filter(type => type !== RecordingGenre.None);
   bookThemes: string[] = Object.values(BookTheme).filter(type => type !== BookTheme.None);
+  professionalTypes: string[] = Object.values(ProfessionalType).filter(type => type !== ProfessionalType.None);
 
   disabledPublishButton = input<boolean>(false);
 
@@ -240,6 +241,10 @@ export class PublishFormComponent {
         break;
       case ArticleCategory.Professional:
         specificGroup = this.fb.group({
+          type: this.fb.control('', { 
+            validators: [Validators.required],
+            updateOn: 'blur'
+          }),
           name: this.fb.control('', { 
             validators: [Validators.required],
             updateOn: 'blur'

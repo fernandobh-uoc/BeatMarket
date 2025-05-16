@@ -130,12 +130,14 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
         }
       } else if (isAccessoryCharacteristics(c, category)) {
         characteristics = {
+          type: c.type,
           name: c.name,
           brand: c.brand,
           associatedInstrument: c.associatedInstrument,
         }
       } else if (isProfessionalCharacteristics(c, category)) {
         characteristics = {
+          type: c.type,
           name: c.name,
           brand: c.brand,
           model: c.model,

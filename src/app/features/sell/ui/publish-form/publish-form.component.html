@@ -330,6 +330,21 @@
       }
       @case (categoriesEnum.Professional) {
         <div class="input-wrapper">
+          <ion-label class="custom" color="light">Tipo de artículo profesional</ion-label>
+          <ion-select formControlName="type" aria-label="Tipo de artículo profesional" interface="popover" color="light"
+            class="custom select-input" (ionFocus)="controlFocus.emit('specificData')"> …
+            @for (type of professionalTypes; track type) {
+              <ion-select-option [value]="type">{{ type }}</ion-select-option>
+            }
+          </ion-select>
+          @if (submitAttempted()) {
+            @if (publishForm.get('specificData.type')?.errors?.['required']) {
+              <ion-text class="error-text" color="danger">El tipo es obligatorio</ion-text>
+            }
+          }
+        </div>
+
+        <div class="input-wrapper">
           <ion-label class="custom" color="light">Nombre</ion-label>
           <ion-input formControlName="name" type="text" class="custom" (ionFocus)="controlFocus.emit('specificData')"></ion-input>
           @if (submitAttempted()) {

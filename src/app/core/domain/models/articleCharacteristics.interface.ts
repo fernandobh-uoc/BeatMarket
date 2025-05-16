@@ -122,6 +122,16 @@ export enum RecordingGenre {
   Other = 'Otros'
 }
 
+export enum ProfessionalType {
+  None = '',
+  Microphone = 'Micrófono',
+  Speaker = 'Altavoz',
+  Turntables = 'Banda magnética',
+  ProductionTable = 'Mesa de producción',
+  MusicPlayer = 'Reproductor de música',
+  Other = 'Otros'
+}
+
 export enum BookTheme {
   None = 'none',
   MusicSheets = 'Partituras',
@@ -184,6 +194,7 @@ export interface AccessoryCharacteristics {
 
 export interface ProfessionalCharacteristics {
   category: ArticleCategory.Professional;
+  type: ProfessionalType;
   name: string;
   brand: string;
   model: string;
