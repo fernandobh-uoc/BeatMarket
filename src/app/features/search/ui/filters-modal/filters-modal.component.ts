@@ -43,8 +43,8 @@ export class FiltersModalComponent implements OnInit {
 
   constructor() {
     addIcons({ closeOutline });
-    effect(() => console.log({ generalFilters: this.generalFilters() }));
-    effect(() => console.log({ specificFilters: this.specificFilters() }));
+    /* effect(() => console.log({ generalFilters: this.generalFilters() }));
+    effect(() => console.log({ specificFilters: this.specificFilters() })); */
   }
 
   ngOnInit() { }
@@ -54,35 +54,27 @@ export class FiltersModalComponent implements OnInit {
     this.specificFilters.set([]);
   }
 
-  confirm() {
-    console.log("confirm");
-    return this.modalController.dismiss('confirmData', 'confirm');
-  }
-
-  cancel() {
-    console.log("cancel");
-    return this.modalController.dismiss('cancelData', 'cancel');
-  }
-
   applyFilters() {
-    console.log("filter");
     if (this.priceErrorMessage()) return null;
 
     return this.modalController.dismiss({
-      constraints: {
-        category: 'Grabaciones',
-        price: [10, 50],
-        condition: ['Nuevo', 'Bueno']
-      },
-      localFilters: [
-
-      ]
+      generalFilters: { ...this.generalFilters() },
+      localFilters: { ...this.specificFilters() }
     }, 'filters');
+  }
+
+  cancel() {
+    return this.modalController.dismiss();
   }
 
   addGeneralFilter(filter: { key: string, value: any }) {
     if (filter.key === 'priceMin' || filter.key === 'priceMax') {
-      filter.value = parseFloat(filter.value);
+      if (filter.value) {
+        filter.value = parseFloat(filter.value);
+      } else {
+        delete this.generalFilters()[filter.key];
+        return;
+      }
     }
     this.generalFilters.set({ ...this.generalFilters(), [filter.key]: filter.value });
   }

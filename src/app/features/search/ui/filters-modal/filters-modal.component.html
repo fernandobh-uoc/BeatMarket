@@ -7,7 +7,7 @@
     </ion-buttons>
     <ion-title>Filtros</ion-title>
     <ion-buttons slot="end">
-      <ion-button class="custom" (click)="confirm()" [strong]="true">Aplicar</ion-button>
+      <ion-button class="custom" (click)="applyFilters()" [strong]="true">Aplicar</ion-button>
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
@@ -46,7 +46,7 @@
         <div class="price-label-input-wrapper">
           <ion-text>Desde</ion-text>
           <div class="price-input-row">
-            <ion-input #priceMin class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMin', value: priceMin.value }); formatPrice('priceMin', priceMin.value)"></ion-input>    
+            <ion-input #priceMin class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMin', value: priceMin.value }); priceMin.value ? formatPrice('priceMin', priceMin.value) : ''"></ion-input>     
             <ion-text class="price-currency" slot="end">€</ion-text>
           </div>
         </div>
@@ -54,11 +54,14 @@
         <div class="price-label-input-wrapper">
           <ion-text>Hasta</ion-text>
           <div class="price-input-row">
-            <ion-input #priceMax class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMax', value: priceMax.value }); formatPrice('priceMax', priceMax.value)"></ion-input>  
+            <ion-input #priceMax class="custom" type="text" inputmode="decimal" (ionBlur)="checkPriceValid() && addGeneralFilter({ key: 'priceMax', value: priceMax.value }); priceMax.value ? formatPrice('priceMax', priceMax.value) : ''"></ion-input>  
             <ion-text class="price-currency" slot="end">€</ion-text>
           </div>
         </div>
       </div>
+      @if (priceErrorMessage()) {
+        <ion-text class="error-text" color="danger">{{ priceErrorMessage() }}</ion-text>
+      }
       <!-- <ion-range 
         [dualKnobs]="true" 
         [ticks]="true"
@@ -69,9 +72,6 @@
         [max]="500"
       ></ion-range> -->
     </div>
-    @if (priceErrorMessage()) {
-      <ion-text class="error-text" color="danger">{{ priceErrorMessage() }}</ion-text>
-    }
   
     <div class="condition-container">
       <ion-label>Estado del artículo</ion-label>
@@ -88,8 +88,9 @@
   
     @switch (this.selectedCategory()) {
       @case (categoriesEnum.Instruments) {
+
         <div class="label-checkboxes-container">
-          <ion-label class="custom" color="light">Tipo de instrumento</ion-label>
+          <ion-label>Tipo de instrumento</ion-label>
           <div class="checkboxes-container">
             @for (type of instrumentTypes; track type) {
               <div class="checkbox-wrapper">
