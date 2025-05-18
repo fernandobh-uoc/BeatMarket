@@ -6,6 +6,7 @@ import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/ar
 import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, ProfessionalType, RecordingFormat, RecordingGenre } from 'src/app/core/domain/models/articleCharacteristics.interface';
 import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.pipe';
 
+
 @Component({
   selector: 'app-filters-modal',
   templateUrl: './filters-modal.component.html',

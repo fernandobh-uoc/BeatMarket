@@ -34,14 +34,26 @@
       </div>
 
       <div class="filters-badges">
-        <ion-badge class="filter-badge" color="danger" slot="start">
-          <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
-          <ion-text>Todos los filtros</ion-text>
-        </ion-badge>
-        @for (filter of generalFilters(); track filter.field) {
-          <ion-badge class="filter-badge" color="warning" slot="start">
+        @if (generalFilters().length > 0 || localFilters().length > 0) {
+          <ion-badge class="filter-badge" color="danger" slot="start" (click)="removeAllFilters()">
             <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
-            <ion-text>{{ filter.field }}: {{ filter.value }}</ion-text>
+            <ion-text>Todos los filtros</ion-text>
+          </ion-badge>
+        }
+        @for (filter of generalFilters(); track filter.field) {
+          <ion-badge class="filter-badge" color="warning" slot="start" (click)="removeGeneralFilter(filter)">
+            <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
+            @if (filter.field === 'priceMin' || filter.field === 'priceMax') {
+              <ion-text>{{ filter.field | translateFilterKey }}: {{ filter.value | formatCurrency }}</ion-text>
+            } @else {
+              <ion-text>{{ filter.field | translateFilterKey }}: {{ filter.value | translateFilterValue }}</ion-text>
+            }
+          </ion-badge>
+        }
+        @for (filter of localFilters(); track filter.field) {
+          <ion-badge class="filter-badge" color="warning" slot="start" (click)="removeLocalFilter(filter)">
+            <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
+            <ion-text>{{ filter.field | translateFilterKey }}: {{ filter.value | translateFilterValue }}</ion-text>
           </ion-badge>
         }
         <!-- <ion-badge color="primary" slot="start">
