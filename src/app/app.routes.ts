@@ -29,14 +29,6 @@ export const routes: Routes = [
     data: { authStatusMustBe: true }
   },
   {
-    path: 'user-detail',
-    loadComponent: () => import('./features/user-detail/user-detail.page').then(m => m.UserDetailPage)
-  },
-  {
-    path: 'history',
-    loadComponent: () => import('./features/history/history.page').then( m => m.HistoryPage)
-  },
-  {
     path: 'search',
     loadComponent: () => import('./features/search/search.page').then( m => m.SearchPage)
   }
