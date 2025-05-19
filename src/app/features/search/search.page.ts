@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, OnInit, Signal, signal, viewChild, WritableSignal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonItem, IonSelect, IonSelectOption, IonThumbnail, IonLabel, IonIcon, IonBadge } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonItem, IonSelect, IonSelectOption, IonThumbnail, IonLabel, IonIcon, IonBadge, IonSpinner } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GeneralFilter, LocalFilter, SearchService } from './data-access/search.service';
@@ -21,7 +21,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
   standalone: true,
-  imports: [TranslateFilterKeyPipe, TranslateFilterValuePipe, IonBadge, IonIcon, RouterLink, IonLabel, IonThumbnail, IonItem, IonText, IonSelect, IonSelectOption, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, TranslateFilterKeyPipe, TranslateFilterValuePipe, IonBadge, IonIcon, RouterLink, IonLabel, IonThumbnail, IonItem, IonText, IonSelect, IonSelectOption, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class SearchPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -38,10 +38,16 @@ export class SearchPage implements OnInit {
   generalFilters: Signal<GeneralFilter[]> = toSignal(this.searchService.generalFilters$, { initialValue: [] }); 
   localFilters: Signal<LocalFilter[]> = toSignal(this.searchService.localFilters$, { initialValue: [] }); */
 
-  searchQuery = computed(() => this.searchService.searchState().query());
-  generalFilters = computed(() => this.searchService.searchState().generalFilters());
-  localFilters = computed(() => this.searchService.searchState().localFilters());
+  orderSelectInput = viewChild<IonSelect>('orderSelectInput')
+
+  searchQuery = computed(() => this.searchService.query());
+  generalFilters = computed(() => this.searchService.generalFilters());
+  localFilters = computed(() => this.searchService.localFilters());
+  order = computed(() => this.searchService.order());
   searchResults = computed<Post[]>(() => this.searchService.searchResults());
+
+  loading = computed(() => this.searchService.loading());
+  errorMessage = computed(() => this.searchService.errorMessage());
 
   query$ = this.route.queryParams.pipe(map(params => params['query']));
 
@@ -52,36 +58,9 @@ export class SearchPage implements OnInit {
   ngOnInit() {
     this.query$.subscribe(query => {
       if (query) {
-        this.searchService.searchQuery$.next(query);
+        this.searchService.updateQuery(query);
       }
     });
-  }
-
-  removeGeneralFilter(filter: any) {
-    //this.generalFilters.update((filters) => filters.filter((f: GeneralFilter) => f.field !== filter.field));
-    //this.searchService.setGeneralFilters({ generalFilters: this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? [] });
-    this.searchService.generalFilters$.next(this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? []);
-  }
-
-  removeLocalFilter(filter: any) {
-    //this.localFilters.update((filters) => filters.filter((f: LocalFilter) => f.field !== filter.field));
-    //this.searchService.setLocalFilters({ localFilters: this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? [] });
-    this.searchService.localFilters$.next(this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? []);
-  }
-  
-  removeAllFilters() {
-    //this.generalFilters.set([]);
-    //this.localFilters.set([]);
-
-    //this.searchService.setGeneralFilters({ generalFilters: [] });
-    //this.searchService.setLocalFilters({ localFilters: [] });
-    this.searchService.generalFilters$.next([]);
-    this.searchService.localFilters$.next([]);
-  }
-
-  onOrderChange(event: any) {
-    //this.searchService.updateOrder(JSON.parse(event.detail.value));
-    this.searchService.order$.next(JSON.parse(event.detail.value));
   }
 
   async openFiltersModal() {
@@ -97,11 +76,45 @@ export class SearchPage implements OnInit {
       //this.generalFilters.set(Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })));
       //this.localFilters.set(Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })));
 
-      //this.searchService.setGeneralFilters({ generalFilters: Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })) });
-      //this.searchService.setLocalFilters({ localFilters: Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })) });
+      this.searchService.setGeneralFilters({ generalFilters: Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })) });
+      this.searchService.setLocalFilters({ localFilters: Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })) });
 
-      this.searchService.generalFilters$.next(Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })));
-      this.searchService.localFilters$.next(Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })));
+      /* this.searchService.generalFilters$.next(Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })));
+      this.searchService.localFilters$.next(Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] }))); */
     }
   }
+
+  removeGeneralFilter(filter: any) {
+    //this.generalFilters.update((filters) => filters.filter((f: GeneralFilter) => f.field !== filter.field));
+    this.searchService.setGeneralFilters({ generalFilters: this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? [] });
+    //this.searchService.generalFilters$.next(this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? []);
+  }
+
+  removeLocalFilter(filter: any) {
+    //this.localFilters.update((filters) => filters.filter((f: LocalFilter) => f.field !== filter.field));
+    this.searchService.setLocalFilters({ localFilters: this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? [] });
+    //this.searchService.localFilters$.next(this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? []);
+  }
+  
+  resetAllFilters() {
+    //this.generalFilters.set([]);
+    //this.localFilters.set([]);
+
+    this.searchService.setGeneralFilters({ generalFilters: [] });
+    this.searchService.setLocalFilters({ localFilters: [] });
+    this.removeOrder();
+    //this.searchService.generalFilters$.next([]);
+    //this.searchService.localFilters$.next([]);
+  }
+
+  removeOrder() {
+    this.orderSelectInput()?.writeValue(null); 
+    this.searchService.updateOrder({ field: 'createdAt', direction: 'asc' });
+  }
+
+  onOrderChange(event: any) {
+    this.searchService.updateOrder(JSON.parse(event.detail.value));
+    //this.searchService.order$.next(JSON.parse(event.detail.value));
+  }
+  
 }

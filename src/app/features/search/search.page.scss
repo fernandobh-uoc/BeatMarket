@@ -73,6 +73,12 @@
     flex-direction: column;
     gap: 2rem;
 
+    .spinner-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
     .container-empty {
       margin-top: 2rem;
       display: flex;

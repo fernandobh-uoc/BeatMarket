@@ -4,8 +4,8 @@ import { PostRepository } from 'src/app/core/domain/repositories/post.repository
 import { FiltersModalComponent } from '../ui/filters-modal/filters-modal.component';
 import { orderBy } from 'firebase/firestore';
 import { ArticleCharacteristics } from 'src/app/core/domain/models/articleCharacteristics.interface';
-import { toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, combineLatest, debounceTime, Observable, of, Subject, switchMap, tap } from 'rxjs';
+import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
+import { BehaviorSubject, catchError, combineLatest, debounceTime, delay, Observable, of, Subject, switchMap, tap } from 'rxjs';
 
 type FirestoreFilter = { field: string; operator: string; value: unknown }
   | { and: FirestoreFilter[] }
@@ -15,12 +15,16 @@ export type GeneralFilter = { field: string, value: any };
 export type LocalFilter = { field: string, value: any };
 
 type SearchState = {
-  query: Signal<string>,
-  generalFilters: Signal<GeneralFilter[]>,
-  localFilters: Signal<LocalFilter[]>,
-  order: Signal<{ field: keyof PostModel, direction: 'asc' | 'desc' }>,
-  limit: Signal<number>,
+  searchParams: {
+    query: string,
+    generalFilters: GeneralFilter[],
+    localFilters: LocalFilter[],
+    order: { field: string, direction: 'asc' | 'desc' },
+    limit: number,
+  }
   searchResults: Post[],
+  loading: boolean,
+  errorMessage: any
 }
 
 @Injectable({
@@ -29,66 +33,85 @@ type SearchState = {
 export class SearchService {
   postRepository = inject(PostRepository);
 
-  generalFilters$ = new BehaviorSubject<GeneralFilter[]>([]);
-  limit$ = new BehaviorSubject<number>(100);
-  searchQuery$ = new BehaviorSubject<string>('');
-  localFilters$ = new BehaviorSubject<LocalFilter[]>([]);
-  order$ = new BehaviorSubject<{ field: keyof PostModel, direction: 'asc' | 'desc' }>({ field: 'createdAt', direction: 'asc' });
+  private query$ = new BehaviorSubject<string>('');
+  private generalFilters$ = new BehaviorSubject<GeneralFilter[]>([]);
+  private limit$ = new BehaviorSubject<number>(100);
+  private localFilters$ = new BehaviorSubject<LocalFilter[]>([]);
+  private order$ = new BehaviorSubject<{ field: keyof PostModel, direction: 'asc' | 'desc' }>({ field: 'createdAt', direction: 'asc' });
 
-  searchState: WritableSignal<SearchState> = signal<SearchState>({
-    query: toSignal(this.searchQuery$, { initialValue: '' }),
+  private searchState: WritableSignal<SearchState> = signal<SearchState>({
+    /* query: toSignal(this.searchQuery$, { initialValue: '' }),
     generalFilters: toSignal(this.generalFilters$, { initialValue: [] }),
     localFilters: toSignal(this.localFilters$, { initialValue: [] }),
     order: toSignal(this.order$, { initialValue: { field: 'createdAt', direction: 'asc' } }),
-    limit: toSignal(this.limit$, { initialValue: 100 }),
+    limit: toSignal(this.limit$, { initialValue: 100 }), */
+    searchParams: {
+      query: '',
+      generalFilters: [],
+      localFilters: [],
+      order: { field: 'createdAt', direction: 'asc' },
+      limit: 100,
+    },
     searchResults: [],
-  });
+    loading: false,
+    errorMessage: ''
+  }); 
 
-  
-  //searchResults = signal<Post[]>([]);
-
-  /* searchQuery = computed<string>(() => this.searchState().query);
-
-  constraintFilters = computed<Filter[]>(() => this.searchState().constraints?.filters || []);
-  constraintLimit = computed<number>(() => this.searchState().constraints?.limit || 100);
-
-  localFilters = computed<LocalFilters>(() => this.searchState().localFilters || {});
-  localOrder = computed<{ field: keyof PostModel, direction: 'asc' | 'desc' }>(() => this.searchState().order || { field: 'createdAt', direction: 'asc' }); */ 
-
-  
-
+  query = computed<string>(() => this.searchState().searchParams.query);
+  generalFilters = computed<GeneralFilter[]>(() => this.searchState().searchParams.generalFilters);
+  localFilters = computed<LocalFilter[]>(() => this.searchState().searchParams.localFilters);
+  order = computed<{ field: string, direction: 'asc' | 'desc' }>(() => this.searchState().searchParams.order);
+  limit = computed<number>(() => this.searchState().searchParams.limit);
   searchResults = computed<Post[]>(() => this.searchState().searchResults);
 
-  errorMessage = signal<string>('');
+  loading = computed(() => this.searchState().loading);
+  errorMessage = computed<string>(() => this.searchState().errorMessage); 
 
   constructor() {
-    combineLatest([this.searchQuery$, this.generalFilters$, this.limit$, this.order$, this.localFilters$])
+    combineLatest([this.query$, this.generalFilters$, this.limit$, this.order$, this.localFilters$])
       .pipe(
         debounceTime(0),
-        tap(() => {
-          console.log({ constraintFilters: this.buildConstraintFilters(this.generalFilters$.getValue()) });
-          console.log({ localFilters: this.localFilters$.getValue() });
-        }),
-        switchMap(async ([query, filters, limit, order, localFilters]) => {
+        tap(() => this.searchState.update(state => ({ ...state, loading: true }))),
+        switchMap(async ([query, generalFilters, limit, order, localFilters]) => {
           const constraints = {
-            filters: this.buildConstraintFilters(filters),
+            filters: this.buildConstraintFilters(generalFilters),
             limit,
           };
 
-          const initialResults = await this.fetchInitialResults({ constraints });
-          const filteredResults = this.filterResults({ results: initialResults, query, localFilters });
-          const finalResults = this.sortResults({ results: filteredResults, order });
+          const initialResults: Post[] = await this.fetchInitialResults({ constraints });
+          const filteredResults: Post[] = this.filterResults({ results: initialResults, query, localFilters });
+          const finalResults: Post[] = this.sortResults({ results: filteredResults, order });
 
-          return finalResults;
+          return {
+            searchResults: finalResults,
+            searchParams: { query, generalFilters, localFilters, order, limit }
+          };
+        }),
+        takeUntilDestroyed(),
+        catchError(error => {
+          console.error(error);
+          this.searchState.update(state => ({ 
+            ...state, 
+            loading: false, 
+            errorMessage: error as string 
+          }));
+          return of(null);
         })
       )
-      .subscribe(results => {
-        this.updateSearchResults(results);
+      .subscribe((value) => {
+        if (!value) return;
+        const { searchResults, searchParams } = value;
+        this.searchState.update(state => ({
+          ...state,
+          searchParams,
+          loading: false,
+          searchResults,
+        }));
       });
   }
 
   updateQuery(query: string) {
-    this.searchQuery$.next(query);
+    this.query$.next(query);
   }
 
   setGeneralFilters({ generalFilters }: { generalFilters: GeneralFilter[] }): void {
@@ -112,30 +135,18 @@ export class SearchService {
     try {
       return await this.postRepository.queryPosts(constraints) ?? [];
     } catch (error) {
-      console.error(error);
-      this.errorMessage.set(error as string);
       throw error;
     }
-
-    /* if (query === 'all') return initialSearchResults;
-
-    return initialSearchResults.filter((result: Post) =>
-    (result.title
-      .toLowerCase()
-      .split(/\s+/)
-      .includes(query.toLowerCase())
-    )
-    ); */
   }
 
-  /* fetchInitialResults$({ query, constraints }: { query: SearchState['query'], constraints?: SearchState['constraints'] }): Observable<Post[] | null> {
-    let initialSearchResults$: Observable<Post[] | null> = this.queryPosts$(constraints) ?? of([]); 
-    if (!initialSearchResults$) return of([]);
-
-    if (query === 'all') return initialSearchResults$;
-
-    return 
-  } */
+  fetchInitialResults$({ constraints }: { constraints?: any }): Observable<Post[] | null> { 
+    if (!this.postRepository.queryPosts$) return of([]);
+    try {
+      return this.postRepository.queryPosts$(constraints) ?? of([]);
+    } catch (error) {
+      throw error;
+    }
+  }
  
   filterResults({ results, query, localFilters }: { results: Post[], query: string, localFilters: LocalFilter[] }): Post[] { 
     let filteredResults: Post[] = results;
@@ -166,29 +177,7 @@ export class SearchService {
     }
 
     return filteredResults;
-
-    /* if (!this.appliedLocalFilters()?.['orderBy']) return filteredInitialResults;
-
-    const { field, direction }: { field: keyof Post, direction: 'asc' | 'desc' } = this.appliedLocalFilters()?.['orderBy'];
-    return this.sortResults(filteredInitialResults, { field, direction }); */
   }
-
-  /* buildPostFilterFn(localFilters: LocalFilters | undefined): (post: Post) => boolean {
-    if (!localFilters) return () => true;
-    return (post: Post): boolean => {
-      return Object.keys(localFilters)
-        .filter(key => key !== 'orderBy')
-        .every(key => {
-          const filterValue = localFilters[key];
-          const postValue = ((post as Post).article.characteristics as any)[key];
-          if (Array.isArray(filterValue)) {
-            return filterValue.includes(postValue);
-          } else {
-            return postValue === filterValue;
-          }
-        });
-    }
-  } */
 
   sortResults({ results, order }: { results: Post[], order: { field: keyof PostModel, direction: 'asc' | 'desc' } }): Post[] {
     return results.sort((a: PostModel, b: PostModel) => {
@@ -229,36 +218,6 @@ export class SearchService {
     }
   }
 
-  /* async getAllPosts(): Promise<Post[] | null> {
-    try {
-      return await this.postRepository.getAllPosts();
-    } catch (error) {
-      console.error(error);
-      this.errorMessage.set(error as string);
-      throw error;
-    }
-  } */
-
-  async queryPosts(constraints: any): Promise<Post[] | null> {
-    try {
-      return await this.postRepository.queryPosts(constraints);
-    } catch (error) {
-      console.error(error);
-      this.errorMessage.set(error as string);
-      throw error;
-    }
-  }
-
-  queryPosts$(constraints: any): Observable<Post[] | null> | null {
-    if (!this.postRepository.queryPosts$) return null;
-    try {
-      return this.postRepository.queryPosts$(constraints);
-    } catch (error) {
-      console.error(error);
-      this.errorMessage.set(error as string);
-      throw error;
-    }
-  }
 
 
 }

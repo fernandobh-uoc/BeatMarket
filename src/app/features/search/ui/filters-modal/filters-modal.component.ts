@@ -44,8 +44,6 @@ export class FiltersModalComponent implements OnInit {
 
   constructor() {
     addIcons({ closeOutline });
-    /* effect(() => console.log({ generalFilters: this.generalFilters() }));
-    effect(() => console.log({ specificFilters: this.specificFilters() })); */
   }
 
   ngOnInit() { }
@@ -94,7 +92,6 @@ export class FiltersModalComponent implements OnInit {
         this.addGeneralFilter({ key: filterData.key, value: this.generalFilters()[filterData.key]?.filter((f: string) => f !== filterData.value) });
       }
     }
-    console.log({ generalFilters: this.generalFilters() });
   }
 
   onCheckboxChangeSpecific(event: any, filterData: { key: string, value: any }) {

@@ -20,7 +20,7 @@
         <div class="order-container">
           <ion-icon name="swap-vertical" color="light" size="small"></ion-icon>
           <!-- <ion-text class="order-label">Ordenar</ion-text> -->
-          <ion-select interface="popover" placeholder="Ordenar" selectedText="Ordenar" (ionChange)="onOrderChange($event)">
+          <ion-select #orderSelectInput interface="popover" selectedText="Ordenar" (ionChange)="onOrderChange($event)">
             <ion-select-option value='{ "field": "title", "direction": "asc" }'>Título (ascendente)</ion-select-option>
             <ion-select-option value='{ "field": "title", "direction": "desc" }'>Título (descendente)</ion-select-option>
             <ion-select-option value='{ "field": "price", "direction": "asc" }'>Precio (ascendente)</ion-select-option>
@@ -34,10 +34,16 @@
       </div>
 
       <div class="filters-badges">
-        @if (generalFilters().length > 0 || localFilters().length > 0) {
-          <ion-badge class="filter-badge" color="danger" slot="start" (click)="removeAllFilters()">
+        @if (generalFilters().length > 0 || localFilters().length > 0 || order().field !== 'createdAt') {
+          <ion-badge class="filter-badge" color="danger" slot="start" (click)="resetAllFilters()">
             <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
             <ion-text>Todos los filtros</ion-text>
+          </ion-badge>
+        }
+        @if (order().field !== 'createdAt') {
+          <ion-badge class="filter-badge" color="warning" slot="start" (click)="removeOrder()">
+            <ion-icon name="close-outline" color="dark" size="small"></ion-icon>
+            <ion-text>{{ order().field | translateFilterKey }}: {{ order().direction === 'asc' ? 'Ascendente' : 'Descendente' }}</ion-text>
           </ion-badge>
         }
         @for (filter of generalFilters(); track filter.field) {
@@ -67,7 +73,11 @@
     <ion-text class="search-title">Resultados de búsqueda</ion-text>
 
     <div class="search-results-list">
-      @if (searchResults().length === 0) {
+      @if (loading()) {
+        <div class="spinner-wrapper">
+          <ion-spinner name="circular"></ion-spinner>
+        </div>
+      } @else if (searchResults().length === 0) {
         <div class="container-empty">
           <ion-text class="text-empty">No hay resultados</ion-text>
         </div>

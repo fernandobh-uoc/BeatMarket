@@ -6,7 +6,9 @@ import { Pipe, PipeTransform } from '@angular/core';
 export class TranslateFilterKeyPipe implements PipeTransform {
   transform(value: string, ...args: unknown[]): string {
     const translations: Record<string, string> = {
+      title: 'Título',
       category: 'Categoría',
+      price: 'Precio',
       priceMin: 'Precio (min)',
       priceMax: 'Precio (max)',
       condition: 'Estado',
