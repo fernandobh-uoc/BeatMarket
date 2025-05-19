@@ -28,26 +28,18 @@ export class SearchPage implements OnInit {
   private searchService = inject(SearchService);
   private modalController = inject(ModalController);
 
-  //searchQuery = computed<string>(() => this.searchService.searchQuery$.getValue());
-  //generalFilters = signal<GeneralFilter[]>([]);
-  //localFilters = signal<LocalFilter[]>([]);
-  //generalFilters = computed<GeneralFilter[]>(() => this.searchService.generalFilters$.getValue());
-  //localFilters = computed<LocalFilter[]>(() => this.searchService.localFilters$.getValue());
-
-  /* searchQuery: Signal<string> = toSignal(this.searchService.searchQuery$, { initialValue: '' });
-  generalFilters: Signal<GeneralFilter[]> = toSignal(this.searchService.generalFilters$, { initialValue: [] }); 
-  localFilters: Signal<LocalFilter[]> = toSignal(this.searchService.localFilters$, { initialValue: [] }); */
-
   orderSelectInput = viewChild<IonSelect>('orderSelectInput')
 
-  searchQuery = computed(() => this.searchService.query());
-  generalFilters = computed(() => this.searchService.generalFilters());
-  localFilters = computed(() => this.searchService.localFilters());
-  order = computed(() => this.searchService.order());
-  searchResults = computed<Post[]>(() => this.searchService.searchResults());
+  searchState = computed(() => this.searchService.searchState());
 
-  loading = computed(() => this.searchService.loading());
-  errorMessage = computed(() => this.searchService.errorMessage());
+  searchQuery = computed(() => this.searchState().searchParams.query);
+  generalFilters = computed(() => this.searchState().searchParams.generalFilters);
+  localFilters = computed(() => this.searchState().searchParams.localFilters);
+  order = computed(() => this.searchState().searchParams.order);
+  searchResults = computed(() => this.searchState().searchResults);
+
+  loading = computed(() => this.searchState().loading);
+  errorMessage = computed(() => this.searchState().errorMessage);
 
   query$ = this.route.queryParams.pipe(map(params => params['query']));
 
@@ -73,38 +65,23 @@ export class SearchPage implements OnInit {
 
     if (role === 'filters') {
       const { generalFilters, localFilters } = filters;
-      //this.generalFilters.set(Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })));
-      //this.localFilters.set(Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })));
-
       this.searchService.setGeneralFilters({ generalFilters: Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })) });
       this.searchService.setLocalFilters({ localFilters: Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] })) });
-
-      /* this.searchService.generalFilters$.next(Object.keys(generalFilters).map(key => ({ field: key, value: generalFilters[key] })));
-      this.searchService.localFilters$.next(Object.keys(localFilters).map(key => ({ field: key, value: localFilters[key] }))); */
     }
   }
 
   removeGeneralFilter(filter: any) {
-    //this.generalFilters.update((filters) => filters.filter((f: GeneralFilter) => f.field !== filter.field));
     this.searchService.setGeneralFilters({ generalFilters: this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? [] });
-    //this.searchService.generalFilters$.next(this.generalFilters()?.filter((f: GeneralFilter) => f.field !== filter.field) ?? []);
   }
 
   removeLocalFilter(filter: any) {
-    //this.localFilters.update((filters) => filters.filter((f: LocalFilter) => f.field !== filter.field));
     this.searchService.setLocalFilters({ localFilters: this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? [] });
-    //this.searchService.localFilters$.next(this.localFilters()?.filter((f: LocalFilter) => f.field !== filter.field) ?? []);
   }
   
   resetAllFilters() {
-    //this.generalFilters.set([]);
-    //this.localFilters.set([]);
-
     this.searchService.setGeneralFilters({ generalFilters: [] });
     this.searchService.setLocalFilters({ localFilters: [] });
     this.removeOrder();
-    //this.searchService.generalFilters$.next([]);
-    //this.searchService.localFilters$.next([]);
   }
 
   removeOrder() {
@@ -114,7 +91,6 @@ export class SearchPage implements OnInit {
 
   onOrderChange(event: any) {
     this.searchService.updateOrder(JSON.parse(event.detail.value));
-    //this.searchService.order$.next(JSON.parse(event.detail.value));
   }
   
 }

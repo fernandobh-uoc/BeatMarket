@@ -1,11 +1,6 @@
-import { computed, effect, inject, Injectable, Signal, signal, WritableSignal } from '@angular/core';
-import { Post, PostModel } from 'src/app/core/domain/models/post.model';
-import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
-import { FiltersModalComponent } from '../ui/filters-modal/filters-modal.component';
-import { orderBy } from 'firebase/firestore';
-import { ArticleCharacteristics } from 'src/app/core/domain/models/articleCharacteristics.interface';
-import { takeUntilDestroyed, toObservable, toSignal } from '@angular/core/rxjs-interop';
-import { BehaviorSubject, catchError, combineLatest, debounceTime, delay, Observable, of, Subject, switchMap, tap } from 'rxjs';
+import { Injectable, inject, signal, computed, resource } from "@angular/core";
+import { Post, PostModel } from "src/app/core/domain/models/post.model";
+import { PostRepository } from "src/app/core/domain/repositories/post.repository";
 
 type FirestoreFilter = { field: string; operator: string; value: unknown }
   | { and: FirestoreFilter[] }
@@ -19,7 +14,7 @@ type SearchState = {
     query: string,
     generalFilters: GeneralFilter[],
     localFilters: LocalFilter[],
-    order: { field: string, direction: 'asc' | 'desc' },
+    order: { field: keyof PostModel, direction: 'asc' | 'desc' },
     limit: number,
   }
   searchResults: Post[],
@@ -28,196 +23,168 @@ type SearchState = {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class SearchService {
-  postRepository = inject(PostRepository);
+  private postRepository = inject(PostRepository);
 
-  private query$ = new BehaviorSubject<string>('');
-  private generalFilters$ = new BehaviorSubject<GeneralFilter[]>([]);
-  private limit$ = new BehaviorSubject<number>(100);
-  private localFilters$ = new BehaviorSubject<LocalFilter[]>([]);
-  private order$ = new BehaviorSubject<{ field: keyof PostModel, direction: 'asc' | 'desc' }>({ field: 'createdAt', direction: 'asc' });
+  private query = signal<string>('');
+  private generalFilters = signal<GeneralFilter[]>([]);
+  private localFilters = signal<LocalFilter[]>([]);
+  private order = signal<{ field: keyof PostModel; direction: 'asc' | 'desc' }>({
+    field: 'createdAt',
+    direction: 'asc',
+  });
+  private limit = signal<number>(100);
+  private loading = signal<boolean>(false);
+  private errorMessage = signal<string>('');
 
-  private searchState: WritableSignal<SearchState> = signal<SearchState>({
-    /* query: toSignal(this.searchQuery$, { initialValue: '' }),
-    generalFilters: toSignal(this.generalFilters$, { initialValue: [] }),
-    localFilters: toSignal(this.localFilters$, { initialValue: [] }),
-    order: toSignal(this.order$, { initialValue: { field: 'createdAt', direction: 'asc' } }),
-    limit: toSignal(this.limit$, { initialValue: 100 }), */
+  searchState = computed<SearchState>(() => ({
     searchParams: {
-      query: '',
-      generalFilters: [],
-      localFilters: [],
-      order: { field: 'createdAt', direction: 'asc' },
-      limit: 100,
+      query: this.query(),
+      generalFilters: this.generalFilters(),
+      localFilters: this.localFilters(),
+      order: this.order(),
+      limit: this.limit(),
     },
-    searchResults: [],
-    loading: false,
-    errorMessage: ''
-  }); 
+    searchResults: this.searchResults(),
+    loading: this.loading(),
+    errorMessage: this.errorMessage(),
+  }));
 
-  query = computed<string>(() => this.searchState().searchParams.query);
-  generalFilters = computed<GeneralFilter[]>(() => this.searchState().searchParams.generalFilters);
-  localFilters = computed<LocalFilter[]>(() => this.searchState().searchParams.localFilters);
-  order = computed<{ field: string, direction: 'asc' | 'desc' }>(() => this.searchState().searchParams.order);
-  limit = computed<number>(() => this.searchState().searchParams.limit);
-  searchResults = computed<Post[]>(() => this.searchState().searchResults);
+  private initialResults = resource({
+    request: () => ({
+      generalFilters: this.generalFilters(),
+      limit: this.limit(),
+    }),
+    loader: async ({ request }) => {
+      const { generalFilters, limit } = request;
 
-  loading = computed(() => this.searchState().loading);
-  errorMessage = computed<string>(() => this.searchState().errorMessage); 
+      try {
+        this.loading.set(true);
+        this.errorMessage.set('');
 
-  constructor() {
-    combineLatest([this.query$, this.generalFilters$, this.limit$, this.order$, this.localFilters$])
-      .pipe(
-        debounceTime(0),
-        tap(() => this.searchState.update(state => ({ ...state, loading: true }))),
-        switchMap(async ([query, generalFilters, limit, order, localFilters]) => {
-          const constraints = {
-            filters: this.buildConstraintFilters(generalFilters),
-            limit,
-          };
+        //await new Promise(resolve => setTimeout(resolve, 2000));   // Simulate a delay
 
-          const initialResults: Post[] = await this.fetchInitialResults({ constraints });
-          const filteredResults: Post[] = this.filterResults({ results: initialResults, query, localFilters });
-          const finalResults: Post[] = this.sortResults({ results: filteredResults, order });
+        const constraints = {
+          filters: this.buildConstraintFilters(generalFilters),
+          limit,
+        };
 
-          return {
-            searchResults: finalResults,
-            searchParams: { query, generalFilters, localFilters, order, limit }
-          };
-        }),
-        takeUntilDestroyed(),
-        catchError(error => {
-          console.error(error);
-          this.searchState.update(state => ({ 
-            ...state, 
-            loading: false, 
-            errorMessage: error as string 
-          }));
-          return of(null);
-        })
-      )
-      .subscribe((value) => {
-        if (!value) return;
-        const { searchResults, searchParams } = value;
-        this.searchState.update(state => ({
-          ...state,
-          searchParams,
-          loading: false,
-          searchResults,
-        }));
-      });
-  }
+        const results = await this.fetchInitialResults({ constraints });
+
+        this.loading.set(false);
+        return results;
+      } catch (err) {
+        this.loading.set(false);
+        this.errorMessage.set((err as any)?.message ?? 'Unknown error');
+        return [];
+      }
+    }
+  });
+
+  private searchResults = computed(() => {
+    const initialResults = this.initialResults.value() ?? [];
+    const query = this.query();
+    const localFilters = this.localFilters();
+    const order = this.order();
+
+    const filteredResults = this.filterResults({ results: initialResults, query, localFilters });
+    const sortedResults = this.sortResults({ results: filteredResults, order });
+
+    return sortedResults;
+  })
 
   updateQuery(query: string) {
-    this.query$.next(query);
+    this.query.set(query);
   }
 
-  setGeneralFilters({ generalFilters }: { generalFilters: GeneralFilter[] }): void {
-    this.generalFilters$.next(generalFilters);
+  setGeneralFilters({ generalFilters }: { generalFilters: GeneralFilter[] }) {
+    this.generalFilters.set(generalFilters);
   }
 
-  setLocalFilters({ localFilters }: { localFilters: LocalFilter[] }): void {
-    this.localFilters$.next(localFilters);
+  setLocalFilters({ localFilters }: { localFilters: LocalFilter[] }) {
+    this.localFilters.set(localFilters);
   }
 
-  updateOrder(order: { field: keyof PostModel, direction: 'asc' | 'desc' }) {
-    this.order$.next(order);
+  updateOrder(order: { field: keyof PostModel; direction: 'asc' | 'desc' }) {
+    this.order.set(order);
   }
 
-  updateSearchResults(searchResults: Post[]) {
-    this.searchState.update(state => ({ ...state, searchResults: searchResults }));
-    //this.searchResults.set(searchResults);
+  updateLimit(limit: number) {
+    this.limit.set(limit);
   }
 
-  async fetchInitialResults({ constraints }: { constraints?: any }): Promise<Post[]> {  
+  private async fetchInitialResults({ constraints }: { constraints?: any }): Promise<Post[]> {
     try {
-      return await this.postRepository.queryPosts(constraints) ?? [];
+      return (await this.postRepository.queryPosts(constraints)) ?? [];
     } catch (error) {
       throw error;
     }
   }
 
-  fetchInitialResults$({ constraints }: { constraints?: any }): Observable<Post[] | null> { 
-    if (!this.postRepository.queryPosts$) return of([]);
-    try {
-      return this.postRepository.queryPosts$(constraints) ?? of([]);
-    } catch (error) {
-      throw error;
-    }
-  }
- 
-  filterResults({ results, query, localFilters }: { results: Post[], query: string, localFilters: LocalFilter[] }): Post[] { 
+  private filterResults({
+    results,
+    query,
+    localFilters,
+  }: {
+    results: Post[];
+    query: string;
+    localFilters: LocalFilter[];
+  }): Post[] {
     let filteredResults: Post[] = results;
 
     if (query !== 'all') {
       filteredResults = results.filter((result: Post) =>
-        (result.title
-          .toLowerCase()
-          .split(/\s+/)
-          .includes(query.toLowerCase())
-        )
+        result.title.toLowerCase().split(/\s+/).includes(query.toLowerCase())
       );
     }
 
     if (localFilters.length > 0) {
-      //initialResults = initialResults.filter(this.buildPostFilterFn(localFilters));
-      filteredResults = filteredResults.filter((post: Post) => {
-        return localFilters.every((filter: LocalFilter) => {
+      filteredResults = filteredResults.filter((post: Post) =>
+        localFilters.every((filter: LocalFilter) => {
           const filterValue = filter.value;
-          const postValue = ((post as Post).article.characteristics as any)[filter.field];
-          if (Array.isArray(filterValue)) {
-            return filterValue.includes(postValue);
-          } else {
-            return postValue === filterValue;
-          }
-        });
-      })
+          const postValue = (post.article.characteristics as any)[filter.field];
+          return Array.isArray(filterValue)
+            ? filterValue.includes(postValue)
+            : postValue === filterValue;
+        })
+      );
     }
 
     return filteredResults;
   }
 
-  sortResults({ results, order }: { results: Post[], order: { field: keyof PostModel, direction: 'asc' | 'desc' } }): Post[] {
+  private sortResults({
+    results,
+    order,
+  }: {
+    results: Post[];
+    order: { field: keyof PostModel; direction: 'asc' | 'desc' };
+  }): Post[] {
     return results.sort((a: PostModel, b: PostModel) => {
       const aValue = a[order.field] ?? 0;
       const bValue = b[order.field] ?? 0;
-      if (aValue < bValue) {
-        return order.direction === 'asc' ? -1 : 1;
-      } else if (aValue > bValue) {
-        return order.direction === 'asc' ? 1 : -1;
-      } else {
-        return 0;
-      }
+      if (aValue < bValue) return order.direction === 'asc' ? -1 : 1;
+      if (aValue > bValue) return order.direction === 'asc' ? 1 : -1;
+      return 0;
     });
   }
 
-  buildConstraintFilters(generalFilters: GeneralFilter[]): FirestoreFilter[] {
+  private buildConstraintFilters(generalFilters: GeneralFilter[]): FirestoreFilter[] {
     if (!Object.keys(generalFilters).length) return [];
 
-    let filters: FirestoreFilter[] = [];
+    const filters: FirestoreFilter[] = generalFilters.map((filter) => {
+      const { field, value } = filter;
+      if (field === 'category') return { field: 'article.category', operator: '==', value };
+      if (field === 'priceMin') return { field: 'price', operator: '>=', value };
+      if (field === 'priceMax') return { field: 'price', operator: '<=', value };
+      if (field === 'condition') {
+        return { or: value.map((v: any) => ({ field: 'article.condition', operator: '==', value: v })) };
+      }
+      return { field, operator: '==', value };
+    });
 
-    generalFilters.forEach((filter: GeneralFilter) => {
-      let { field, value } = filter;
-      if (field === 'category') {
-        filters.push({ field: 'article.category', operator: '==', value: value });
-      } else if (field === 'priceMin') {
-        filters.push({ field: 'price', operator: '>=', value: value });
-      } else if (field === 'priceMax') {
-        filters.push({ field: 'price', operator: '<=', value: value });
-      } else if (field === 'condition') {
-        filters.push({ or: value.map((v: any) => ({ field: 'article.condition', operator: '==', value: v })) });
-      };
-    })
-
-    if (filters.length === 1) {
-      return filters;
-    } else {
-      return [{ and: filters }];
-    }
+    return filters.length > 1 ? [{ and: filters }] : filters;
   }
-
-
-
 }
