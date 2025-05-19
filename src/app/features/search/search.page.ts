@@ -30,16 +30,14 @@ export class SearchPage implements OnInit {
 
   orderSelectInput = viewChild<IonSelect>('orderSelectInput')
 
-  searchState = computed(() => this.searchService.searchState());
+  searchQuery = computed(() => this.searchService.searchState().searchParams.query);
+  generalFilters = computed(() => this.searchService.searchState().searchParams.generalFilters);
+  localFilters = computed(() => this.searchService.searchState().searchParams.localFilters);
+  order = computed(() => this.searchService.searchState().searchParams.order);
+  searchResults = computed(() => this.searchService.searchState().searchResults);
 
-  searchQuery = computed(() => this.searchState().searchParams.query);
-  generalFilters = computed(() => this.searchState().searchParams.generalFilters);
-  localFilters = computed(() => this.searchState().searchParams.localFilters);
-  order = computed(() => this.searchState().searchParams.order);
-  searchResults = computed(() => this.searchState().searchResults);
-
-  loading = computed(() => this.searchState().loading);
-  errorMessage = computed(() => this.searchState().errorMessage);
+  loading = computed(() => this.searchService.searchState().loading);
+  errorMessage = computed(() => this.searchService.searchState().errorMessage);
 
   query$ = this.route.queryParams.pipe(map(params => params['query']));
 

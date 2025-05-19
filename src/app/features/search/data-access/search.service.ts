@@ -36,7 +36,6 @@ export class SearchService {
     direction: 'asc',
   });
   private limit = signal<number>(100);
-  private loading = signal<boolean>(false);
   private errorMessage = signal<string>('');
 
   searchState = computed<SearchState>(() => ({
@@ -48,7 +47,7 @@ export class SearchService {
       limit: this.limit(),
     },
     searchResults: this.searchResults(),
-    loading: this.loading(),
+    loading: this.initialResults.isLoading(),
     errorMessage: this.errorMessage(),
   }));
 
@@ -61,7 +60,6 @@ export class SearchService {
       const { generalFilters, limit } = request;
 
       try {
-        this.loading.set(true);
         this.errorMessage.set('');
 
         //await new Promise(resolve => setTimeout(resolve, 2000));   // Simulate a delay
@@ -73,10 +71,8 @@ export class SearchService {
 
         const results = await this.fetchInitialResults({ constraints });
 
-        this.loading.set(false);
         return results;
       } catch (err) {
-        this.loading.set(false);
         this.errorMessage.set((err as any)?.message ?? 'Unknown error');
         return [];
       }
