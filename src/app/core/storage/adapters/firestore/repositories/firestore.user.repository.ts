@@ -1,6 +1,6 @@
 import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { combineLatestWith, map, of, switchMap } from 'rxjs';
+import { combineLatest, map, of, switchMap } from 'rxjs';
 
 import { UserRepository } from '../../../../domain/repositories/user.repository';
 import { Storage } from '../../../storage.interface';
@@ -49,8 +49,7 @@ export class FirestoreUserRepository implements UserRepository {
           converter: this.activePostConverter
         });
 
-      return user$.pipe(
-        combineLatestWith(activePosts$),
+      return combineLatest([user$, activePosts$]).pipe(
         map(([user, activePosts]) => {
           if (user) {
             user.activePosts = activePosts ?? [];
