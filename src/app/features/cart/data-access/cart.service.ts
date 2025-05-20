@@ -9,6 +9,7 @@ import { rxResource } from '@angular/core/rxjs-interop';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { CartItemModel, CartModel } from 'src/app/core/domain/models/cart.model';
 import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
+import { User } from 'src/app/core/domain/models/user.model';
 
 type CartState = {
   cartItems: CartItemModel[],
@@ -24,7 +25,7 @@ export class CartService {
 
   private errorMessage = signal<string>('');
 
-  private cartResource = rxResource({
+  private cartResource = rxResource<CartModel | null, User | null>({
     request: () => this.authService.currentUser(),
     loader: ({ request: currentUser }): Observable<CartModel | null> => {
       if (!this.cartRepository.getCartByUserId$) return of(null);
@@ -40,7 +41,7 @@ export class CartService {
     }
   });
 
-  private cartItemsAmount = computed(() => this.cartResource.value()?.items.length ?? 0);
+  private cartItemsAmount = computed<number>(() => this.cartResource.value()?.items.length ?? 0);
 
   cartState = computed<CartState>(() => ({
     cartItems: this.cartResource.value()?.items ?? [],
