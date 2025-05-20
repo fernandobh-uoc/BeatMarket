@@ -7,14 +7,10 @@ export const ConversationRepository = new InjectionToken<ConversationRepository>
 export interface ConversationRepository {
   getConversationById(id: string): Promise<Conversation | null>;
   getConversationById$?(id: string): Observable<Conversation | null> | null;
-  getConversationsByInitiatorUserId(userId: string): Promise<Conversation[] | null>;
-  getConversationsByInitiatorUserId$?(userId: string): Observable<Conversation[] | null> | null;  
-  getConversationsByInitiatorUsername(username: string): Promise<Conversation[] | null>;
-  getConversationsByInitiatorUsername$?(username: string): Observable<Conversation[] | null> | null;
-  getConversationsByRecipientUserId(userId: string): Promise<Conversation[] | null>;
-  getConversationsByRecipientUserId$?(userId: string): Observable<Conversation[] | null> | null;
-  getConversationsByRecipientUsername(username: string): Promise<Conversation[] | null>;
-  getConversationsByRecipientUsername$?(username: string): Observable<Conversation[] | null> | null;
+  getConversationsByInitiatorId(initiatorId: string): Promise<Conversation[] | null>;
+  getConversationsByInitiatorId$?(initiatorId: string): Observable<Conversation[] | null> | null;
+  getConversationsByRecipientId(recipientId: string): Promise<Conversation[] | null>;
+  getConversationsByRecipientId$?(recipientId: string): Observable<Conversation[] | null> | null;
   getConversationsByPostId(postId: string): Promise<Conversation[] | null>;
   getConversationsByPostId$?(postId: string): Observable<Conversation[] | null> | null;
   getAllConversations(): Promise<Conversation[] | null>;

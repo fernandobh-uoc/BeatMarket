@@ -33,6 +33,10 @@ export const TabsRoutes: Routes = [
         loadChildren: () => import('src/app/features/sell/sell.routes').then(m => m.SellRoutes)
       },
       {
+        path: 'conversations',
+        loadComponent: () => import('src/app/features/conversations/conversations-list/conversations-list.page').then(m => m.ConversationsListPage)  
+      },
+      {
         path: 'post-detail/:postId',
         loadComponent: () => import('src/app/features/post-detail/post-detail.page').then(m => m.PostDetailPage),
         resolve: {

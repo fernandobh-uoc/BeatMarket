@@ -9,12 +9,17 @@ export enum MessageStatus {
 }
 
 export interface RelatedPostModel {
-  _id: string;
+  postId: string;
   title: string;
   price: number;
-  //status: PostStatus;
   isActive: boolean;
   mainImageURL: string;
+}
+
+export interface ParticipantModel {
+  userId: UserModel["_id"];
+  username: UserModel["username"];
+  profilePictureURL: UserModel["profilePictureURL"];
 }
 
 export interface MessageModel {
@@ -26,42 +31,35 @@ export interface MessageModel {
   status: MessageStatus;
 }
 
-export interface ParticipantModel {
-  userId: UserModel["_id"];
-  username: UserModel["username"];
-  profilePictureURL: UserModel["profilePictureURL"];
-}
-
 export interface ConversationModel extends JSONSerializable<ConversationModel>, Timestamps {
   _id: string;
   relatedPost: RelatedPostModel;
-  initiatedBy: UserModel["_id"];
   initiatedAt: Date;
   lastUpdatedAt: Date;
-  lastMessage: MessageModel | null;
-  participants: [ParticipantModel, ParticipantModel],
-  messages: MessageModel[] | null;  // Subcollection
+  //participants: [ParticipantModel, ParticipantModel],
+  participants: {
+    initiator: ParticipantModel,
+    recipient: ParticipantModel
+  },
+  messages: MessageModel[];  // Subcollection
 }
 
 export class Conversation implements ConversationModel {
   public _id: string = '';
   public relatedPost: RelatedPostModel = { 
-    _id: '', 
+    postId: '', 
     title: '', 
-    price: 0, 
-    //status: PostStatus.Active, 
+    price: 0,
     isActive: true,
     mainImageURL: '' 
   };
-  public initiatedBy: UserModel["_id"] = '';
   public initiatedAt: Date = new Date();
   public lastUpdatedAt: Date = new Date();
-  public lastMessage: MessageModel | null = null;
-  public participants: [ParticipantModel, ParticipantModel] = [
-    { userId: '', username: '', profilePictureURL: '' }, 
-    { userId: '', username: '', profilePictureURL: '' }
-  ];
-  public messages: MessageModel[] | null = null;
+  public participants: { initiator: ParticipantModel, recipient: ParticipantModel } = {
+    initiator: { userId: '', username: '', profilePictureURL: '' },
+    recipient: { userId: '', username: '', profilePictureURL: '' }
+  };
+  public messages: MessageModel[] = [];
 
   private constructor(conversation: Partial<ConversationModel> = {}) {
     Object.assign(this, { ...conversation });
@@ -99,9 +97,7 @@ export function isConversationModel(obj: any): obj is ConversationModel {
     obj !== null &&
     typeof obj._id === 'string' &&
     typeof obj.relatedPost === 'object' &&
-    typeof obj.initiatedBy === 'string' &&
     typeof obj.initiatedAt === 'object' &&
     typeof obj.lastUpdatedAt === 'object' &&
-    typeof obj.lastMessage === 'object' &&
     Array.isArray(obj.participants);
 }

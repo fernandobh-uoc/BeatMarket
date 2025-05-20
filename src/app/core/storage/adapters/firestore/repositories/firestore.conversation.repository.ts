@@ -31,9 +31,9 @@ export class FirestoreConversationRepository implements ConversationRepository {
     }
   }
 
-  async getConversationsByInitiatorUserId(userId: string): Promise<Conversation[] | null> {
+  async getConversationsByInitiatorId(initiatorId: string): Promise<Conversation[] | null> {
     try {
-      const conversations: Conversation[] | null = await this.storage.getByField('initiatedBy', userId, { collection: 'conversations', converter: this.conversationConverter });
+      const conversations: Conversation[] | null = await this.storage.getByField('participants.initiator.userId', initiatorId, { collection: 'conversations', converter: this.conversationConverter });
       return conversations;
     } catch (storageError) {
       console.error(storageError);
@@ -41,20 +41,20 @@ export class FirestoreConversationRepository implements ConversationRepository {
     }
   }
 
-  getConversationsByInitiatorUserId$(userId: string): Observable<Conversation[] | null> | null {
+  getConversationsByInitiatorId$(initiatorId: string): Observable<Conversation[] | null> | null {
     if (!this.storage.getByField$) return null;
 
     try {
-      return this.storage.getByField$('initiatedBy', userId, { collection: 'conversations', converter: this.conversationConverter });
+      return this.storage.getByField$('participants.initiator.userId', initiatorId, { collection: 'conversations', converter: this.conversationConverter });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;
     }
   }
 
-  async getConversationsByInitiatorUsername(username: string): Promise<Conversation[] | null> {
+  async getConversationsByRecipientId(recipientId: string): Promise<Conversation[] | null> {
     try {
-      const conversations: Conversation[] | null = await this.storage.getByField('initiatedBy', username, { collection: 'conversations', converter: this.conversationConverter });
+      const conversations: Conversation[] | null = await this.storage.getByField('participants.recipient.userId', recipientId, { collection: 'conversations', converter: this.conversationConverter });
       return conversations;
     } catch (storageError) {
       console.error(storageError);
@@ -62,53 +62,11 @@ export class FirestoreConversationRepository implements ConversationRepository {
     }
   }
 
-  getConversationsByInitiatorUsername$(username: string): Observable<Conversation[] | null> | null {
+  getConversationsByRecipientId$(recipientId: string): Observable<Conversation[] | null> | null {
     if (!this.storage.getByField$) return null;
 
     try {
-      return this.storage.getByField$('initiatedBy', username, { collection: 'conversations', converter: this.conversationConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
-    }
-  }
-
-  async getConversationsByRecipientUserId(userId: string): Promise<Conversation[] | null> {
-    try {
-      const conversations: Conversation[] | null = await this.storage.getByField('initiatedBy', userId, { collection: 'conversations', converter: this.conversationConverter });
-      return conversations;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
-    }
-  }
-
-  getConversationsByRecipientUserId$(userId: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
-    try {
-      return this.storage.getByField$('initiatedBy', userId, { collection: 'conversations', converter: this.conversationConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
-    }
-  }
-
-  async getConversationsByRecipientUsername(username: string): Promise<Conversation[] | null> {
-    try {
-      const conversations: Conversation[] | null = await this.storage.getByField('initiatedBy', username, { collection: 'conversations', converter: this.conversationConverter });
-      return conversations;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
-    }
-  }
-
-  getConversationsByRecipientUsername$(username: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
-    try {
-      return this.storage.getByField$('initiatedBy', username, { collection: 'conversations', converter: this.conversationConverter });
+      return this.storage.getByField$('participants.recipient.userId', recipientId, { collection: 'conversations', converter: this.conversationConverter });
     } catch (storageError) {
       console.error(storageError);
       throw storageError;

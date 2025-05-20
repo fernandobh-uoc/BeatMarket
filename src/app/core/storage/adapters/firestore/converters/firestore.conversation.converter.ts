@@ -1,37 +1,29 @@
-import { FirestoreDataConverter, QueryDocumentSnapshot, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
+import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
 import { Conversation, ConversationModel, ParticipantModel } from "src/app/core/domain/models/conversation.model";
-import { isFieldValue, isValidDateInput } from "./utils/converter.utils";
+import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface FirestoreConversationModel {
   relatedPost: {
+    postId: string;
     title: string;
     price: number;
-    //status: string;
     isActive: boolean;
     mainImageURL: string;
   },
-  initiatedBy: string;
-  initiatedAt: Timestamp | null;
-  lastUpdatedAt: Timestamp | null;
-  lastMessage: {
-    text: string;
-    timestamp: Timestamp;
-    senderId: string;
-    recipientId: string;
-    status: string;
-  } | null;
-  participants: [
-    {
+  participants: {
+    initiator: {
       participantId: string;
       username: string;
       profilePictureURL: string;
     },
-    {
+    recipient: {
       participantId: string;
       username: string;
       profilePictureURL: string;
     }
-  ]
+  },
+  createdAt: Timestamp;
+  updatedAt: Timestamp;
 }
 
 export interface FirestoreMessageModel {
@@ -44,41 +36,59 @@ export interface FirestoreMessageModel {
 
 export class FirestoreConversationConverter implements FirestoreDataConverter<ConversationModel, FirestoreConversationModel> {
   toFirestore(conversation: WithFieldValue<ConversationModel>): WithFieldValue<FirestoreConversationModel> {
-    const participants = (<[ParticipantModel, ParticipantModel]>conversation.participants).slice(0, 2).map(participant => ({
-      participantId: participant.userId,
-      username: participant.username,
-      profilePictureURL: participant.profilePictureURL
-    }));
-
     return {
-      /* isValidDateInput(post.finishedAt) 
-              ? Timestamp.fromDate(new Date(post.finishedAt)) 
-              : isFieldValue(post.finishedAt)
-                ? post.finishedAt
-                : null */
       relatedPost: conversation.relatedPost,
-      initiatedBy: conversation.initiatedBy,
-      initiatedAt: isValidDateInput(conversation.initiatedAt) 
-        ? Timestamp.fromDate(new Date(conversation.initiatedAt)) 
-        : isFieldValue(conversation.initiatedAt)
-          ? conversation.initiatedAt
-          : null,
-      lastUpdatedAt: isValidDateInput(conversation.lastUpdatedAt) 
-        ? Timestamp.fromDate(new Date(conversation.lastUpdatedAt)) 
-        : isFieldValue(conversation.lastUpdatedAt)
-          ? conversation.lastUpdatedAt
-          : null,
-      lastMessage: isFieldValue(conversation.lastMessage) 
-        ? conversation.lastMessage 
-        : null, 
-      participants: participants as [
-        { participantId: string; username: string; profilePictureURL: string }, 
-        { participantId: string; username: string; profilePictureURL: string }
-      ]
+      participants: isFieldValue(conversation.participants)
+        ? conversation.participants
+        : {
+          initiator: {
+            participantId: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.userId,
+            username: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.username,
+            profilePictureURL: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.profilePictureURL
+          },
+          recipient: {
+            participantId: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.userId,
+            username: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.username,
+            profilePictureURL: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.profilePictureURL
+          }
+        },
+      createdAt: isValidDateInput(conversation.createdAt)
+        ? Timestamp.fromDate(new Date(conversation.createdAt))
+        : isFieldValue(conversation.createdAt)
+          ? conversation.createdAt
+          : serverTimestamp(),
+      updatedAt: isValidDateInput(conversation.updatedAt)
+        ? Timestamp.fromDate(new Date(conversation.updatedAt))
+        : isFieldValue(conversation.updatedAt)
+          ? conversation.updatedAt
+          : serverTimestamp(),
     };
   }
 
   fromFirestore(snapshot: QueryDocumentSnapshot<FirestoreConversationModel>, options?: SnapshotOptions): ConversationModel {
-    return Conversation.Build();
+    const data = snapshot.data(options);
+
+    return Conversation.Build({
+      _id: snapshot.id,
+      relatedPost: data.relatedPost,
+      participants: {
+        initiator: {
+          userId: data.participants.initiator.participantId,
+          username: data.participants.initiator.username,
+          profilePictureURL: data.participants.initiator.profilePictureURL
+        },
+        recipient: {
+          userId: data.participants.recipient.participantId,
+          username: data.participants.recipient.username,
+          profilePictureURL: data.participants.recipient.profilePictureURL
+        }
+      },
+      createdAt: isFirestoreTimestamp(data.createdAt)
+        ? data.createdAt.toDate()
+        : null,
+      updatedAt: isFirestoreTimestamp(data.updatedAt)
+        ? data.updatedAt.toDate()
+        : null,
+    });
   }
 }
