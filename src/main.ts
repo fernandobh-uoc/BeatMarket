@@ -65,13 +65,9 @@ bootstrapApplication(AppComponent, {
 
     provideAppInitializer(async () => {
       const authService = inject(AuthService);
-      const cartService = inject(CartService);
       const pushNotificationsService = inject(PushNotificationsService);
 
       await authService.init();
-      if (authService.authStatus().isAuthenticated) {
-        await cartService.loadCart();
-      }
       pushNotificationsService.initPushNotifications();
     }),
   ],

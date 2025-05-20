@@ -42,7 +42,7 @@
         <div class="cart-icon-wrapper">
           <ion-icon slot="icon-only" name="cart-outline" color="light"></ion-icon>
           @if (cartItemsAmount() > 0) {
-            <ion-badge class="cart-badge" color="dark">{{ cartService.cartItemsAmount() }}</ion-badge>
+            <ion-badge class="cart-badge" color="dark">{{ cartItemsAmount() }}</ion-badge>
           }
         </div>
       </ion-button>

@@ -1,58 +1,67 @@
-import { signal, computed, inject, Injectable } from '@angular/core';
+import {
+  Injectable,
+  inject,
+  signal,
+  computed,
+} from '@angular/core';
+import { Observable, of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { CartItemModel, CartModel } from 'src/app/core/domain/models/cart.model';
 import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
-import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
-import { AuthStatus } from 'src/app/core/services/auth/auth.service';
-import { firstValueFrom, Observable } from 'rxjs';
 
-@Injectable({
-  providedIn: 'root'
-})
+type CartState = {
+  cartItems: CartItemModel[],
+  cartItemsAmount: number,
+  loading: boolean,
+  errorMessage: string
+};
+
+@Injectable({ providedIn: 'root' })
 export class CartService {
-  cartRepository = inject(CartRepository);
-  cache = inject(LocalStorageService);
+  private cartRepository = inject(CartRepository);
+  private authService = inject(AuthService);
 
-  #cart = signal<CartModel | null>(null);
-  #cartItemsAmount = computed<number>(() => this.#cart()?.items.length ?? 0);
+  private errorMessage = signal<string>('');
 
-  get cart() {
-    return this.#cart.asReadonly();
-  }
+  private cartResource = rxResource({
+    request: () => this.authService.currentUser(),
+    loader: ({ request: currentUser }): Observable<CartModel | null> => {
+      if (!this.cartRepository.getCartByUserId$) return of(null);
+      if (!currentUser?._id) return of(null);
 
-  get cartItemsAmount() {
-    return this.#cartItemsAmount;
-  }
+      try {
+        const cart$ = this.cartRepository.getCartByUserId$(currentUser._id);
+        return cart$ ?? of(null);
+      } catch (error) {
+        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
+        return of(null);
+      }
+    }
+  });
+
+  private cartItemsAmount = computed(() => this.cartResource.value()?.items.length ?? 0);
+
+  cartState = computed<CartState>(() => ({
+    cartItems: this.cartResource.value()?.items ?? [],
+    cartItemsAmount: this.cartItemsAmount(), 
+    loading: this.cartResource.isLoading(), 
+    errorMessage: this.errorMessage() 
+  }));
 
   async createCart(userId: string): Promise<void> {
     await this.cartRepository.saveCart({ userId });
   }
 
-  async loadCart(): Promise<void> {
-    if (this.#cart()) return;
-    const userId = (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '';
-
-    // Try to load real-time cart
-    if (this.cartRepository.getCartByUserId$) {
-      const cart$ = this.cartRepository.getCartByUserId$(userId);
-      cart$?.subscribe(cart => {
-        this.#cart.set(cart);
-      });
-      if (cart$) await firstValueFrom(cart$); 
-      return;
-    }
-
-    // Else, load a snapshot
-    const cart = await this.cartRepository.getCartByUserId(userId);
-    this.#cart.set(cart);
-  }
-
   async addItemToCart(item: CartItemModel): Promise<void> {
-    const cart: CartModel | null = this.#cart();
+    const cart = this.cartResource.value();
+    console.log({ cart });
     if (!cart) return;
 
-    if (cart.items.find(i => i.postId === item.postId)) {
-      console.warn(`Item with postId ${item.postId} already exists in cart`);
-      return; // Item already exists in cart
+    const exists = cart.items.find(i => i.postId === item.postId);
+    if (exists) {
+      console.warn(`Item with postId ${item.postId} already in cart`);
+      return;
     }
 
     cart.items.push(item);
@@ -60,7 +69,7 @@ export class CartService {
   }
 
   async removeItemFromCart(postId: string): Promise<void> {
-    const cart: CartModel | null = this.#cart();
+    const cart = this.cartResource.value();
     if (!cart) return;
 
     const index = cart.items.findIndex(i => i.postId === postId);
@@ -71,7 +80,7 @@ export class CartService {
   }
 
   async clearCart(): Promise<void> {
-    const cart: CartModel | null = this.#cart();
+    const cart = this.cartResource.value();
     if (!cart) return;
 
     cart.items = [];

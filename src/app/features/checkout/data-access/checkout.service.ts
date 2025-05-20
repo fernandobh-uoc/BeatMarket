@@ -21,7 +21,7 @@ export class CheckoutService {
 
   userFullName = computed<string>(() => this.authService.currentUser()?.fullName ?? '');
 
-  cartItems = computed<CartItemModel[]>(() => this.cartService.cart()?.items ?? []);
+  cartItems = computed<CartItemModel[]>(() => this.cartService.cartState()?.cartItems ?? []);
   cartItemsPosts = signal<Post[] | null>([]);
 
   itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));

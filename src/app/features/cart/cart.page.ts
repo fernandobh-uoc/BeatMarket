@@ -19,7 +19,7 @@ import { ActivatedRoute, RouterLink } from '@angular/router';
 export class CartPage {
   private cartService = inject(CartService);
 
-  cartItems = computed<CartItemModel[]>(() => this.cartService.cart()?.items ?? []);
+  cartItems = computed<CartItemModel[]>(() => this.cartService.cartState().cartItems ?? []);
 
   itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));
   itemsShippingTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.shipping, 0));

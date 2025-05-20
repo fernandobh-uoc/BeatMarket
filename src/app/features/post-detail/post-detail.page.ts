@@ -31,8 +31,8 @@ export class PostDetailPage implements OnInit {
   private cartService = inject(CartService);
 
   #postData = signal<Post | null>(null);
-  itemIsAdded = computed<boolean>(() => this.cartService.cart()?.items.some(item => item.postId === this.#postData()?._id) ?? false);
-  isOwnPost = signal<boolean>(true);     
+  itemIsAdded = computed<boolean>(() => this.cartService.cartState().cartItems.some(item => item.postId === this.#postData()?._id) ?? false);
+  isOwnPost = signal<boolean>(true);
 
   get postData() {
     return this.#postData.asReadonly();

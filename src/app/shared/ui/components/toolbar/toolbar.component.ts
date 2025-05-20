@@ -36,7 +36,7 @@ export class ToolbarComponent implements OnInit {
   public searchActive = signal<boolean>(this.searchDefaultActive());
 
   public showCart = input<boolean>(true);
-  public cartItemsAmount = computed<number>(() => this.cartService.cartItemsAmount());
+  public cartItemsAmount = computed<number>(() => this.cartService.cartState()?.cartItemsAmount ?? 0);
 
   public showProgressBar = input<boolean>(false);
   public progressBarValue = input<number>(0);
