@@ -1,17 +1,36 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>conversations-list</ion-title>
-  </ion-toolbar>
+  <app-toolbar type="menu" title="Mensajes"></app-toolbar>
 </ion-header>
 
 <ion-content [fullscreen]="true">
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">conversations-list</ion-title>
+      <ion-title size="large">Mensajes</ion-title>
     </ion-toolbar>
   </ion-header>
 
-  <p>
-    {{ conversations().asBuyer.length }}, {{ conversations().asSeller.length }}
-  </p>
+  <div class="container">
+    <div class="top-tabs-container">
+      <div class="as-buyer-tab" (click)="selectedTab.set('conversationsAsBuyer')">
+        <ion-text [class.selected]="selectedTab() === 'conversationsAsBuyer'">Como comprador</ion-text>
+      </div>
+      <div class="as-seller-tab" (click)="selectedTab.set('conversationsAsSeller')">
+        <ion-text [class.selected]="selectedTab() === 'conversationsAsSeller'">Como vendedor</ion-text>
+      </div>
+    </div>
+
+    @if (selectedTab() === 'conversationsAsBuyer') {
+      <app-conversations-list
+        [conversations]="conversationsAsBuyer()"
+        [type]="'asBuyer'"
+      ></app-conversations-list>
+    }
+
+    @if (selectedTab() === 'conversationsAsSeller') {
+      <app-conversations-list
+        [conversations]="conversationsAsSeller()"
+        [type]="'asSeller'"
+      ></app-conversations-list>
+    }
+  </div>
 </ion-content>

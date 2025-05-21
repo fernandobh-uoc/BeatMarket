@@ -2,8 +2,7 @@ import { computed, inject, Injectable, resource, signal } from '@angular/core';
 import { ConversationModel } from 'src/app/core/domain/models/conversation.model';
 import { User } from 'src/app/core/domain/models/user.model';
 import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
-import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 type ConversationsListState = {
   conversationsAsSeller: ConversationModel[],
@@ -34,6 +33,7 @@ export class ConversationsListService {
       }
     }
   })
+  
   private conversationsAsBuyer = resource<ConversationModel[], User | null>({
     request: () => this.authService.currentUser(),
     loader: async ({ request: currentUser }): Promise<ConversationModel[]> => {
@@ -56,10 +56,4 @@ export class ConversationsListService {
   }))
 
   constructor() {}
-
-  // Receive initial lists from the parent component's resolver
-  /* initConversationsList(conversationsAsSeller: ConversationModel[], conversationsAsBuyer: ConversationModel[]) {
-    this.conversationsAsSeller.set(conversationsAsSeller);
-    this.conversationsAsBuyer.set(conversationsAsBuyer);
-  } */
 }

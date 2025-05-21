@@ -74,7 +74,6 @@ export class ConversationService {
       // Else, there is no conversation for the current user and the given post
       return null;
     } catch (error) {
-      //this.errorMessage.set((error as any)?.message ?? 'Unknown error');
       throw error;
     }
   }

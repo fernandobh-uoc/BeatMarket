@@ -1,0 +1,31 @@
+@if (conversations().length === 0) {
+  <div class="container-empty">
+    <ion-text class="text-empty">No hay conversaciones</ion-text>
+  </div>
+} @else {
+  <ion-list lines="none" class="conversations-list">
+    @for (conversation of conversations(); track conversation._id) {
+      <div class="conversation-item" [routerLink]="['/conversation/' + conversation._id]">
+        <div class="conversation-data">
+          <ion-avatar class="user-avatar">
+            @if (type() === 'asBuyer') {
+              <img [src]="conversation.participants.seller.profilePictureURL" alt="Avatar del usuario">
+            }
+            @if (type() === 'asSeller') {
+              <img [src]="conversation.participants.buyer.profilePictureURL" alt="Avatar del usuario">
+            }
+          </ion-avatar>
+          <div class="labels-container">
+            <ion-text class="user-name">{{ type() === 'asBuyer' ? conversation.participants.seller.username : conversation.participants.buyer.username }}</ion-text>
+            <ion-text class="post-title">{{ conversation.relatedPost.title }}</ion-text>
+          </div>
+        </div>
+
+        <div class="conversation-date">
+          <ion-text class="conversation-date">{{ conversation.updatedAt | date: 'dd/MM/yyyy' }}</ion-text>
+        </div>
+      </div>
+    }
+  </ion-list>
+}
+

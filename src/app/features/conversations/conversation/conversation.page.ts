@@ -26,12 +26,6 @@ export class ConversationPage implements OnInit {
 
   async ngOnInit() {
     this.conversationService.setConversationId(this.route.snapshot.paramMap.get('conversationId') ?? '');
-    /* await this.conversationService.loadConversationId({ 
-      productId: this.route.snapshot.queryParamMap.get('postId') ?? '',
-      sellerId: this.route.snapshot.queryParamMap.get('postUserId') ?? ''
-    }); */
-
-    
   }
 
 }
