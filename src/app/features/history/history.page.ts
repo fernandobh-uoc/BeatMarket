@@ -20,7 +20,7 @@ export class HistoryPage implements OnInit {
   boughtItems = signal<Sale[] | null>(null);
   soldItems = signal<Sale[] | null>(null);
 
-  selectedTab = signal<string>('boughtItems')
+  selectedTab = signal<'boughtItems' | 'soldItems'>('boughtItems')
 
   constructor() {}
 
