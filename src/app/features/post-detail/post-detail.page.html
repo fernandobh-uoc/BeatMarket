@@ -30,7 +30,7 @@
           </ion-text>
         </div>
         @if (!isOwnPost()) {
-          <div class="message-icon-container">
+          <div class="message-icon-container" (click)="goToConversation()">
             <ion-icon name="chatbubble-ellipses" color="light" size="large"></ion-icon>
           </div>
         }

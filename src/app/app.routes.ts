@@ -1,6 +1,5 @@
 import { Routes } from '@angular/router';
 import { authGuard } from './core/guards/auth.guard';
-import { postDetailResolver, postDetailResolver$ } from './features/post-detail/utils/resolvers/post-detail.resolver';
 
 export const routes: Routes = [
   {
@@ -23,13 +22,16 @@ export const routes: Routes = [
   },
   {
     path: 'checkout',
-    //loadComponent: () => import('./features/checkout/checkout.page').then(m => m.CheckoutPage
     loadChildren: () => import('./features/checkout/checkout.routes').then(m => m.CheckoutRoutes),
     canMatch: [authGuard],
     data: { authStatusMustBe: true }
   },
   {
     path: 'search',
-    loadComponent: () => import('./features/search/search.page').then( m => m.SearchPage)
+    loadComponent: () => import('./features/search/search.page').then(m => m.SearchPage)
+  },
+  {
+    path: 'conversation/:conversationId',
+    loadComponent: () => import('./features/conversations/conversation/conversation.page').then(m => m.ConversationPage)
   }
 ];

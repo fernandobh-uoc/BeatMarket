@@ -7,10 +7,12 @@ export const ConversationRepository = new InjectionToken<ConversationRepository>
 export interface ConversationRepository {
   getConversationById(id: string): Promise<Conversation | null>;
   getConversationById$?(id: string): Observable<Conversation | null> | null;
-  getConversationsByInitiatorId(initiatorId: string): Promise<Conversation[] | null>;
-  getConversationsByInitiatorId$?(initiatorId: string): Observable<Conversation[] | null> | null;
-  getConversationsByRecipientId(recipientId: string): Promise<Conversation[] | null>;
-  getConversationsByRecipientId$?(recipientId: string): Observable<Conversation[] | null> | null;
+  getConversationsByParticipantId$?(participantId: string): Observable<Conversation[] | null> | null;
+  getConversationsByBuyerId(initiatorId: string): Promise<Conversation[] | null>;
+  getConversationsByBuyerId$?(initiatorId: string): Observable<Conversation[] | null> | null;
+  getConversationsBySellerId(recipientId: string): Promise<Conversation[] | null>;
+  getConversationsBySellerId$?(recipientId: string): Observable<Conversation[] | null> | null;
+  getConversationsByParticipantId(participantId: string): Promise<Conversation[] | null>;
   getConversationsByPostId(postId: string): Promise<Conversation[] | null>;
   getConversationsByPostId$?(postId: string): Observable<Conversation[] | null> | null;
   getAllConversations(): Promise<Conversation[] | null>;

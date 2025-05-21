@@ -35,12 +35,12 @@ export class HomePage implements ViewDidEnter, ViewDidLeave {
     return this.#recommendedPosts();
   }
 
-  async ionViewDidEnter(): Promise<void> {
-    this.#latestPosts.set(await this.route.snapshot.data['latestPosts']);
-    this.#recommendedPosts.set(await this.route.snapshot.data['recommendedPosts']);
+  ionViewDidEnter(): void {
+    this.#latestPosts.set(this.route.snapshot.data['latestPosts']);
+    this.#recommendedPosts.set(this.route.snapshot.data['recommendedPosts']);
   }
 
-  async ionViewDidLeave(): Promise<void> {
+  ionViewDidLeave(): void {
     this.toolbar()?.searchActive.set(false);
   }
 }

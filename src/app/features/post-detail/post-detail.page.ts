@@ -2,19 +2,16 @@ import { Component, computed, effect, inject, input, OnInit, signal } from '@ang
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonAvatar, IonIcon, IonButton } from '@ionic/angular/standalone';
-import { Post } from 'src/app/core/domain/models/post.model';
 import { PostDetailService } from './data-access/post-detail.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { PostImagesSliderComponent } from './ui/post-images-slider/post-images-slider.component';
 import { addIcons } from 'ionicons';
-import { chatbubbleEllipses, chatbubbleEllipsesOutline } from 'ionicons/icons';
+import { chatbubbleEllipses } from 'ionicons/icons';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
-import { Observable } from 'rxjs';
 import { KeyValuePairsPipe } from 'src/app/shared/utils/pipes/key-value-pairs.pipe';
 import { ArticleCharacteristicsTranslatePipe } from 'src/app/shared/utils/pipes/article-characteristics-translate.pipe';
-import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { CartService } from '../cart/data-access/cart.service';
 
 @Component({
@@ -30,13 +27,14 @@ export class PostDetailPage implements OnInit {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
 
-  #postData = signal<Post | null>(null);
-  itemIsAdded = computed<boolean>(() => this.cartService.cartState().cartItems.some(item => item.postId === this.#postData()?._id) ?? false);
-  isOwnPost = signal<boolean>(true);
+  postData = computed(() => this.postDetailService.postDetailState().postData);
 
-  get postData() {
-    return this.#postData.asReadonly();
-  }
+  itemIsAdded = computed<boolean>(() => {
+    return this.cartService.cartState().cartItems
+      .some(item => item.postId === this.postData()?._id) 
+      ?? false
+  });
+  isOwnPost = signal<boolean>(true);
 
   get Math() {
     return Math;
@@ -46,17 +44,12 @@ export class PostDetailPage implements OnInit {
     addIcons({ chatbubbleEllipses });
 
     effect(() => {
-      this.isOwnPost.set(this.#postData()?.user?.userId === this.authService.currentUser()?._id);
+      this.isOwnPost.set(this.postData()?.user?.userId === this.authService.currentUser()?._id);
     })
   }
 
-  ngOnInit() {
-    const postData$ = this.route.snapshot.data['postData$'];
-    if (postData$) {
-      postData$.subscribe((postData: Post | null) => {
-        this.#postData.set(postData);
-      });
-    }
+  async ngOnInit() {
+    this.postDetailService.setPostId(this.route.snapshot.paramMap.get('postId') ?? '');
   }
 
   addToCart() {
@@ -69,5 +62,9 @@ export class PostDetailPage implements OnInit {
       shipping: shipping,
       mainImageURL: this.postData()?.mainImageURL ?? ''
     })
+  }
+
+  goToConversation(): void {
+    this.postDetailService.loadConversation();
   }
 }

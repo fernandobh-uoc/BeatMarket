@@ -53,6 +53,7 @@ export class SearchService {
 
   private initialResults = resource({
     request: () => ({
+      query: this.query(),
       generalFilters: this.generalFilters(),
       limit: this.limit(),
     }),

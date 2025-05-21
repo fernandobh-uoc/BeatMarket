@@ -1,5 +1,5 @@
 import { FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "@angular/fire/firestore";
-import { Conversation, ConversationModel, ParticipantModel } from "src/app/core/domain/models/conversation.model";
+import { Conversation, ConversationModel, MessageModel, ParticipantModel } from "src/app/core/domain/models/conversation.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 
 export interface FirestoreConversationModel {
@@ -11,13 +11,13 @@ export interface FirestoreConversationModel {
     mainImageURL: string;
   },
   participants: {
-    initiator: {
-      participantId: string;
+    buyer: {
+      userId: string;
       username: string;
       profilePictureURL: string;
     },
-    recipient: {
-      participantId: string;
+    seller: {
+      userId: string;
       username: string;
       profilePictureURL: string;
     }
@@ -31,7 +31,7 @@ export interface FirestoreMessageModel {
   timestamp: Timestamp;
   senderId: string;
   recipientId: string;
-  status: string;
+  //status: string;
 }
 
 export class FirestoreConversationConverter implements FirestoreDataConverter<ConversationModel, FirestoreConversationModel> {
@@ -41,15 +41,15 @@ export class FirestoreConversationConverter implements FirestoreDataConverter<Co
       participants: isFieldValue(conversation.participants)
         ? conversation.participants
         : {
-          initiator: {
-            participantId: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.userId,
-            username: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.username,
-            profilePictureURL: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).initiator.profilePictureURL
+          buyer: {
+            userId: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).buyer.userId,
+            username: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).buyer.username,
+            profilePictureURL: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).buyer.profilePictureURL
           },
-          recipient: {
-            participantId: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.userId,
-            username: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.username,
-            profilePictureURL: (conversation.participants as { initiator: ParticipantModel; recipient: ParticipantModel }).recipient.profilePictureURL
+          seller: {
+            userId: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).seller.userId,
+            username: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).seller.username,
+            profilePictureURL: (conversation.participants as { buyer: ParticipantModel; seller: ParticipantModel }).seller.profilePictureURL
           }
         },
       createdAt: isValidDateInput(conversation.createdAt)
@@ -72,15 +72,15 @@ export class FirestoreConversationConverter implements FirestoreDataConverter<Co
       _id: snapshot.id,
       relatedPost: data.relatedPost,
       participants: {
-        initiator: {
-          userId: data.participants.initiator.participantId,
-          username: data.participants.initiator.username,
-          profilePictureURL: data.participants.initiator.profilePictureURL
+        buyer: {
+          userId: data.participants.buyer.userId,
+          username: data.participants.buyer.username,
+          profilePictureURL: data.participants.buyer.profilePictureURL
         },
-        recipient: {
-          userId: data.participants.recipient.participantId,
-          username: data.participants.recipient.username,
-          profilePictureURL: data.participants.recipient.profilePictureURL
+        seller: {
+          userId: data.participants.seller.userId,
+          username: data.participants.seller.username,
+          profilePictureURL: data.participants.seller.profilePictureURL
         }
       },
       createdAt: isFirestoreTimestamp(data.createdAt)
@@ -90,5 +90,32 @@ export class FirestoreConversationConverter implements FirestoreDataConverter<Co
         ? data.updatedAt.toDate()
         : null,
     });
+  }
+}
+
+export class FirestoreMessageConverter implements FirestoreDataConverter<MessageModel, FirestoreMessageModel> {
+  toFirestore(message: WithFieldValue<MessageModel>): WithFieldValue<FirestoreMessageModel> {
+    return {
+      text: message.text,
+      timestamp: isValidDateInput(message.timestamp)
+        ? Timestamp.fromDate(new Date(message.timestamp))
+        : isFieldValue(message.timestamp)
+          ? message.timestamp
+          : serverTimestamp(),
+      senderId: message.senderId,
+      recipientId: message.recipientId
+    };
+  }
+
+  fromFirestore(snapshot: QueryDocumentSnapshot<FirestoreMessageModel>, options?: SnapshotOptions): MessageModel {
+    const data = snapshot.data(options);
+
+    return {
+      _id: snapshot.id,
+      text: data.text,
+      timestamp: data.timestamp.toDate(),
+      senderId: data.senderId,
+      recipientId: data.recipientId
+    };
   }
 }

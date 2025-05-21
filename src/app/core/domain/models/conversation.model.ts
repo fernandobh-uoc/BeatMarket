@@ -2,11 +2,11 @@ import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
 import { Timestamps } from "./appModel.type";
 
-export enum MessageStatus {
+/* export enum MessageStatus {
   Pending = 'Pendiente',
   Sent = 'Enviado',
   Received = 'Recibido'
-}
+} */
 
 export interface RelatedPostModel {
   postId: string;
@@ -28,18 +28,16 @@ export interface MessageModel {
   timestamp: Date;
   senderId: UserModel["_id"];
   recipientId: UserModel["_id"];
-  status: MessageStatus;
+  //status: MessageStatus;
 }
 
 export interface ConversationModel extends JSONSerializable<ConversationModel>, Timestamps {
   _id: string;
   relatedPost: RelatedPostModel;
-  initiatedAt: Date;
-  lastUpdatedAt: Date;
   //participants: [ParticipantModel, ParticipantModel],
   participants: {
-    initiator: ParticipantModel,
-    recipient: ParticipantModel
+    buyer: ParticipantModel,
+    seller: ParticipantModel
   },
   messages: MessageModel[];  // Subcollection
 }
@@ -53,11 +51,9 @@ export class Conversation implements ConversationModel {
     isActive: true,
     mainImageURL: '' 
   };
-  public initiatedAt: Date = new Date();
-  public lastUpdatedAt: Date = new Date();
-  public participants: { initiator: ParticipantModel, recipient: ParticipantModel } = {
-    initiator: { userId: '', username: '', profilePictureURL: '' },
-    recipient: { userId: '', username: '', profilePictureURL: '' }
+  public participants: { buyer: ParticipantModel, seller: ParticipantModel } = { 
+    buyer: { userId: '', username: '', profilePictureURL: '' },
+    seller: { userId: '', username: '', profilePictureURL: '' }
   };
   public messages: MessageModel[] = [];
 
