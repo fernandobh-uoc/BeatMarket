@@ -1,17 +1,29 @@
 .container-empty {
-  margin-top: 4rem;
+  position: relative;
+  min-height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
+  gap: 5rem;
 
   .text-empty {
+    position: absolute;
+    top: 25%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     color: var(--ion-color-medium-tint);
     font-size: var(--body-large-size, 1rem);
     font-style: normal;
     font-weight: var(--body-large-weight, 400);
     line-height: var(--body-large-line-height, 1.5rem);
     letter-spacing: var(--body-large-tracking, 0.03125rem);
+  }
+
+  .cart-icon-empty {
+    width: 180px;
+    height: 180px;
+    color: var(--ion-color-dark-tint);
   }
 }
 
