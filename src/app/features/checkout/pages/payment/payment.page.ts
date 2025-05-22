@@ -1,7 +1,7 @@
-import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { CheckoutFormComponent } from '../../ui/checkout-form/checkout-form.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   templateUrl: './payment.page.html',
   styleUrls: ['./payment.page.scss'],
   standalone: true,
-  imports: [ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class PaymentPage implements OnInit {
   router = inject(Router);
@@ -25,20 +25,24 @@ export class PaymentPage implements OnInit {
   totalSteps = 2;
   progressBarValue = computed(() => this.step() / this.totalSteps);
 
-  disabledCheckoutButton = signal<boolean>(false);
-
-  userFullName = computed<string>(() => this.checkoutService.userFullName() ?? '');
-  cartItems = computed<CartItemModel[]>(() => this.checkoutService.cartItems() ?? []);
-  itemsArticlesTotal = computed<number>(() => this.checkoutService.itemsArticlesTotal());
-  itemsShippingTotal = computed<number>(() => this.checkoutService.itemsShippingTotal());
-  totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
-
   checkoutFormComponent = viewChild(CheckoutFormComponent);
-  checkoutFormData = signal<Record<string, any>>({})
-
+  checkoutFormData = signal<Record<string, any>>({});
   submitAttempted = signal<boolean>(false);
 
-  constructor() { }
+  //disabledCheckoutButton = signal<boolean>(false);
+  loading = computed(() => this.checkoutService.checkoutState().loading);
+
+  userFullName = computed<string>(() => this.checkoutService.checkoutState().currentUser.fullName ?? '');
+  cartItems = computed<CartItemModel[]>(() => this.checkoutService.checkoutState().cartItems ?? []);
+  itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));
+  itemsShippingTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.shipping, 0));
+  totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
+
+
+  constructor() { 
+    effect(() => console.log({ loading: this.loading() }));
+
+  }
 
   ngOnInit() {
   }
@@ -68,7 +72,6 @@ export class PaymentPage implements OnInit {
 
   async handleCheckout() {
     try {
-      this.disabledCheckoutButton.set(true);
       await this.checkoutService.checkout({
         items: this.cartItems(),
         paymentData: this.checkoutFormData()

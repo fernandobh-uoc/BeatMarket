@@ -1,67 +1,86 @@
-import { computed, effect, inject, Injectable, OutputEmitterRef, signal } from '@angular/core';
+import { computed, effect, inject, Injectable, linkedSignal, OutputEmitterRef, signal } from '@angular/core';
 import { CartService } from '../../cart/data-access/cart.service';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { SaleRepository } from 'src/app/core/domain/repositories/sale.repository';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { Post, PostModel } from 'src/app/core/domain/models/post.model';
-import { catchError, combineLatest, forkJoin, Observable, of } from 'rxjs';
+import { catchError, combineLatest, forkJoin, map, Observable, of } from 'rxjs';
 import { User } from 'src/app/core/domain/models/user.model';
 import { Sale } from 'src/app/core/domain/models/sale.model';
+import { rxResource } from '@angular/core/rxjs-interop';
+
+type CheckoutState = {
+  cartItems: CartItemModel[],
+  currentUser: User,
+  loading: boolean,
+  errorMessage: string
+}
 
 @Injectable({
   providedIn: 'root'
 })
 export class CheckoutService {
-  authService = inject(AuthService);
-  cartService = inject(CartService);
+  private authService = inject(AuthService);
+  private cartService = inject(CartService);
+  private postRepository = inject(PostRepository);
+  private saleRepository = inject(SaleRepository);
 
-  postRepository = inject(PostRepository);
-  saleRepository = inject(SaleRepository);
+  private cartItems = computed<CartItemModel[]>(() => this.cartService.cartState()?.cartItems ?? []);
 
-  userFullName = computed<string>(() => this.authService.currentUser()?.fullName ?? '');
+  private cartItemsPosts = rxResource<Post[] | null, string[] | null>({
+    request: () => this.cartItems().map(item => item.postId),
+    loader: ({ request: postIds }): Observable<Post[]> => {
+      if (!postIds || !postIds.length) return of([]);
 
-  cartItems = computed<CartItemModel[]>(() => this.cartService.cartState()?.cartItems ?? []);
-  cartItemsPosts = signal<Post[] | null>([]);
-
-  itemsArticlesTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.price, 0));
-  itemsShippingTotal = computed<number>(() => this.cartItems().reduce((acc, item) => acc + item.shipping, 0));
-  totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
-
-  constructor() {
-    effect(() => {
-      const items = this.cartItems();
-
-      if (items.length === 0 || !this.postRepository.getPostById$) {
-        this.cartItemsPosts.set([]);
-        return;
-      }
-
-      const postObservables = items.map(item =>
-        this.postRepository.getPostById$!(item.postId)?.pipe(
-          catchError(() => of(null))
+      try {
+        const postObservables: Observable<Post | null>[] = postIds.map(postId => {
+          return this.postRepository.getPostById$(postId) ?? of(null);
+        });
+  
+        return combineLatest(postObservables).pipe(
+          map(posts => posts.filter((post): post is Post => post !== null))
         )
-      );
+      } catch (error) {
+        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
+        return of([]);
+      }
+    }
+  })
 
-      combineLatest([...postObservables]).subscribe(posts => {
-        this.cartItemsPosts.set(posts.filter(post => post !== null) as unknown as Post[]);
-      });
-    });
-  }
+  //private loading = computed<boolean>(() => this.cartItemsPosts.isLoading());
+  //private loading = linkedSignal<boolean>(() => this.cartItemsPosts.isLoading());
+  private loading = signal<boolean>(false);
+  private errorMessage = signal<string>('');
 
-  async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<void> {
+  checkoutState = computed<CheckoutState>(() => ({
+    cartItems: this.cartItems(),
+    currentUser: this.authService.currentUser()!,
+    loading: this.loading(),
+    errorMessage: this.errorMessage()
+  }));
+
+
+  constructor() {}
+
+  async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<Sale[] | null> {
+
+    this.loading.set(true);
 
     // TODO: Stripe checkout
     await new Promise(resolve => setTimeout(resolve, 1000));
 
     try {
+
       const currentUser: User | null = this.authService.currentUser();
       const saleDate = new Date();
+      const completedSales: Sale[] = [];
 
       for (let item of this.cartItems()) {
         let sale: Sale | null;
-        const postData = this.cartItemsPosts()?.find(post => post._id === item.postId);
-        if (!postData) return;
+        //const postData = this.cartItemsPosts()?.find(post => post._id === item.postId);
+        const postData = this.cartItemsPosts.value()?.find(post => post._id === item.postId);
+        if (!postData) return null;
         
         // Just in case someone bought the product before
         if (!postData.isActive) throw new Error('Post is inactive'); 
@@ -103,13 +122,17 @@ export class CheckoutService {
             finishedAt: saleDate
           }) */
 
-          // Empty user's cart (not necessary since the carts are handled in firebase trigger)
+          // Empty user's cart (handled in firebase trigger)
           // this.cartService.clearCart();
+          completedSales.push(sale);
         }
       }
+
+      this.loading.set(false);
+      return completedSales;
     } catch (error) {
       console.error(error);
-      return;
+      return null;
     }
   }
 }
