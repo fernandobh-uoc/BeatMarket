@@ -2,6 +2,30 @@ ion-title {
   margin-left: 0.5rem;
 }
 
+.large {
+    font-size: var(--title-large-size, 1.375rem);
+		font-style: normal;
+		font-weight: 400;
+		line-height: var(title-large-line-height, 1.75rem);
+		letter-spacing: var(--title-large-tracking, 0rem);
+  }
+
+  .medium {
+    font-size: var(--title-medium-size, 1rem);
+		font-style: normal;
+		font-weight: 500;
+		line-height: var(title-medium-line-height, 1.5rem);
+		letter-spacing: var(--title-medium-tracking, 0.00938rem);
+  }
+
+  .small {
+    font-size: var(--title-small-size, 0.875rem);
+		font-style: normal;
+		font-weight: 500;
+		line-height: var(title-small-line-height, 1.25rem);
+		letter-spacing: var(--title-small-tracking, 0.00625rem);
+  }
+
 .searchbar {
   --background: var(--ion-color-light-shade);
   --color: var(--ion-color-dark);

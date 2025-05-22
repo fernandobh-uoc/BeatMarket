@@ -27,6 +27,7 @@ export class ToolbarComponent implements OnInit {
 
   public largeTitle = input<boolean>(false);
   public title = input<string>('');
+  public titleFontSize = input<'large' | 'medium' | 'small'>('large');
 
   public showSearch = input<boolean>(true);
   public searchDefaultActive = input<boolean>(false);

@@ -54,7 +54,12 @@
       </ion-button>
     }
   </ion-buttons>
-  <ion-title [attr.size]="largeTitle() ? 'large' : undefined">{{ title() }}</ion-title>
+  <ion-title 
+    [class.large]="titleFontSize() === 'large'" 
+    [class.medium]="titleFontSize() === 'medium'"
+    [class.small]="titleFontSize() === 'small'"
+    [attr.size]="largeTitle() ? 'large' : undefined"
+  >{{ title() }}</ion-title>
   @if (showProgressBar()) {
     <ion-progress-bar color="light" [value]="progressBarValue()"></ion-progress-bar>
   }
