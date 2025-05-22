@@ -10,18 +10,31 @@
   </ion-header>
 
   <div class="container">
+
     <div class="title-cards-row-container">
       <ion-text class="title-cards-row">Últimos anuncios</ion-text> 
-      <app-post-cards-row
-        [posts]="latestPosts"
-      ></app-post-cards-row>
+      @if (loading()) {
+        <div class="loading-spinner-container">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      } @else {
+        <app-post-cards-row
+          [posts]="latestPosts()"
+        ></app-post-cards-row>
+      }
     </div>
 
     <div class="title-cards-row-container">
       <ion-text class="title-cards-row">Anuncios destacados</ion-text>
-      <app-post-cards-row
-        [posts]="recommendedPosts"
-      ></app-post-cards-row>
+      @if (loading()) {
+        <div class="loading-spinner-container">
+          <ion-spinner name="crescent"></ion-spinner>
+        </div>
+      } @else {
+        <app-post-cards-row
+          [posts]="recommendedPosts()"
+        ></app-post-cards-row>
+      }
     </div>
   </div>
 </ion-content>

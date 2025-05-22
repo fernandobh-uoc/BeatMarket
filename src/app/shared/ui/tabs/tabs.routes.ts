@@ -16,10 +16,10 @@ export const TabsRoutes: Routes = [
       {
         path: 'home',
         loadComponent: () => import('src/app/features/home/home.page').then(m => m.HomePage),
-        resolve: {
+        /* resolve: {
           latestPosts: latestPostsResolver,
           recommendedPosts: recommendedPostsResolver
-        }
+        } */
       },
       {
         path: 'search',

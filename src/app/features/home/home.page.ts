@@ -1,5 +1,5 @@
-import { Component, inject, OnInit, signal, viewChild } from '@angular/core';
-import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonText } from '@ionic/angular/standalone';
+import { Component, computed, inject, OnInit, signal, viewChild } from '@angular/core';
+import { IonHeader, IonToolbar, IonTitle, IonContent, IonButton, IonText, IonSpinner } from '@ionic/angular/standalone';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { Role } from 'src/app/core/domain/models/user.model';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
@@ -17,27 +17,28 @@ import { ViewDidEnter, ViewDidLeave } from '@ionic/angular';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
+  imports: [IonSpinner, IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
 })
 export class HomePage implements ViewDidEnter, ViewDidLeave {
   route = inject(ActivatedRoute);
+  homeService = inject(HomeService);
 
-  #latestPosts = signal<Post[]>([]);
-  #recommendedPosts = signal<Post[]>([]);
+  latestPosts = computed(() => this.homeService.homeState().latestPosts);
+  recommendedPosts = computed(() => this.homeService.homeState().recommendedPosts);
 
+  loading = computed(() => this.homeService.homeState().loading);
+  errorMessage = computed(() => this.homeService.homeState().errorMessage);
+  
   toolbar = viewChild(ToolbarComponent);
-
-  get latestPosts() {
-    return this.#latestPosts();
-  }
-
-  get recommendedPosts() {
-    return this.#recommendedPosts();
-  }
+  
+  constructor() {}
 
   ionViewDidEnter(): void {
-    this.#latestPosts.set(this.route.snapshot.data['latestPosts']);
-    this.#recommendedPosts.set(this.route.snapshot.data['recommendedPosts']);
+    /* 
+    this.latestPosts.set(this.route.snapshot.data['latestPosts']);
+    this.recommendedPosts.set(this.route.snapshot.data['recommendedPosts']); 
+    */
+   this.homeService.reloadResources();
   }
 
   ionViewDidLeave(): void {
