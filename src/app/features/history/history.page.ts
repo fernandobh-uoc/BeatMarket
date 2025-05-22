@@ -1,4 +1,4 @@
-import { Component, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, effect, inject, linkedSignal, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText } from '@ionic/angular/standalone';
@@ -6,6 +6,8 @@ import { ActivatedRoute } from '@angular/router';
 import { Sale } from 'src/app/core/domain/models/sale.model';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { HistoryListComponent } from './ui/history-list/history-list.component';
+import { HistoryService } from './data-access/history.service';
+import { ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-history',
@@ -14,11 +16,12 @@ import { HistoryListComponent } from './ui/history-list/history-list.component';
   standalone: true,
   imports: [HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class HistoryPage implements OnInit {
+export class HistoryPage implements OnInit, ViewDidEnter {
   private route = inject(ActivatedRoute);
+  private historyService = inject(HistoryService);
 
-  boughtItems = signal<Sale[] | null>(null);
-  soldItems = signal<Sale[] | null>(null);
+  boughtItems = linkedSignal<Sale[]>(() => this.historyService.historyState().boughtItems);
+  soldItems = linkedSignal<Sale[]>(() => this.historyService.historyState().soldItems);
 
   selectedTab = signal<'boughtItems' | 'soldItems'>('boughtItems')
 
@@ -29,4 +32,8 @@ export class HistoryPage implements OnInit {
     this.soldItems.set(this.route.snapshot.data['soldItems']);
   }
 
+  ionViewDidEnter(): void {
+    this.boughtItems.set(this.route.snapshot.data['boughtItems']);
+    this.soldItems.set(this.route.snapshot.data['soldItems']);
+  }
 }

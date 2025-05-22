@@ -1,14 +1,23 @@
 import { ResolveFn } from '@angular/router';
-import { HistoryService } from '../../data-access/history.service';
 import { inject } from '@angular/core';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { Sale } from 'src/app/core/domain/models/sale.model';
+import { SaleRepository } from 'src/app/core/domain/repositories/sale.repository';
 
 export const boughtItemsResolver: ResolveFn<Sale[] | null> = async (route, state) => {
-  const historyService = inject(HistoryService);
-  return await historyService.getBoughtItems();
+  const authService = inject(AuthService);
+  const saleRepository = inject(SaleRepository);
+  
+  const userId = authService.authStatus().userId;
+  if (!userId) return [];
+  return await saleRepository.getSalesByBuyerId(userId) ?? [];
 };
 
 export const soldItemsResolver: ResolveFn<Sale[] | null> = async (route, state) => {
-  const historyService = inject(HistoryService);
-  return await historyService.getSoldItems();
+  const authService = inject(AuthService);
+  const saleRepository = inject(SaleRepository);
+
+  const userId = authService.authStatus().userId;
+  if (!userId) return [];
+  return await saleRepository.getSalesBySellerId(userId) ?? [];
 };
