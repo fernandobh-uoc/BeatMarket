@@ -1,12 +1,11 @@
-import { Component, computed, effect, inject, OnInit, signal, ViewChild, viewChild } from '@angular/core';
+import { Component, computed, effect, inject, OnInit, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonThumbnail, IonText, IonItem, IonInput, IonIcon, IonAvatar, IonFooter } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonThumbnail, IonText, IonInput, IonIcon, IonAvatar, IonFooter } from '@ionic/angular/standalone';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ConversationService } from './data-access/conversation.service';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
-import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { FormatCurrencyPipe } from "../../../shared/utils/pipes/format-currency.pipe";
 import { addIcons } from 'ionicons';
 import { navigateOutline } from 'ionicons/icons';
@@ -18,7 +17,7 @@ import { FormatTimestampPipe } from '../conversation/utils/pipes/format-timestam
   templateUrl: './conversation.page.html',
   styleUrls: ['./conversation.page.scss'],
   standalone: true,
-  imports: [FormatTimestampPipe, IonFooter, IonAvatar, RouterLink, IonIcon, IonInput, IonItem, IonText, ToolbarComponent, IonThumbnail, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [FormatTimestampPipe, IonFooter, IonAvatar, RouterLink, IonIcon, IonInput, IonText, ToolbarComponent, IonThumbnail, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class ConversationPage implements OnInit {
   private route = inject(ActivatedRoute);
