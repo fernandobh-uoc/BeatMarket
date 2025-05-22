@@ -36,10 +36,10 @@ export const TabsRoutes: Routes = [
       {
         path: 'conversations',
         loadComponent: () => import('src/app/features/conversations/conversations-list/conversations-list.page').then(m => m.ConversationsListPage),
-        resolve: {
+        /* resolve: {
           conversationsAsBuyer: conversationsAsBuyerResolver,
           conversationsAsSeller: conversationsAsSellerResolver,
-        }
+        } */
       },
       {
         path: 'post-detail/:postId',

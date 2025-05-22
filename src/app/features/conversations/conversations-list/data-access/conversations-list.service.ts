@@ -22,20 +22,6 @@ export class ConversationsListService {
   
   private errorMessage = signal<string>('');
 
-  /* private conversationsAsSeller = resource<ConversationModel[], User | null>({
-    request: () => this.authService.currentUser(),
-    loader: async ({ request: currentUser }): Promise<ConversationModel[]> => {
-      if (!currentUser) return [];
-      try {
-        const conversations = await this.conversationRepository.getConversationsBySellerId(currentUser._id);
-        return conversations ?? [];
-      } catch (error) {
-        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
-        return [];
-      }
-    }
-  }) */
-
   private conversationsAsSeller = rxResource<ConversationModel[] | null, string | null>({
     request: () => this.authService.currentUser()?._id ?? null,
     loader: ({ request: userId }): Observable<ConversationModel[] | null> => {
@@ -50,20 +36,6 @@ export class ConversationsListService {
       }
     }
   });
-  
-  /* private conversationsAsBuyer = resource<ConversationModel[], User | null>({
-    request: () => this.authService.currentUser(),
-    loader: async ({ request: currentUser }): Promise<ConversationModel[]> => {
-      if (!currentUser) return [];
-      try {
-        const conversations = await this.conversationRepository.getConversationsByBuyerId(currentUser._id);
-        return conversations ?? [];
-      } catch (error) {
-        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
-        return [];
-      }
-    }
-  }) */
 
   private conversationsAsBuyer = rxResource<ConversationModel[] | null, string | null>({
     request: () => this.authService.currentUser()?._id ?? null,

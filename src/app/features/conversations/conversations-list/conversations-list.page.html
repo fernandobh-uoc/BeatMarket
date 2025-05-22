@@ -19,18 +19,24 @@
       </div>
     </div>
 
-    @if (selectedTab() === 'conversationsAsBuyer') {
-      <app-conversations-list
-        [conversations]="conversationsAsBuyer()"
-        [type]="'asBuyer'"
-      ></app-conversations-list>
-    }
-
-    @if (selectedTab() === 'conversationsAsSeller') {
-      <app-conversations-list
-        [conversations]="conversationsAsSeller()"
-        [type]="'asSeller'"
-      ></app-conversations-list>
+    @if (loading()) {
+      <div class="loading-spinner-container">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else {
+      @if (selectedTab() === 'conversationsAsBuyer') {
+        <app-conversations-list
+          [conversations]="conversationsAsBuyer()"
+          [type]="'asBuyer'"
+        ></app-conversations-list>
+      }
+  
+      @if (selectedTab() === 'conversationsAsSeller') {
+        <app-conversations-list
+          [conversations]="conversationsAsSeller()"
+          [type]="'asSeller'"
+        ></app-conversations-list>
+      }
     }
   </div>
 </ion-content>

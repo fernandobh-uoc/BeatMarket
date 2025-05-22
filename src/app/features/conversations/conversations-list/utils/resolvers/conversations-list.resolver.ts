@@ -5,6 +5,8 @@ import { ConversationRepository } from 'src/app/core/domain/repositories/convers
 import { AuthStatus } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 
+// UNUSED
+
 export const conversationsAsSellerResolver: ResolveFn<Conversation[]> = async (route, state) => {
   const conversationRepository = inject(ConversationRepository);
   const cache = inject(LocalStorageService);

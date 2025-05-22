@@ -1,7 +1,7 @@
 import { Component, computed, inject, linkedSignal, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonSpinner } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { ConversationsListService } from './data-access/conversations-list.service';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
@@ -13,7 +13,7 @@ import { Conversation } from 'src/app/core/domain/models/conversation.model';
   templateUrl: './conversations-list.page.html',
   styleUrls: ['./conversations-list.page.scss'],
   standalone: true,
-  imports: [ToolbarComponent, ConversationsListComponent, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonSpinner, ToolbarComponent, ConversationsListComponent, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class ConversationsListPage {
   private route = inject(ActivatedRoute);
@@ -21,7 +21,7 @@ export class ConversationsListPage {
 
   selectedTab = signal<'conversationsAsBuyer' | 'conversationsAsSeller'>('conversationsAsBuyer');
   
-  conversationsAsBuyer = computed(() => {
+  /* conversationsAsBuyer = computed(() => {
     const source = this.conversationsListService.conversationsListState().conversationsAsBuyer;
     const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsBuyer'];
     return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
@@ -31,7 +31,10 @@ export class ConversationsListPage {
     const source = this.conversationsListService.conversationsListState().conversationsAsSeller;
     const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsSeller'];
     return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
-  });
+  }); */
+
+  conversationsAsBuyer = computed(() => this.conversationsListService.conversationsListState().conversationsAsBuyer);
+  conversationsAsSeller = computed(() => this.conversationsListService.conversationsListState().conversationsAsSeller);
 
   conversations = computed(() => ({
     asBuyer: this.conversationsAsBuyer(),
