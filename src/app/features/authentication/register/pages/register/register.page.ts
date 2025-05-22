@@ -1,4 +1,4 @@
-import { Component, computed, ElementRef, inject, signal, effect, ViewChild, viewChild, WritableSignal, Signal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, effect, ViewChild, viewChild, WritableSignal, Signal, linkedSignal } from '@angular/core';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
 import { filter, last } from 'rxjs/operators';
 
@@ -22,10 +22,8 @@ import { Router } from '@angular/router';
   imports: [IonContent, IonHeader, IonProgressBar, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, RegisterFormComponent]
 })
 export class RegisterPage {
-  #router = inject(Router);
-  #registerService = inject(RegisterService);
-
-  //@ViewChild('fileInput') fileInput!: ElementRef<HTMLInputElement>;
+  private router = inject(Router);
+  private registerService = inject(RegisterService);
   
   constructor() {
     addIcons({ arrowBackOutline });
@@ -37,30 +35,28 @@ export class RegisterPage {
   totalSteps = 4;
   progress = computed(() => (this.step() / this.totalSteps));
 
-  authProviderErrorMessage = computed(() => this.#registerService.errorMessage() ?? '');
-  profilePictureDataURL = computed(() => this.#registerService.profilePictureDataURL() ?? '');
+  errorMessage = computed(() => this.registerService.registerState().errorMessage);
+  profilePictureDataURL = computed(() => this.registerService.registerState().profilePictureDataURL);
   
-  //registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
-
   submitAttempts: Record<string, WritableSignal<boolean>> = {
     email: signal<boolean>(false),
     userData: signal<boolean>(false),
     personalData: signal<boolean>(false),
-    otherData: signal<boolean>(false)
+    register: signal<boolean>(false)
   };
 
-  disabledNextButtons = {
+  loadingStates = {
     email: signal<boolean>(false),
     userData: signal<boolean>(false),
     personalData: signal<boolean>(false),
-    otherData: signal<boolean>(false)
+    register: linkedSignal<boolean>(() => this.registerService.registerState().loading)
   }
 
   onControlFocus(control: string) {
     this.submitAttempts['email'].set(false);
     this.submitAttempts['userData'].set(false);
     this.submitAttempts['personalData'].set(false);
-    this.submitAttempts['otherData'].set(false);
+    this.submitAttempts['register'].set(false);
   }
 
   nextStep = () => {
@@ -90,7 +86,7 @@ export class RegisterPage {
   fileInput: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild('fileInput');
   onAvatarUpload = async () => {
     if (Capacitor.isNativePlatform()) {
-      await this.#registerService.getAvatarData();
+      await this.registerService.getAvatarData();
     } else {
       // Activate hidden file input
       this.fileInput()?.nativeElement.click();
@@ -99,12 +95,8 @@ export class RegisterPage {
 
   // Not native platform only
   handleFileInput = (event: any) => {
-    this.#registerService.setAvatarDataNotNative(event);
+    this.registerService.setAvatarDataNotNative(event);
   }
-
-  /* errorMessages = {
-    email: signal<string>(''),
-  } */
 
   #handleNextStepEmail = async (registerForm: FormGroup<any> | undefined) => {
     const emailControl = registerForm?.get('emailData.email');
@@ -113,13 +105,15 @@ export class RegisterPage {
     emailControl?.updateValueAndValidity();
 
     if (emailControl.pending) {
-      this.disabledNextButtons.email.set(true);
+      //this.disabledNextButtons.email.set(true);
+      this.loadingStates.email.set(true);
       await firstValueFrom(
         emailControl.statusChanges.pipe(
           filter(status => status !== 'PENDING')
         )
       );
-      this.disabledNextButtons.email.set(false);
+      //this.disabledNextButtons.email.set(false);
+      this.loadingStates.email.set(false);
     }
 
     if (registerForm?.get('emailData')?.valid) {
@@ -137,18 +131,15 @@ export class RegisterPage {
     passwordControl?.updateValueAndValidity();
 
     if (usernameControl.pending) {
-      this.disabledNextButtons.userData.set(true);
+      this.loadingStates.userData.set(true);
       await firstValueFrom(
         usernameControl.statusChanges.pipe(
           filter(status => status !== 'PENDING')
         )
       );
-      this.disabledNextButtons.userData.set(false);
+      this.loadingStates.userData.set(false);
     }
 
-    /* if (usernameControl.valid && passwordControl.valid) {
-      this.step.set(this.step() + 1);
-    } */
     if (registerForm?.get('userData')?.valid) {
       this.step.set(this.step() + 1);
     }
@@ -157,7 +148,6 @@ export class RegisterPage {
   #handleNextStepPersonalData = async (registerForm: FormGroup<any> | undefined) => {
     const firstNameControl = registerForm?.get('personalData.firstName');
     const lastNameControl = registerForm?.get('personalData.lastName');
-    //const dobControl = registerForm?.get('personalData.dob');
     const addressControl = registerForm?.get('personalData.address');
     const zipcodeControl = registerForm?.get('personalData.zipcode');
     const countryControl = registerForm?.get('personalData.country');
@@ -166,19 +156,18 @@ export class RegisterPage {
 
     firstNameControl?.updateValueAndValidity();
     lastNameControl?.updateValueAndValidity();
-    //dobControl?.updateValueAndValidity();
     addressControl?.updateValueAndValidity();
     zipcodeControl?.updateValueAndValidity();
     countryControl?.updateValueAndValidity();
 
     if (firstNameControl.pending) {
-      this.disabledNextButtons.personalData.set(true);
+      this.loadingStates.personalData.set(true);
       await firstValueFrom(
         firstNameControl.statusChanges.pipe(
           filter(status => status !== 'PENDING')
         )
       );
-      this.disabledNextButtons.personalData.set(false);
+      this.loadingStates.personalData.set(false);
     }
 
     if (registerForm?.get('personalData')?.valid) {
@@ -186,35 +175,18 @@ export class RegisterPage {
     }
   }
 
-
   async handleRegister(): Promise<void> {
-    /* const dummyUserData = {
-      email: 'fernando@gmail.com',
-      username: 'fernando',
-      password: '123456',
-      firstName: 'Fernando',
-      lastName: 'Hernandez',
-      dob: new Date(),
-      address: 'Calle de la Paz, 1',
-      zipcode: '28001',
-      country: 'España',
-      roles: ['Student', 'Professional'],
-    }
-    this.#registerService.registerUser(dummyUserData); */
-
-    this.disabledNextButtons.otherData.set(true);
-
     const registerForm: FormGroup<any> | undefined = this.registerFormComponent()?.registerForm;
 
-    await this.#registerService.registerUser({
+    await this.registerService.registerUser({
       ...registerForm?.value.emailData,
       ...registerForm?.value.userData,
       ...registerForm?.value.personalData,
       ...registerForm?.value.otherData
     });
 
-    if (!this.authProviderErrorMessage()) {
-      this.#router.navigate(['/auth/welcome']);
+    if (!this.errorMessage()) {
+      this.router.navigate(['/auth/welcome']);
     }
   }
 }

@@ -1,7 +1,7 @@
 import { Component, signal, input, output, WritableSignal, inject, OnInit } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
-import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonLabel, IonAvatar, IonText, IonIcon, IonModal, IonCheckbox, IonTextarea } from '@ionic/angular/standalone';
+import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonLabel, IonAvatar, IonText, IonIcon, IonModal, IonCheckbox, IonTextarea, IonSpinner } from '@ionic/angular/standalone';
 
 import { EmailValidator } from '../../utils/validators/email.validator';
 import { UsernameValidator } from '../../utils/validators/username.validator';
@@ -15,7 +15,7 @@ import { Role } from 'src/app/core/domain/models/user.model';
   selector: 'app-register-form',
   templateUrl: './register-form.component.html',
   styleUrls: ['./register-form.component.scss'],
-  imports: [RouterLink, IonTextarea, IonCheckbox, IonButton, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
+  imports: [IonSpinner, RouterLink, IonTextarea, IonCheckbox, IonButton, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent implements OnInit {
   //#userRepository = inject(UserRepository);
@@ -33,19 +33,17 @@ export class RegisterFormComponent implements OnInit {
     email: signal<boolean>(false),
     userData: signal<boolean>(false),
     personalData: signal<boolean>(false),
-    otherData: signal<boolean>(false)
+    register: signal<boolean>(false)
   });
 
-  disabledNextButtons = input<Record<string, WritableSignal<boolean>>>({
+  loadingStates = input<Record<string, WritableSignal<boolean>>>({
     email: signal<boolean>(false),
     userData: signal<boolean>(false),
     personalData: signal<boolean>(false),
-    otherData: signal<boolean>(false)
+    register: signal<boolean>(false)
   });
 
-  //controlFocus = output<AbstractControl>();
   controlFocus = output<string>();
-  //controlBlur = output<AbstractControl>();
   controlBlur = output<string>();
 
   uploadAvatar = output<void>();
@@ -100,10 +98,7 @@ export class RegisterFormComponent implements OnInit {
         lastName: this.fb.control('', { 
           validators: [Validators.required], 
           updateOn: 'blur' 
-        }),/* 
-        dob: this.fb.control(this.formattedDate.set(new Date().toLocaleDateString('es-ES')), { 
-          updateOn: 'change' 
-        }), */
+        }),
         address: this.fb.control('', { 
           validators: [Validators.required], 
           updateOn: 'blur' 
@@ -123,23 +118,6 @@ export class RegisterFormComponent implements OnInit {
       })
     });
   }
-
-  /* onEmailFocus() {
-    this.emailFocused.emit();
-    this.registerForm.controls['email'].markAsUntouched();
-  } */
-
-  /* onControlFocus(control: any) {
-    this.controlFocus.emit(control as AbstractControl);
-  }
-
-  onControlBlur(control: any) {
-    this.controlBlur.emit(control as AbstractControl);
-  } */
-
-  /* onDateChange(event: any) {
-    this.formattedDate.set(new Date(event.detail.value).toLocaleDateString('es-ES'));
-  } */
 
   onRoleChange(event: any) {
     const roles: FormArray = this.registerForm.get('otherData.roles') as FormArray;

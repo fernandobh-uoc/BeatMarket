@@ -40,9 +40,9 @@
       <app-register-form
         [step]="step()"
         [submitAttempts]="submitAttempts"
-        [disabledNextButtons]="disabledNextButtons"
+        [loadingStates]="loadingStates"
         [avatarDataURL]="profilePictureDataURL()"
-        [authProviderErrorMessage]="authProviderErrorMessage()"
+        [authProviderErrorMessage]="errorMessage()"
         (controlFocus)="onControlFocus($event)"
         (uploadAvatar)="onAvatarUpload()"
         (nextStep)="nextStep()"

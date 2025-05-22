@@ -1,4 +1,4 @@
-import { ElementRef, inject, Injectable, Signal, signal, ViewChild, viewChild } from '@angular/core';
+import { computed, ElementRef, inject, Injectable, Signal, signal, ViewChild, viewChild } from '@angular/core';
 import { Camera, CameraResultType, CameraSource, Photo } from '@capacitor/camera';
 import { Capacitor } from '@capacitor/core';
 import { isUserModel, User, UserModel } from 'src/app/core/domain/models/user.model';
@@ -6,21 +6,30 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { CartService } from 'src/app/features/cart/data-access/cart.service';
 
+type RegisterState = {
+  profilePictureDataURL: string;
+  loading: boolean;
+  errorMessage: string;
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class RegisterService {
-  authService = inject(AuthService);
-  cartService = inject(CartService);
-  cache = inject(LocalStorageService);
+  private authService = inject(AuthService);
+  private cartService = inject(CartService);
+  private cache = inject(LocalStorageService);
 
-  profilePictureDataURL = signal<string | undefined | null>(null);
+  private profilePictureDataURL = signal<string | undefined | null>(null);
 
-  #errorMessage = signal<string>('');
+  private loading = signal<boolean>(false);
+  private errorMessage = signal<string>('');
 
-  get errorMessage() {
-    return this.#errorMessage.asReadonly();
-  }
+  registerState = computed<RegisterState>(() => ({
+    profilePictureDataURL: this.profilePictureDataURL() ?? '',
+    loading: this.loading(),
+    errorMessage: this.errorMessage()
+  }));
 
   getAvatarData = async (): Promise<void> => {
     try {
@@ -52,6 +61,7 @@ export class RegisterService {
   }
 
   registerUser = async (userFormData: any): Promise<void> => {
+    this.loading.set(true);
     try {
       const fcmToken = await this.cache.get<string | null>('fcmToken');
       const user: User | null = await this.authService.register({
@@ -64,7 +74,6 @@ export class RegisterService {
             first: userFormData.firstName ?? '',
             last: userFormData.lastName ?? ''
           },
-          //dateOfBirth: userFormData.dob ?? '',
           address: {
             line1: userFormData.address ?? '',
             city: userFormData.city ?? '',
@@ -82,9 +91,13 @@ export class RegisterService {
       if (isUserModel(user)) {
         await this.cartService.createCart(user._id);
       }
+
+      this.loading.set(false);
+      this.errorMessage.set('');
     } catch (errorMessage: any) {
       console.error(errorMessage);
-      this.#errorMessage.set(errorMessage);
+      this.loading.set(false);
+      this.errorMessage.set(errorMessage);
     }
   }
 }
