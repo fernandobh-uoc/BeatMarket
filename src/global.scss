@@ -134,8 +134,8 @@ ion-content {
 
 ion-button {
 	--border-radius: 8px;
-	display: block;
 	width: 100%;
+	display: block;
 	min-height: 3rem;
 	text-transform: none;
 
@@ -151,6 +151,10 @@ ion-button {
 		--background: transparent;
 		--color: var(--ion-color-light);
 		--border-color: var(--ion-color-light);
+	}
+
+	ion-spinner {
+		margin-left: 1rem;
 	}
 }
 
