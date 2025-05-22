@@ -5,9 +5,9 @@ import { LocalStorageService } from 'src/app/core/storage/local-storage.service'
 
 @Injectable()
 export class UserDataItemEditService {
-  #userRepository = inject(UserRepository);
-  #authService = inject(AuthService);
-  #cache = inject(LocalStorageService);
+  private userRepository = inject(UserRepository);
+  private authService = inject(AuthService);
+  private cache = inject(LocalStorageService);
 
   editNewData = signal<Record<string, string>>({});
   pending = signal<boolean>(false);
@@ -32,7 +32,7 @@ export class UserDataItemEditService {
       }
 
       if (key === 'password') {
-        await this.#authService.updatePassword(data as string);
+        await this.authService.updatePassword(data as string);
         this.passwordUpdateSuccessMessage.set('Contraseña actualizada');
         this.resetEditingInputStates();
         this.pending.set(false);
@@ -46,7 +46,7 @@ export class UserDataItemEditService {
 
       if (key === 'line1' || key === "city" || key === 'country' || key === 'zipcode') {
         data = { 
-          ...this.#authService.currentUser()?.address,
+          ...this.authService.currentUser()?.address,
           [key]: data as string
         };
         key = 'address';
@@ -54,19 +54,19 @@ export class UserDataItemEditService {
 
       if (key === 'first' || key === 'last') {
         data = { 
-          ...this.#authService.currentUser()?.name,
+          ...this.authService.currentUser()?.name,
           [key]: data as string
         };
         key = 'name';
       }
 
-      this.#userRepository.updateUser({
-        _id: (await this.#cache.get<AuthStatus>('authStatus'))?.userId ?? '',
+      this.userRepository.updateUser({
+        _id: (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '',
         [key]: data as string
       });
 
       if (key === 'username') {
-        this.#cache.set('authStatus', { ...(await this.#cache.get<AuthStatus>('authStatus')), username: data as string });
+        this.cache.set('authStatus', { ...(await this.cache.get<AuthStatus>('authStatus')), username: data as string });
       }
 
       this.resetEditingInputStates();
@@ -101,7 +101,7 @@ export class UserDataItemEditService {
 
   async usernameExists(username: string): Promise<boolean> {
     try {
-      const user = await this.#userRepository.getUserByUsername(username);
+      const user = await this.userRepository.getUserByUsername(username);
       return Boolean(user);
     } catch (storageError) {
       this.usernameErrorMessage.set(storageError as string);

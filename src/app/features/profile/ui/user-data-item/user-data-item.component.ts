@@ -2,7 +2,7 @@ import { Component, computed, effect, input, OnInit, output, signal, viewChild }
 import { AbstractControl } from '@angular/forms';
 import { IonLabel, IonText, IonInput, IonAvatar, IonIcon, IonInputPasswordToggle, IonSelect, IonSelectOption } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
-import { closeOutline, createOutline, saveOutline } from 'ionicons/icons';
+import { checkmarkOutline, closeOutline, createOutline } from 'ionicons/icons';
 import { CountryData } from 'src/app/shared/utils/countries';
 
 @Component({
@@ -36,7 +36,7 @@ export class UserDataItemComponent  implements OnInit {
   editInput = viewChild<AbstractControl>('editInput');
 
   constructor() {
-    addIcons({ createOutline, saveOutline, closeOutline });
+    addIcons({ createOutline, checkmarkOutline, closeOutline });
   }
 
 

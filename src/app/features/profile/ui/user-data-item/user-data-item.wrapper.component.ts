@@ -1,6 +1,6 @@
 import { Component, computed, effect, inject, input, OnInit, output, signal } from '@angular/core';
-import { UserDataItemComponent } from '../user-data-item.component';
-import { UserDataItemEditService } from '../../../utils/user-data-item-edit.service'; 
+import { UserDataItemComponent } from './user-data-item.component';
+import { UserDataItemEditService } from '../../utils/user-data-item-edit.service'; 
 import { countries } from 'src/app/shared/utils/countries';
 
 @Component({

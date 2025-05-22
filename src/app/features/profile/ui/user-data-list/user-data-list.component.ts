@@ -1,13 +1,12 @@
 import { Component, input, OnInit } from '@angular/core';
 import { User } from 'src/app/core/domain/models/user.model';
-import { UserDataItemWrapperComponent } from '../user-data-item/user-data-item-wrapper/user-data-item-wrapper.component';
-import { CountryCodeToNamePipe } from 'src/app/shared/utils/pipes/country-code-to-name.pipe';
+import { UserDataItemWrapperComponent } from '../user-data-item/user-data-item.wrapper.component';
 
 @Component({
   selector: 'app-user-data-list',
   templateUrl: './user-data-list.component.html',
   styleUrls: ['./user-data-list.component.scss'],
-  imports: [UserDataItemWrapperComponent, CountryCodeToNamePipe]
+  imports: [UserDataItemWrapperComponent]
 })
 export class UserDataListComponent  implements OnInit {
   user = input<User | null>(null);

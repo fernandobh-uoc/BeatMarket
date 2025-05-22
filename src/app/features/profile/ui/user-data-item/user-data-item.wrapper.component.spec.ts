@@ -1,7 +1,7 @@
 import { ComponentFixture, TestBed, waitForAsync } from '@angular/core/testing';
 import { IonicModule } from '@ionic/angular';
 
-import { UserDataItemWrapperComponent } from './user-data-item-wrapper.component';
+import { UserDataItemWrapperComponent } from './user-data-item.wrapper.component';
 
 describe('UserDataItemSmartWrapperComponent', () => {
   let component: UserDataItemWrapperComponent;
