@@ -18,15 +18,20 @@
           <ion-text class="error-text" color="danger">Introduce una contraseña</ion-text>
         }
   
-        @if (authProviderErrorMessage()) {
-          <ion-text class="error-text" color="danger">{{ authProviderErrorMessage() }}</ion-text>
+        @if (authErrorMessage()) {
+          <ion-text class="error-text auth-error" color="danger">{{ authErrorMessage() }}</ion-text>
         }
       }
   </div>  
 </form>
 
 <div class="button-subtitle-container">
-  <ion-button (click)="formSubmit.emit(this.loginForm.value)" [disabled]="disabledSubmitButton()">Ingresar</ion-button>
+  <ion-button [disabled]="loading()" (click)="formSubmit.emit(this.loginForm.value)">
+    Ingresar
+    @if (loading()) {
+      <ion-spinner name="crescent"></ion-spinner>
+    }
+  </ion-button>
   <ion-text>¿No tienes cuenta? <a class="inline-link" [routerLink]="['/auth/register']">Regístrate</a></ion-text>
   <!-- <ion-button class="ion-text-uppercase" (click)="onGoogleLogin()">Google</ion-button>
   <ion-button (click)="onAppleLogin()">Apple</ion-button> -->  
