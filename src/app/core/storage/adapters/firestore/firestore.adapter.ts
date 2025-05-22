@@ -1,22 +1,22 @@
 import { EnvironmentInjector, Injectable, inject, InjectionToken, Injector, runInInjectionContext } from "@angular/core";
 import { Observable } from "rxjs/internal/Observable";
-import { 
-  Firestore, 
-  doc, docData, getDoc, addDoc, setDoc, updateDoc, deleteDoc, getDocs, 
-  DocumentReference, DocumentSnapshot, 
-  collection, collectionData,  
+import {
+  Firestore,
+  doc, docData, getDoc, addDoc, setDoc, updateDoc, deleteDoc, getDocs,
+  DocumentReference, DocumentSnapshot,
+  collection, collectionData,
   CollectionReference, FieldPath,
   FirestoreDataConverter,
-  query, Query, QuerySnapshot, 
-  or, and, where, orderBy, 
-  limit as queryLimit, 
-  startAt as queryStartAt, 
-  startAfter as queryStartAfter, 
-  endAt as queryEndAt, 
+  query, Query, QuerySnapshot,
+  or, and, where, orderBy,
+  limit as queryLimit,
+  startAt as queryStartAt,
+  startAfter as queryStartAfter,
+  endAt as queryEndAt,
   endBefore as queryEndBefore,
   QueryConstraint, QueryFilterConstraint,
   WhereFilterOp, OrderByDirection,
-  serverTimestamp, 
+  serverTimestamp,
 
   FirestoreErrorCode
 } from '@angular/fire/firestore';
@@ -219,216 +219,234 @@ export class FirestoreAdapter<T extends AppModel & { _id: string }> {
   }
 
   async create(obj: T, params?: FirestoreParams): Promise<T | null> {
-    if (!params?.collection) throw new Error("You must provide the collection.");
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (!params?.collection) throw new Error("You must provide the collection.");
 
-    try {
-      const now = serverTimestamp();
+      try {
+        const now = serverTimestamp();
 
-      const objWithTimestamps = {
-        ...obj,
-        createdAt: now,
-        updatedAt: now,
-      };
+        const objWithTimestamps = {
+          ...obj,
+          createdAt: now,
+          updatedAt: now,
+        };
 
-      let docRef: DocumentReference;
-      if (obj._id) {
-        docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
-        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+        let docRef: DocumentReference;
+        if (obj._id) {
+          docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
+          docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
 
-        await setDoc(docRef, objWithTimestamps);
-      } else {
-        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
-        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+          await setDoc(docRef, objWithTimestamps);
+        } else {
+          let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+          collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
 
-        docRef = await addDoc(collectionRef, obj);
+          docRef = await addDoc(collectionRef, obj);
+        }
+        const retObj: T = (await getDoc(docRef)).data() as T;
+        return <T>({ ...retObj, _id: docRef.id });
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
-      const retObj: T = (await getDoc(docRef)).data() as T;
-      return <T>({ ...retObj, _id: docRef.id });
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    });
   };
 
   async createInSubcollection(obj: any, params?: FirestoreParams): Promise<any | null> {
-    if (!params?.collection) throw new Error("You must provide the collection.");
-
-    try {
-      let docRef: DocumentReference;
-
-      if (obj._id) {
-        docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
-        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
-        await setDoc(docRef, obj);
-      } else {
-        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
-        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
-        docRef = await addDoc(collectionRef, obj);
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (!params?.collection) throw new Error("You must provide the collection.");
+  
+      try {
+        let docRef: DocumentReference;
+  
+        if (obj._id) {
+          docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
+          docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+          await setDoc(docRef, obj);
+        } else {
+          let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+          collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+          docRef = await addDoc(collectionRef, obj);
+        }
+  
+        const retObj: any = (await getDoc(docRef)).data();
+        return ({ ...retObj, _id: docRef.id });
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
-
-      const retObj: any = (await getDoc(docRef)).data();
-      return ({ ...retObj, _id: docRef.id });
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    });
   };
 
   async updateInSubcollection(obj: any & { _id: string; }, params?: any): Promise<any | null> {
-    if (!params?.collection) throw new Error("You must provide the collection.");
-
-    try {
-      let docRef: DocumentReference = doc(this.firestore, `${params.collection}`);
-      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
-
-      await updateDoc(docRef, obj);
-      const retObj: any = (await getDoc(docRef)).data();
-      return ({ ...retObj, _id: docRef.id });
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (!params?.collection) throw new Error("You must provide the collection.");
+  
+      try {
+        let docRef: DocumentReference = doc(this.firestore, `${params.collection}`);
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+  
+        await updateDoc(docRef, obj);
+        const retObj: any = (await getDoc(docRef)).data();
+        return ({ ...retObj, _id: docRef.id });
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
+      }
+    });
   }
 
   async update(obj: Partial<T> & { _id: string }, params?: FirestoreParams): Promise<T | null> {
-    if (!params?.collection) {
-      throw new Error("You must provide the collection.");
-    }
-
-    try {
-      let docRef: DocumentReference = doc(this.firestore, params.collection, obj._id);
-      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
-
-      const { _id, ...fieldsToUpdate } = obj;
-
-      await updateDoc(docRef, {
-        ...fieldsToUpdate,
-        updatedAt: serverTimestamp()
-      });
-
-      return this.getById(obj._id, params); // Return the updated object
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (!params?.collection) {
+        throw new Error("You must provide the collection.");
+      }
+  
+      try {
+        let docRef: DocumentReference = doc(this.firestore, params.collection, obj._id);
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+  
+        const { _id, ...fieldsToUpdate } = obj;
+  
+        await updateDoc(docRef, {
+          ...fieldsToUpdate,
+          updatedAt: serverTimestamp()
+        });
+  
+        return this.getById(obj._id, params); // Return the updated object
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
+      }
+    });
   }
 
   async remove(id: string, params?: FirestoreParams): Promise<boolean> {
-    if (params && !params.collection) throw new Error("You must provide the collection.");
-    try {
-      const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
-      const docSnapshot = await getDoc(docRef);
-
-      if (!docSnapshot.exists()) {
-        console.error(`Document with uid ${id} does not exist.`);
-        return false;
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (params && !params.collection) throw new Error("You must provide the collection.");
+      try {
+        const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
+        const docSnapshot = await getDoc(docRef);
+  
+        if (!docSnapshot.exists()) {
+          console.error(`Document with uid ${id} does not exist.`);
+          return false;
+        }
+  
+        await deleteDoc(docRef);
+        return true;  // Return null after successful deletion
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
-
-      await deleteDoc(docRef);
-      return true;  // Return null after successful deletion
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    });
   };
 
   async exists(id: string, params?: FirestoreParams): Promise<boolean> {
-    if (params && !params.collection) throw new Error("You must provide the collection.");
-    try {
-      const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
-      const docSnapshot = await getDoc(docRef);
-      return docSnapshot.exists();  // Returns true if the document exists, false otherwise
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    return await runAsyncInInjectionContext(this.injector, async () => {
+      if (params && !params.collection) throw new Error("You must provide the collection.");
+      try {
+        const docRef: DocumentReference = doc(this.firestore, `${params?.collection}/${id}`);
+        const docSnapshot = await getDoc(docRef);
+        return docSnapshot.exists();  // Returns true if the document exists, false otherwise
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
+      }
+    });
   };
 
   async query(params: FirestoreParams): Promise<T[] | null> {
-    if (!params.collection) {
-      throw new Error("You must provide the collection.");
-    }
+    return await runAsyncInInjectionContext(this.injector, async () => {
 
-    if (!params.queryConstraints) {
-      throw new Error("You must provide the query constraints.");
-    }
-
-    try {
-      let collectionRef: CollectionReference = collection(this.firestore, params.collection);
-      collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
-
-      const constraints: QueryConstraint[] = [];
-      const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
-
-      if (filters?.length) {
-        constraints.push(...buildQueryConstraints(filters));
+      if (!params.collection) {
+        throw new Error("You must provide the collection.");
       }
-      if (order) {
-        constraints.push(orderBy(order.field, order.direction || 'asc'));
+  
+      if (!params.queryConstraints) {
+        throw new Error("You must provide the query constraints.");
       }
-      if (limit !== undefined) {
-        constraints.push(queryLimit(limit));
+  
+      try {
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+  
+        const constraints: QueryConstraint[] = [];
+        const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
+  
+        if (filters?.length) {
+          constraints.push(...buildQueryConstraints(filters));
+        }
+        if (order) {
+          constraints.push(orderBy(order.field, order.direction || 'asc'));
+        }
+        if (limit !== undefined) {
+          constraints.push(queryLimit(limit));
+        }
+        if (startAt !== undefined) {
+          constraints.push(queryStartAt(startAt));
+        }
+        if (startAfter !== undefined) {
+          constraints.push(queryStartAfter(startAfter));
+        }
+        if (endAt !== undefined) {
+          constraints.push(queryEndAt(endAt));
+        }
+        if (endBefore !== undefined) {
+          constraints.push(queryEndBefore(endBefore));
+        }
+  
+        const firestoreQuery: Query = query(collectionRef, ...constraints);
+        const snapshot = await getDocs(firestoreQuery);
+  
+        return snapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
-      if (startAt !== undefined) {
-        constraints.push(queryStartAt(startAt));
-      }
-      if (startAfter !== undefined) {
-        constraints.push(queryStartAfter(startAfter));
-      }
-      if (endAt !== undefined) {
-        constraints.push(queryEndAt(endAt));
-      }
-      if (endBefore !== undefined) {
-        constraints.push(queryEndBefore(endBefore));
-      }
-
-      const firestoreQuery: Query = query(collectionRef, ...constraints);
-      const snapshot = await getDocs(firestoreQuery);
-
-      return snapshot.docs.map(doc => ({ ...doc.data(), _id: doc.id }) as T);
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    });
   }
 
   query$(params: FirestoreParams): Observable<any[]> {
-    if (!params.collection) {
-      throw new Error("You must provide the collection.");
-    }
+    return runInInjectionContext(this.injector, () => {
 
-    if (!params.queryConstraints) {
-      throw new Error("You must provide the query constraints.");
-    }
-
-    try {
-      let collectionRef: CollectionReference = collection(this.firestore, params.collection);
-      collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
-
-      const constraints: QueryConstraint[] = [];
-      const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
-
-      if (filters?.length) {
-        constraints.push(...buildQueryConstraints(filters));
+      if (!params.collection) {
+        throw new Error("You must provide the collection.");
       }
-      if (order) {
-        constraints.push(orderBy(order.field, order.direction || 'asc'));
+  
+      if (!params.queryConstraints) {
+        throw new Error("You must provide the query constraints.");
       }
-      if (limit !== undefined) {
-        constraints.push(queryLimit(limit));
+  
+      try {
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+  
+        const constraints: QueryConstraint[] = [];
+        const { filters, orderBy: order, limit, startAt, startAfter, endAt, endBefore } = params.queryConstraints;
+  
+        if (filters?.length) {
+          constraints.push(...buildQueryConstraints(filters));
+        }
+        if (order) {
+          constraints.push(orderBy(order.field, order.direction || 'asc'));
+        }
+        if (limit !== undefined) {
+          constraints.push(queryLimit(limit));
+        }
+        if (startAt !== undefined) {
+          constraints.push(queryStartAt(startAt));
+        }
+        if (startAfter !== undefined) {
+          constraints.push(queryStartAfter(startAfter));
+        }
+        if (endAt !== undefined) {
+          constraints.push(queryEndAt(endAt));
+        }
+        if (endBefore !== undefined) {
+          constraints.push(queryEndBefore(endBefore));
+        }
+  
+        const firestoreQuery: Query = query(collectionRef, ...constraints);
+  
+        return collectionData(firestoreQuery, { idField: '_id' });
+      } catch (firestoreError: any) {
+        throw this.getErrorMessage(firestoreError);
       }
-      if (startAt !== undefined) {
-        constraints.push(queryStartAt(startAt));
-      }
-      if (startAfter !== undefined) {
-        constraints.push(queryStartAfter(startAfter));
-      }
-      if (endAt !== undefined) {
-        constraints.push(queryEndAt(endAt));
-      }
-      if (endBefore !== undefined) {
-        constraints.push(queryEndBefore(endBefore));
-      }
-
-      const firestoreQuery: Query = query(collectionRef, ...constraints);
-
-      return collectionData(firestoreQuery, { idField: '_id' });
-    } catch (firestoreError: any) {
-      throw this.getErrorMessage(firestoreError);
-    }
+    });
   }
 
   private getErrorMessage(errorCode: string): string {
