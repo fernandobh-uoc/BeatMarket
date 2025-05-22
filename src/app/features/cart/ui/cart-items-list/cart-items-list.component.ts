@@ -1,6 +1,6 @@
-import { Component, effect, input, OnInit } from '@angular/core';
+import { Component, input } from '@angular/core';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
-import { CartItemWrapperComponent } from '../cart-item/cart-item-wrapper/cart-item-wrapper.component';
+import { CartItemWrapperComponent } from '../cart-item/cart-item.wrapper.component';
 
 @Component({
   selector: 'app-cart-items-list',
@@ -8,11 +8,8 @@ import { CartItemWrapperComponent } from '../cart-item/cart-item-wrapper/cart-it
   styleUrls: ['./cart-items-list.component.scss'],
   imports: [CartItemWrapperComponent]
 })
-export class CartItemsListComponent  implements OnInit {
+export class CartItemsListComponent {
   items = input<CartItemModel[]>([]);
 
   constructor() {}
-
-  ngOnInit() {}
-
 }

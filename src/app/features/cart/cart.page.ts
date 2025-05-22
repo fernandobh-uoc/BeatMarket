@@ -1,13 +1,13 @@
-import { Component, computed, effect, inject, OnInit, signal } from '@angular/core';
+import { Component, inject, computed } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton, IonIcon } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { CartItemsListComponent } from './ui/cart-items-list/cart-items-list.component';
-import { CartService } from './data-access/cart.service';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
+import { CartService } from './data-access/cart.service';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
-import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-cart',

@@ -1,8 +1,8 @@
-import { Component, inject, input, OnInit } from '@angular/core';
-import { CartItemComponent } from '../cart-item.component';
-import { CartItemModel } from 'src/app/core/domain/models/cart.model';
-import { CartService } from '../../../data-access/cart.service';
+import { Component, inject, input } from '@angular/core';
 import { AlertController } from '@ionic/angular';
+import { CartItemComponent } from './cart-item.component';
+import { CartItemModel } from 'src/app/core/domain/models/cart.model';
+import { CartService } from '../../data-access/cart.service';
 
 @Component({
   selector: 'app-cart-item-wrapper',
@@ -23,15 +23,13 @@ import { AlertController } from '@ionic/angular';
   `,
   imports: [CartItemComponent]
 })
-export class CartItemWrapperComponent implements OnInit {
+export class CartItemWrapperComponent {
   private cartService = inject(CartService);
   private alertController = inject(AlertController);
 
   item = input<CartItemModel>();
 
   constructor() { }
-
-  ngOnInit() {}
 
   async onRemoveItem(event: MouseEvent) {
     event.stopPropagation(); // Prevents navigation to post detail
