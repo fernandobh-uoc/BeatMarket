@@ -29,6 +29,12 @@
           </ion-button>
         </ion-menu-toggle>
       }
+
+      @if (showAvatar()) {
+        <ion-avatar class="user-avatar">
+          <img [src]="avatarUrl()" alt="Avatar del usuario">
+        </ion-avatar>
+      }
     }
   </ion-buttons>
   <ion-buttons slot="end">

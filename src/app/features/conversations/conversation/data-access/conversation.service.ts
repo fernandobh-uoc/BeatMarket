@@ -7,6 +7,7 @@ import { AuthService } from 'src/app/core/services/auth/auth.service';
 
 type ConversationState = {
   conversation: ConversationModel | null;
+  role: 'buyer' | 'seller';
   loading: boolean;
   errorMessage: string;
 }
@@ -41,6 +42,7 @@ export class ConversationService {
   conversationState = computed<ConversationState>(() => ({
     conversation: this.conversation.value() ?? null,
     loading: this.conversation.isLoading(),
+    role: this.conversation.value()?.participants.buyer.userId === this.authService.currentUser()?._id ? 'buyer' : 'seller',
     errorMessage: this.errorMessage()
   }));
 
@@ -102,5 +104,20 @@ export class ConversationService {
     } catch (error) {
       throw error;
     }
+  }
+
+  async sendMessage(message: string): Promise<void> {
+    const conversation = this.conversationState().conversation;
+    if (!conversation) return;
+
+    await this.conversationRepository.saveMessage({
+      conversationId: conversation._id,
+      messageData: {
+        text: message,
+        timestamp: new Date(),
+        senderId: this.authService.currentUser()?._id,
+        recipientId: conversation.participants[this.conversationState().role === 'buyer' ? 'seller' : 'buyer'].userId
+      }
+    });
   }
 }

@@ -6,7 +6,7 @@ import { Storage } from '../../../storage.interface';
 import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
 import { ConversationModel, Conversation, MessageModel } from '../../../../domain/models/conversation.model'; 
 import { FirestoreConversationConverter, FirestoreMessageConverter } from '../converters/firestore.conversation.converter'; 
-import { combineLatest, map, of, switchMap } from 'rxjs';
+import { auditTime, combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreConversationRepository implements ConversationRepository {
@@ -39,20 +39,33 @@ export class FirestoreConversationRepository implements ConversationRepository {
     try {
       const conversation$: Observable<Conversation | null> = this.storage.getById$(id, { collection: 'conversations', converter: this.conversationConverter });
       
-      if (!this.storage.getCollection$) return conversation$;
-      const conversationMessages$: Observable<MessageModel[]> = this.storage.getCollection$({
+      //if (!this.storage.getCollection$) return conversation$;
+      /* const conversationMessages$: Observable<MessageModel[]> = this.storage.getCollection$({
         collection: `conversations/${id}/messages`,
         converter: this.messageConverter
-      });
+      }); */
+
+      if (!this.storage.query$) return conversation$;
+      const conversationMessages$: Observable<MessageModel[]> = this.storage.query$({
+        collection: `conversations/${id}/messages`,
+        converter: this.messageConverter,
+        queryConstraints: {
+          orderBy: { field: 'timestamp', direction: 'desc' }
+        }
+      })
 
       return combineLatest([conversation$, conversationMessages$]).pipe(
         map(([conversation, conversationMessages]) => {
           if (conversation) {
-            conversation.messages = conversationMessages ?? [];
-            return conversation;
+            return {
+              ...conversation,
+              messages: conversationMessages ?? []
+            } as Conversation;
           }
           return null;
-        })
+        }),
+        //distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current))  // To avoid double updates 
+        distinctUntilChanged((previous, current) => previous?.messages.length === current?.messages.length)  // To avoid double updates
       );
     } catch (storageError) {
       console.error(storageError);

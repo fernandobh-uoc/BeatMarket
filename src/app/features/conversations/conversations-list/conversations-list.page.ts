@@ -6,6 +6,7 @@ import { ActivatedRoute } from '@angular/router';
 import { ConversationsListService } from './data-access/conversations-list.service';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { ConversationsListComponent } from './ui/conversations-list/conversations-list.component';
+import { Conversation } from 'src/app/core/domain/models/conversation.model';
 
 @Component({
   selector: 'app-conversations-list-page',
@@ -22,12 +23,14 @@ export class ConversationsListPage {
   
   conversationsAsBuyer = computed(() => {
     const source = this.conversationsListService.conversationsListState().conversationsAsBuyer;
-    return source.length > 0 ? source : this.route.snapshot.data['conversationsAsBuyer'];
+    const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsBuyer'];
+    return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
   });
 
   conversationsAsSeller = computed(() => {
     const source = this.conversationsListService.conversationsListState().conversationsAsSeller;
-    return source.length > 0 ? source : this.route.snapshot.data['conversationsAsSeller'];
+    const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsSeller'];
+    return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
   });
 
   conversations = computed(() => ({

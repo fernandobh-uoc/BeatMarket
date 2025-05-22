@@ -16,6 +16,6 @@ export interface UserRepository {
   getAllUsers$?(): Observable<User[] | null> | null;
   saveUser(userData: Partial<UserModel>): Promise<User | null>;
   updateUser(userData: Partial<UserModel> & { _id: string }): Promise<User | null>;
-  saveActivePost({ userId, postId, activePostData }: { userId: string, postId: string, activePostData: Omit<ActivePost, '_id'> }): Promise<ActivePost | null>;
+  saveActivePost({ userId, activePostData }: { userId: string, activePostData: Omit<ActivePost, '_id'> }): Promise<ActivePost | null>;
   userExists(id: string): Promise<boolean>;
 }

@@ -70,6 +70,7 @@ export class Conversation implements ConversationModel {
     delete serialized._id;
     try {
       const jsonStr = JSON.stringify(serialized);
+      console.log({ jsonStr });
       return jsonStr;
     } catch (error) {
       console.error(`Error stringifying object ${serialized}: ${error}`)

@@ -118,7 +118,8 @@ export class SellService {
       });
 
       // Add post to active posts of the user
-      const activePostData: Omit<ActivePost, '_id'> = {
+      const activePostData: ActivePost = {
+        _id: post._id,  // Use the post id as the active post id
         title: post?.title ?? '',
         category: post?.article.category ?? ArticleCategory.None,
         price: post?.price ?? 0,
@@ -128,7 +129,6 @@ export class SellService {
       //await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
       await this.#userRepository.saveActivePost({
         userId: currentUser._id,
-        postId: post._id,
         activePostData: activePostData
       });
 

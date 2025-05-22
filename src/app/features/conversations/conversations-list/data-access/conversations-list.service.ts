@@ -1,4 +1,6 @@
 import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { rxResource } from '@angular/core/rxjs-interop';
+import { Observable, of } from 'rxjs';
 import { ConversationModel } from 'src/app/core/domain/models/conversation.model';
 import { User } from 'src/app/core/domain/models/user.model';
 import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
@@ -20,7 +22,7 @@ export class ConversationsListService {
   
   private errorMessage = signal<string>('');
 
-  private conversationsAsSeller = resource<ConversationModel[], User | null>({
+  /* private conversationsAsSeller = resource<ConversationModel[], User | null>({
     request: () => this.authService.currentUser(),
     loader: async ({ request: currentUser }): Promise<ConversationModel[]> => {
       if (!currentUser) return [];
@@ -32,9 +34,24 @@ export class ConversationsListService {
         return [];
       }
     }
-  })
+  }) */
+
+  private conversationsAsSeller = rxResource<ConversationModel[] | null, string | null>({
+    request: () => this.authService.currentUser()?._id ?? null,
+    loader: ({ request: userId }): Observable<ConversationModel[] | null> => {
+      if (!this.conversationRepository.getConversationsBySellerId$) return of(null);
+      if (!userId) return of(null);
+      try {
+        const conversations$ = this.conversationRepository.getConversationsBySellerId$(userId);
+        return conversations$ ?? of(null);
+      } catch (error) {
+        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
+        return of(null);
+      }
+    }
+  });
   
-  private conversationsAsBuyer = resource<ConversationModel[], User | null>({
+  /* private conversationsAsBuyer = resource<ConversationModel[], User | null>({
     request: () => this.authService.currentUser(),
     loader: async ({ request: currentUser }): Promise<ConversationModel[]> => {
       if (!currentUser) return [];
@@ -46,7 +63,22 @@ export class ConversationsListService {
         return [];
       }
     }
-  })
+  }) */
+
+  private conversationsAsBuyer = rxResource<ConversationModel[] | null, string | null>({
+    request: () => this.authService.currentUser()?._id ?? null,
+    loader: ({ request: userId }): Observable<ConversationModel[] | null> => {
+      if (!this.conversationRepository.getConversationsByBuyerId$) return of(null);
+      if (!userId) return of(null);
+      try {
+        const conversations$ = this.conversationRepository.getConversationsByBuyerId$(userId);
+        return conversations$ ?? of(null);
+      } catch (error) {
+        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
+        return of(null);
+      }
+    }
+  });
 
   conversationsListState = computed<ConversationsListState>(() => ({
     conversationsAsSeller: this.conversationsAsSeller.value() ?? [],

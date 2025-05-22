@@ -1,19 +1,18 @@
 import { Component, computed, effect, inject, input, OnInit, OnDestroy, output, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonMenuToggle, IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar, IonBadge } from '@ionic/angular/standalone';
+import { IonMenuToggle, IonIcon, IonHeader, IonTitle, IonToolbar, IonButtons, IonButton, IonBackButton, IonProgressBar, IonSearchbar, IonBadge, IonAvatar } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline, cartOutline, menu, searchOutline } from 'ionicons/icons';
 import { Router } from '@angular/router';
 import { CartService } from 'src/app/features/cart/data-access/cart.service';
-import { MenuComponent } from '../menu/menu.component';
 
 @Component({
   selector: 'app-toolbar',
   templateUrl: './toolbar.component.html',
   styleUrls: ['./toolbar.component.scss'],
   standalone: true,
-  imports: [MenuComponent, IonMenuToggle, IonBadge, IonSearchbar, IonProgressBar, IonBackButton, IonButton, IonIcon, IonButtons, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonAvatar, IonMenuToggle, IonBadge, IonSearchbar, IonProgressBar, IonBackButton, IonButton, IonIcon, IonButtons, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
 export class ToolbarComponent implements OnInit {
   public cartService = inject(CartService);
@@ -40,6 +39,9 @@ export class ToolbarComponent implements OnInit {
 
   public showProgressBar = input<boolean>(false);
   public progressBarValue = input<number>(0);
+  
+  public showAvatar = input<boolean>(false);
+  public avatarUrl = input<string>('');
 
   constructor() {
     addIcons({ menu, arrowBackOutline, searchOutline, cartOutline });

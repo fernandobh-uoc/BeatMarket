@@ -1,13 +1,71 @@
 <ion-header [translucent]="true">
-  <ion-toolbar>
-    <ion-title>conversation</ion-title>
-  </ion-toolbar>
+  <app-toolbar
+    type="arrow-back"
+    [title]="displayedUserData().username"
+    [showAvatar]="true"
+    [avatarUrl]="displayedUserData().profilePictureURL"
+  ></app-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
+<ion-content [fullscreen]="true" #scrollContainer>
   <ion-header collapse="condense">
     <ion-toolbar>
-      <ion-title size="large">conversation</ion-title>
+      <ion-title size="large">{{ displayedUserData().username }}</ion-title>
     </ion-toolbar>
   </ion-header>
+
+  <div class="container">
+    <div class="post-data-container" [routerLink]="['/tabs/post-detail/' + conversation()?.relatedPost?.postId]">
+      
+      <ion-thumbnail class="post-thumbnail">
+        <img [src]="conversation()?.relatedPost?.mainImageURL" alt="Imagen principal del post relacionado">
+      </ion-thumbnail>
+      
+      <div class="post-data">
+        <ion-text class="post-status">{{ conversation()?.relatedPost?.isActive ? 'En curso' : 'Finalizado' }}</ion-text>
+        <ion-text class="post-title">{{ conversation()?.relatedPost?.title }}</ion-text>
+        <ion-text class="post-price">{{ conversation()?.relatedPost?.price | formatCurrency }}</ion-text>
+      </div>
+    </div>
+  
+    <div class="conversation-container">
+      @for (message of conversationMessages(); track message._id) {
+        <div 
+          class="message-item" 
+          [class.sent]="message.type === 'sent'" 
+          [class.received]="message.type === 'received'"
+        >
+          @if (message.type === 'received') {
+            <ion-avatar class="message-sender-avatar">
+              <img [src]="displayedUserData().profilePictureURL" alt="Avatar del usuario">
+            </ion-avatar>  
+          }
+          <div class="message-text-wrapper">
+            <ion-text class="message-text">{{ message.text }}</ion-text>
+          </div>
+
+          <div class="message-timestamp-wrapper">
+            <ion-text class="message-timestamp">{{ message.timestamp | formatTimestamp }}</ion-text>
+          </div>
+        </div>
+      }
+    </div>
+  
+    
+  </div>
 </ion-content>
+
+<ion-footer class="footer ion-no-border">
+  <div class="message-input-container">
+    <ion-input
+      [(ngModel)]="inputMessage"
+      placeholder="Mensaje..."
+      class="custom message-input"
+    ></ion-input>
+    <div class="send-icon-container" (click)="sendMessage()">
+      <ion-icon name="navigate-outline" class="send-icon"></ion-icon>
+    </div>
+    <!-- <ion-item lines="none" class="input-item">
+    </ion-item> -->
+  </div>
+</ion-footer>

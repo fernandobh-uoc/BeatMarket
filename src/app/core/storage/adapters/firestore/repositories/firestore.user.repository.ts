@@ -193,14 +193,15 @@ export class FirestoreUserRepository implements UserRepository {
     }
   }
 
-  async saveActivePost({ userId, postId, activePostData }: { userId: string, postId: string, activePostData: Omit<ActivePost, '_id'> }): Promise<ActivePost | null> {
+  async saveActivePost({ userId, activePostData }: { userId: string, activePostData: ActivePost }): Promise<ActivePost | null> {
     if (!this.storage.createInSubcollection) return null;
 
     try {
       let activePost: ActivePost | null;
       if (activePost = await this.storage.createInSubcollection(
-        activePostData, { 
-          collection: `users/${userId}/activePosts/${postId}`, 
+        activePostData, 
+        { 
+          collection: `users/${userId}/activePosts`, 
           converter: this.activePostConverter 
         })
       ) {

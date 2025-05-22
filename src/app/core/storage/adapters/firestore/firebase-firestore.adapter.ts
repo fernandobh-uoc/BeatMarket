@@ -254,10 +254,18 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     if (!params?.collection) throw new Error("You must provide the collection.");
 
     try {
-      let docRef: DocumentReference = doc(this.firestore, `${params.collection}`);
-      docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+      let docRef: DocumentReference;
 
-      await setDoc(docRef, obj);
+      if (obj._id) {
+        docRef = doc(this.firestore, `${params.collection}/${obj._id}`);
+        docRef = params?.converter ? docRef.withConverter(params.converter) : docRef;
+        await setDoc(docRef, obj);
+      } else {
+        let collectionRef: CollectionReference = collection(this.firestore, params.collection);
+        collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
+        docRef = await addDoc(collectionRef, obj);
+      }
+
       const retObj: any = (await getDoc(docRef)).data();
       return ({ ...retObj, _id: docRef.id });
     } catch (firestoreError: any) {
@@ -378,7 +386,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
     }
   }
 
-  query$(params: FirestoreParams): Observable<T[] | null> {
+  query$(params: FirestoreParams): Observable<any[]> {
     if (!params.collection) {
       throw new Error("You must provide the collection.");
     }
@@ -418,7 +426,7 @@ export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> impl
 
       const firestoreQuery: Query = query(collectionRef, ...constraints);
 
-      return collectionData(firestoreQuery, { idField: '_id' }) as Observable<T[]>;
+      return collectionData(firestoreQuery, { idField: '_id' });
     } catch (firestoreError: any) {
       throw this.getErrorMessage(firestoreError);
     }

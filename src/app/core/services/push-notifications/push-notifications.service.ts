@@ -79,12 +79,26 @@ export class PushNotificationsService {
     PushNotifications.addListener('pushNotificationActionPerformed',
       (action: ActionPerformed) => {
         console.log('Push action performed: ' + JSON.stringify(action));
-        /* if (action.actionId === 'open-post') {
-          const postId = action.notification.data?.postId;
-          if (postId) {
-            this.router.navigate(['/tabs/sell/post', postId]);
-          }
-        } */
+
+        const type: string = action.notification.data?.type;
+
+        switch (type) {
+          case 'sale':
+            const postId = action.notification.data?.postId;
+            if (postId) {
+              this.router.navigate([`/tabs/post-detail/${postId}`]);
+            }
+            break;
+          case 'message':
+            const conversationId = action.notification.data?.conversationId;
+            if (conversationId) {
+              this.router.navigate([`/tabs/conversation/${conversationId}`]);
+            }
+            break;
+          default: 
+            console.warn(`Unhandled push notification type: ${type}`);
+            break;
+        }
       }
     );
   }

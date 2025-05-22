@@ -1,6 +1,6 @@
 import { InjectionToken } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
-import { ConversationModel, Conversation } from '../models/conversation.model'; 
+import { ConversationModel, Conversation, MessageModel } from '../models/conversation.model'; 
 
 export const ConversationRepository = new InjectionToken<ConversationRepository>('ConversationRepository');
 
@@ -21,6 +21,7 @@ export interface ConversationRepository {
   queryConversations$?(queryConstraints?: any): Observable<Conversation[] | null> | null;
   saveConversation(conversationData: Partial<ConversationModel>): Promise<Conversation | null>;
   updateConversation(conversationData: Partial<ConversationModel> & { _id: string }): Promise<Conversation | null>;
+  saveMessage({ conversationId, messageData }: { conversationId: string, messageData: Partial<MessageModel> }): Promise<MessageModel | null>;
   deleteConversation(id: string): Promise<boolean>;
   conversationExists(id: string): Promise<boolean>;
 }
