@@ -3,6 +3,14 @@
   flex-direction: column;
   min-height: 100%;
 
+  .loading-spinner-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+  }
+
   .top-tabs-container {
     display: flex;
     flex-direction: row;
@@ -32,15 +40,6 @@
       color: var(--ion-color-light);
     }
   }
-  
-  .spinner-container {
-    width: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    padding: 1rem 0;
-  }
-  
 }
 
 
