@@ -2,51 +2,45 @@ import { Injectable, inject } from '@angular/core';
 import { Observable } from 'rxjs/internal/Observable';
 
 import { ConversationRepository } from '../../../../domain/repositories/conversation.repository'; 
-import { Storage } from '../../../storage.interface';
-import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
+import { FirestoreAdapter } from '../firestore.adapter';
 import { ConversationModel, Conversation, MessageModel } from '../../../../domain/models/conversation.model'; 
 import { FirestoreConversationConverter, FirestoreMessageConverter } from '../converters/firestore.conversation.converter'; 
 import { auditTime, combineLatest, distinctUntilChanged, map, of, switchMap } from 'rxjs';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreConversationRepository implements ConversationRepository {
-  private storage: Storage<Conversation> = inject(FirebaseFirestoreAdapter<ConversationModel>);
+  private firestore: FirestoreAdapter<Conversation> = inject(FirestoreAdapter<ConversationModel>);
   private conversationConverter: FirestoreConversationConverter = new FirestoreConversationConverter();
   private messageConverter: FirestoreMessageConverter = new FirestoreMessageConverter();
 
   async getConversationById(id: string): Promise<Conversation | null> {
     try {
-      const conversation: Conversation | null = await this.storage.getById(id, { collection: 'conversations', converter: this.conversationConverter });
+      const conversation: Conversation | null = await this.firestore.getById(id, { collection: 'conversations', converter: this.conversationConverter });
       if (!conversation) return null;
 
-      if (!this.storage.getCollection) return conversation;
-
-      const conversationMessages: MessageModel[] = await this.storage.getCollection({ 
+      const conversationMessages: MessageModel[] = await this.firestore.getCollection({ 
         collection: `conversations/${id}/messages`, 
         converter: this.messageConverter
       });
       conversation.messages = conversationMessages ?? [];
       return conversation;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getConversationById$(id: string): Observable<Conversation | null> | null {
-    if (!this.storage.getById$) return null;
-
     try {
-      const conversation$: Observable<Conversation | null> = this.storage.getById$(id, { collection: 'conversations', converter: this.conversationConverter });
+      const conversation$: Observable<Conversation | null> = this.firestore.getById$(id, { collection: 'conversations', converter: this.conversationConverter });
       
-      //if (!this.storage.getCollection$) return conversation$;
-      /* const conversationMessages$: Observable<MessageModel[]> = this.storage.getCollection$({
+      //if (!this.firestore.getCollection$) return conversation$;
+      /* const conversationMessages$: Observable<MessageModel[]> = this.firestore.getCollection$({
         collection: `conversations/${id}/messages`,
         converter: this.messageConverter
       }); */
 
-      if (!this.storage.query$) return conversation$;
-      const conversationMessages$: Observable<MessageModel[]> = this.storage.query$({
+      const conversationMessages$: Observable<MessageModel[]> = this.firestore.query$({
         collection: `conversations/${id}/messages`,
         converter: this.messageConverter,
         queryConstraints: {
@@ -67,45 +61,41 @@ export class FirestoreConversationRepository implements ConversationRepository {
         //distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current))  // To avoid double updates 
         distinctUntilChanged((previous, current) => previous?.messages.length === current?.messages.length)  // To avoid double updates
       );
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getConversationsByBuyerId(buyerId: string): Promise<Conversation[] | null> {
     try {
-      const conversations: Conversation[] | null = await this.storage.getByField('participants.buyer.userId', buyerId, { collection: 'conversations', converter: this.conversationConverter }); 
-      if (!this.storage.getCollection || conversations === null) return conversations;
+      const conversations: Conversation[] | null = await this.firestore.getByField('participants.buyer.userId', buyerId, { collection: 'conversations', converter: this.conversationConverter }); 
+      if (!this.firestore.getCollection || conversations === null) return conversations;
 
       for (let conversation of conversations) {
-        conversation.messages = await this.storage.getCollection({ 
+        conversation.messages = await this.firestore.getCollection({ 
           collection: `conversations/${conversation._id}/messages`, 
           converter: this.messageConverter
         });
       }
       return conversations;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getConversationsByBuyerId$(buyerId: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
     try {
-      const conversations$: Observable<Conversation[] | null> = this.storage.getByField$('participants.buyer.userId', buyerId, { collection: 'conversations', converter: this.conversationConverter })
-      if (!this.storage.getCollection$) return conversations$;
+      const conversations$: Observable<Conversation[] | null> = this.firestore.getByField$('participants.buyer.userId', buyerId, { collection: 'conversations', converter: this.conversationConverter })
 
       return conversations$.pipe(
         switchMap((conversations: Conversation[] | null) => {
           if (!conversations || conversations.length === 0) return of(null);
 
           const conversationsWithMessages$ = conversations.map((conversation: Conversation) => {  
-            if (!this.storage.getCollection$) return of(conversation);
 
-            return this.storage.getCollection$({
+            return this.firestore.getCollection$({
               collection: `conversations/${conversation._id}/messages`,
               converter: this.messageConverter
             }).pipe(
@@ -119,45 +109,40 @@ export class FirestoreConversationRepository implements ConversationRepository {
           return combineLatest(conversationsWithMessages$);
         })
       )
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getConversationsBySellerId(sellerId: string): Promise<Conversation[] | null> {
     try {
-      const conversations: Conversation[] | null = await this.storage.getByField('participants.seller.userId', sellerId, { collection: 'conversations', converter: this.conversationConverter }); 
-      if (!this.storage.getCollection || conversations === null) return conversations;
+      const conversations: Conversation[] | null = await this.firestore.getByField('participants.seller.userId', sellerId, { collection: 'conversations', converter: this.conversationConverter }); 
+      if (conversations === null) return conversations;
 
       for (let conversation of conversations) {
-        conversation.messages = await this.storage.getCollection({ 
+        conversation.messages = await this.firestore.getCollection({ 
           collection: `conversations/${conversation._id}/messages`, 
           converter: this.messageConverter
         });
       }
       return conversations;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getConversationsBySellerId$(sellerId: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
     try {
-      const conversations$: Observable<Conversation[] | null> = this.storage.getByField$('participants.seller.userId', sellerId, { collection: 'conversations', converter: this.conversationConverter })
-      if (!this.storage.getCollection$) return conversations$;
+      const conversations$: Observable<Conversation[] | null> = this.firestore.getByField$('participants.seller.userId', sellerId, { collection: 'conversations', converter: this.conversationConverter })
 
       return conversations$.pipe(
         switchMap((conversations: Conversation[] | null) => {
           if (!conversations || conversations.length === 0) return of(null);
 
           const conversationsWithMessages$ = conversations.map((conversation: Conversation) => {  
-            if (!this.storage.getCollection$) return of(conversation);
-
-            const messages$ = this.storage.getCollection$({
+            const messages$ = this.firestore.getCollection$({
               collection: `conversations/${conversation._id}/messages`,
               converter: this.messageConverter
             });
@@ -173,54 +158,42 @@ export class FirestoreConversationRepository implements ConversationRepository {
           return combineLatest(conversationsWithMessages$);
         })
       )
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getConversationsByParticipantId(participantId: string): Promise<Conversation[] | null> {
     try {
-      const conversationsAsBuyer: Conversation[] = await this.storage.getByField('participants.buyer.userId', participantId, { collection: 'conversations', converter: this.conversationConverter }) ?? []; 
-      const conversationsAsSeller: Conversation[] = await this.storage.getByField('participants.seller.userId', participantId, { collection: 'conversations', converter: this.conversationConverter }) ?? []; 
-
-      if (!this.storage.getCollection) return conversationsAsBuyer.concat(conversationsAsSeller);
+      const conversationsAsBuyer: Conversation[] = await this.firestore.getByField('participants.buyer.userId', participantId, { collection: 'conversations', converter: this.conversationConverter }) ?? []; 
+      const conversationsAsSeller: Conversation[] = await this.firestore.getByField('participants.seller.userId', participantId, { collection: 'conversations', converter: this.conversationConverter }) ?? []; 
 
       for (let conversation of conversationsAsBuyer) {
-        conversation.messages = await this.storage.getCollection({ 
+        conversation.messages = await this.firestore.getCollection({ 
           collection: `conversations/${conversation._id}/messages`, 
           converter: this.messageConverter
         });
       }
 
       for (let conversation of conversationsAsSeller) {
-        conversation.messages = await this.storage.getCollection({ 
+        conversation.messages = await this.firestore.getCollection({ 
           collection: `conversations/${conversation._id}/messages`, 
           converter: this.messageConverter
         });
       }
 
       return conversationsAsBuyer.concat(conversationsAsSeller);
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getConversationsByParticipantId$(participantId: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
     try {
-      const conversationsAsBuyer$: Observable<Conversation[] | null> = this.storage.getByField$('participants.buyer.userId', participantId, { collection: 'conversations', converter: this.conversationConverter });
-      const conversationsAsSeller$: Observable<Conversation[] | null> = this.storage.getByField$('participants.seller.userId', participantId, { collection: 'conversations', converter: this.conversationConverter });
-
-      if (!this.storage.getCollection$) {
-        return combineLatest([conversationsAsBuyer$, conversationsAsSeller$]).pipe(
-          map(([conversationsAsBuyer, conversationsAsSeller]) => {
-            return (conversationsAsBuyer ?? []).concat(conversationsAsSeller ?? []);
-          })
-        )
-      };
+      const conversationsAsBuyer$: Observable<Conversation[] | null> = this.firestore.getByField$('participants.buyer.userId', participantId, { collection: 'conversations', converter: this.conversationConverter });
+      const conversationsAsSeller$: Observable<Conversation[] | null> = this.firestore.getByField$('participants.seller.userId', participantId, { collection: 'conversations', converter: this.conversationConverter });
 
       return combineLatest([conversationsAsBuyer$, conversationsAsSeller$]).pipe(
         map(([conversationsAsBuyer, conversationsAsSeller]) => {
@@ -230,9 +203,7 @@ export class FirestoreConversationRepository implements ConversationRepository {
           if (!conversations || conversations.length === 0) return of(null);
 
           const conversationsWithMessages$ = conversations.map((conversation: Conversation) => {  
-            if (!this.storage.getCollection$) return of(conversation);
-
-            return this.storage.getCollection$({
+            return this.firestore.getCollection$({
               collection: `conversations/${conversation._id}/messages`,
               converter: this.messageConverter
             }).pipe(
@@ -247,48 +218,43 @@ export class FirestoreConversationRepository implements ConversationRepository {
         })
       );
 
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getConversationsByPostId(postId: string): Promise<Conversation[] | null> {
     try {
-      const conversations: Conversation[] | null = await this.storage.getByField('relatedPost.postId', postId, { collection: 'conversations', converter: this.conversationConverter }) ?? [];
-
-      if (!this.storage.getCollection) return conversations;
+      const conversations: Conversation[] | null = await this.firestore.getByField('relatedPost.postId', postId, { collection: 'conversations', converter: this.conversationConverter }) ?? [];
 
       for (let conversation of conversations) {
-        conversation.messages = await this.storage.getCollection({ 
+        conversation.messages = await this.firestore.getCollection({ 
           collection: `conversations/${conversation._id}/messages`, 
           converter: this.messageConverter
         });
       }
       return conversations;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getConversationsByPostId$(postId: string): Observable<Conversation[] | null> | null {
-    if (!this.storage.getByField$) return null;
-
     try {
-      //return this.storage.getByField$('initiatedBy', postId, { collection: 'conversations', converter: this.conversationConverter });
-      const conversations$: Observable<Conversation[] | null> = this.storage.getByField$('relatedPost.postId', postId, { collection: 'conversations', converter: this.conversationConverter });
-
-      if (!this.storage.getCollection$) return conversations$;
+      const conversations$: Observable<Conversation[] | null> = 
+        this.firestore.getByField$('relatedPost.postId', postId, { 
+          collection: 'conversations', 
+          converter: this.conversationConverter 
+        });
 
       return conversations$.pipe(
         switchMap((conversations: Conversation[] | null) => {
           if (!conversations || conversations.length === 0) return of(null);
 
-          const conversationsWithMessages$ = conversations.map((conversation: Conversation) => {  
-            if (!this.storage.getCollection$) return of(conversation);
-
-            return this.storage.getCollection$({
+          const conversationsWithMessages$ = conversations.map((conversation: Conversation) =>
+            this.firestore.getCollection$({
               collection: `conversations/${conversation._id}/messages`,
               converter: this.messageConverter
             }).pipe(
@@ -296,65 +262,59 @@ export class FirestoreConversationRepository implements ConversationRepository {
                 ...conversation,
                 messages: messages ?? []
               }))
-            ) as Observable<Conversation>;
-          });
+            ) as Observable<Conversation>
+          );
 
           return combineLatest(conversationsWithMessages$);
         })
       );
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getAllConversations(): Promise<Conversation[] | null> {
-    if (!this.storage.getCollection) return null;
-    
     try {
-      return await this.storage.getCollection({ collection: 'conversations', converter: this.conversationConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return await this.firestore.getCollection({ collection: 'conversations', converter: this.conversationConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getAllConversations$(): Observable<Conversation[] | null> | null {
-    if (!this.storage.getCollection$) return null;
-
     try {
-      return this.storage.getCollection$({ collection: 'conversations', converter: this.conversationConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return this.firestore.getCollection$({ collection: 'conversations', converter: this.conversationConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async queryConversations(queryConstraints?: any): Promise<Conversation[] | null> {
     try {
-      return this.storage.query({ 
+      return this.firestore.query({ 
         collection: 'conversations',
         converter: this.conversationConverter,
         queryConstraints
       });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   queryConversations$(queryConstraints?: any): Observable<Conversation[] | null> | null {
-    if (!this.storage.query$) return null;
-
     try {
-      return this.storage.query$({ 
+      return this.firestore.query$({ 
         collection: 'conversations',
         converter: this.conversationConverter,
         queryConstraints
       });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
@@ -362,33 +322,31 @@ export class FirestoreConversationRepository implements ConversationRepository {
     try {
       const _conversation: Conversation = Conversation.Build(conversationData);
       let conversation: Conversation | null;
-      if (conversation = await this.storage.create(_conversation, { collection: 'conversations', converter: this.conversationConverter })) {
+      if (conversation = await this.firestore.create(_conversation, { collection: 'conversations', converter: this.conversationConverter })) {
         return conversation;
       }
       return null;
-    } catch (storageError) {
-      throw storageError;
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async updateConversation(conversationData: Partial<ConversationModel> & { _id: string }): Promise<Conversation | null> {
     try {
       let conversation: Conversation | null;
-      if (conversation = await this.storage.update(conversationData, { collection: 'conversations', converter: this.conversationConverter })) {
+      if (conversation = await this.firestore.update(conversationData, { collection: 'conversations', converter: this.conversationConverter })) {
         return conversation;
       }
       return null;
-    } catch (storageError) {
-      throw storageError;
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async saveMessage({ conversationId, messageData }: { conversationId: string, messageData: Partial<MessageModel> }): Promise<MessageModel | null> {
-    if (!this.storage.createInSubcollection) return null;
-
     try {
       let message: MessageModel | null;
-      if (message = await this.storage.createInSubcollection(
+      if (message = await this.firestore.createInSubcollection(
         messageData, 
         { 
           collection: `conversations/${conversationId}/messages`, 
@@ -398,24 +356,24 @@ export class FirestoreConversationRepository implements ConversationRepository {
         return message;
       }
       return null;
-    } catch (storageError) {
-      throw storageError;
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async deleteConversation(id: string): Promise<boolean> {
     try {
-      return await this.storage.remove(id);
-    } catch (storageError) {
-      throw storageError;
+      return await this.firestore.remove(id);
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async conversationExists(id: string): Promise<boolean> {
     try {
-      return await this.storage.exists(id);
-    } catch (storageError) {
-      throw storageError;
+      return await this.firestore.exists(id);
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 }

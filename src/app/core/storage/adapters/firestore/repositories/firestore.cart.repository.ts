@@ -3,80 +3,72 @@ import { Observable } from 'rxjs/internal/Observable';
 import { map } from 'rxjs';
 
 import { CartRepository } from '../../../../domain/repositories/cart.repository';
-import { Storage } from '../../../storage.interface';
-import { FirebaseFirestoreAdapter } from '../firebase-firestore.adapter';
+import { FirestoreAdapter } from '../firestore.adapter';
 import { CartModel, Cart } from '../../../../domain/models/cart.model';
 import { FirestoreCartConverter } from '../converters/firestore.cart.converter';
 
 @Injectable({ providedIn: 'root' })
 export class FirestoreCartRepository implements CartRepository {
-  private storage: Storage<Cart> = inject(FirebaseFirestoreAdapter<CartModel>); 
+  private firestore: FirestoreAdapter<Cart> = inject(FirestoreAdapter<CartModel>); 
   private cartConverter: FirestoreCartConverter = new FirestoreCartConverter();
 
   async getCartById(id: string): Promise<Cart | null> {
     try {
-      return await this.storage.getById(id, { collection: 'carts', converter: this.cartConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return await this.firestore.getById(id, { collection: 'carts', converter: this.cartConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getCartById$(id: string): Observable<Cart | null> | null {
-    if (!this.storage.getById$) return null;
     try {
-      return this.storage.getById$(id, { collection: 'carts', converter: this.cartConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return this.firestore.getById$(id, { collection: 'carts', converter: this.cartConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getCartByUserId(userId: string): Promise<Cart | null> {
     try {
-      const carts: Cart[] | null = await this.storage.getByField('userId', userId, { collection: 'carts', converter: this.cartConverter });
+      const carts: Cart[] | null = await this.firestore.getByField('userId', userId, { collection: 'carts', converter: this.cartConverter });
       if (carts && carts.length > 0) {
         return carts[0];
       }
       return null;
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getCartByUserId$(userId: string): Observable<Cart | null> | null {
-    if (!this.storage.getByField$) return null;
-
     try {
-      return this.storage.getByField$('userId', userId, { collection: 'carts', converter: this.cartConverter }).pipe(
+      return this.firestore.getByField$('userId', userId, { collection: 'carts', converter: this.cartConverter }).pipe(
         map(carts => carts && carts.length > 0 ? carts[0] : null)
       );
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   async getAllCarts(): Promise<Cart[] | null> {
-    if (!this.storage.getCollection) return null;
-
     try {
-      return await this.storage.getCollection({ collection: 'carts', converter: this.cartConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return await this.firestore.getCollection({ collection: 'carts', converter: this.cartConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
   getAllCarts$(): Observable<Cart[] | null> | null {
-    if (!this.storage.getCollection$) return null;
-
     try {
-      return this.storage.getCollection$({ collection: 'carts', converter: this.cartConverter });
-    } catch (storageError) {
-      console.error(storageError);
-      throw storageError;
+      return this.firestore.getCollection$({ collection: 'carts', converter: this.cartConverter });
+    } catch (firestoreError) {
+      console.error(firestoreError);
+      throw firestoreError;
     }
   }
 
@@ -84,41 +76,41 @@ export class FirestoreCartRepository implements CartRepository {
     try {
       const _cart: Cart = Cart.Build(cartData);
       let cart: Cart | null;
-      if (cart = await this.storage.create(_cart, { collection: 'carts', converter: this.cartConverter })) {
+      if (cart = await this.firestore.create(_cart, { collection: 'carts', converter: this.cartConverter })) {
         return cart;
       }
       return null;
-    } catch (storageError) {
-      throw storageError;
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async updateCart(cartData: Partial<CartModel> & { _id: string }): Promise<Cart | null> {
     try {
       let cart: Cart | null;
-      if (cart = await this.storage.update(cartData, { collection: 'carts', converter: this.cartConverter })) {
+      if (cart = await this.firestore.update(cartData, { collection: 'carts', converter: this.cartConverter })) {
         return cart;
       }
       return null;
-    } catch (storageError) {
-      console.error(storageError);
+    } catch (firestoreError) {
+      console.error(firestoreError);
     }
     return null;
   }
 
   async deleteCart(id: string): Promise<boolean> {
     try {
-      return await this.storage.remove(id);
-    } catch (storageError) {
-      throw storageError;
+      return await this.firestore.remove(id);
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 
   async cartExists(id: string): Promise<boolean> {
     try {
-      return await this.storage.exists(id);
-    } catch (storageError) {
-      throw storageError;
+      return await this.firestore.exists(id);
+    } catch (firestoreError) {
+      throw firestoreError;
     }
   }
 }

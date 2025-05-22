@@ -29,7 +29,6 @@ export interface FirestoreSaleModel {
     expirationYear: string;
     cvc: string;
   },
-  saleDate: Timestamp;
   createdAt: Timestamp,
   updatedAt: Timestamp;
 }
@@ -55,11 +54,6 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         username: (<SaleUserData>sale.sellerData).username,
       }, */
       paymentData: sale.paymentData,
-      saleDate: isValidDateInput(sale.saleDate)
-        ? Timestamp.fromDate(new Date(sale.saleDate))
-        : isFieldValue(sale.saleDate)
-          ? sale.saleDate
-          : serverTimestamp(),
       createdAt: isValidDateInput(sale.createdAt)
         ? Timestamp.fromDate(new Date(sale.createdAt))
         : isFieldValue(sale.createdAt)
@@ -102,13 +96,8 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         expirationYear: data.paymentData.expirationYear,
         cvc: data.paymentData.cvc,
       },
-      saleDate: data.saleDate.toDate(),
-      createdAt: isFirestoreTimestamp(data.createdAt) 
-        ? data.createdAt.toDate() 
-        : null,
-      updatedAt: isFirestoreTimestamp(data.updatedAt) 
-        ? data.updatedAt.toDate() 
-        : null,
+      createdAt: data.createdAt.toDate(),
+      updatedAt: data.updatedAt.toDate()
     });
   }
 }

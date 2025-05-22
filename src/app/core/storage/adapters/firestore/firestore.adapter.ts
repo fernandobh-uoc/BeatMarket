@@ -21,7 +21,6 @@ import {
   FirestoreErrorCode
 } from '@angular/fire/firestore';
 
-import { Storage } from '../../storage.interface';
 import { AppModel } from "src/app/core/domain/models/appModel.type";
 
 
@@ -90,7 +89,7 @@ const buildQueryConstraints = (filters: FirestoreFilter[]): QueryConstraint[] =>
 }
 
 @Injectable({ providedIn: 'root' })
-export class FirebaseFirestoreAdapter<T extends AppModel & { _id: string }> implements Storage<T> {
+export class FirestoreAdapter<T extends AppModel & { _id: string }> {
   private firestore: Firestore = inject(Firestore);
   private injector = inject(EnvironmentInjector);
 
