@@ -59,10 +59,10 @@ export const TabsRoutes: Routes = [
       {
         path: 'history',
         loadComponent: () => import('src/app/features/history/history.page').then(m => m.HistoryPage),
-        resolve: {
+        /* resolve: {
           boughtItems: boughtItemsResolver,
           soldItems: soldItemsResolver
-        }
+        } */
       },
       {
         path: '',

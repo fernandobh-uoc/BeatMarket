@@ -19,12 +19,18 @@
       </div>
     </div>
 
-    @if (selectedTab() === 'boughtItems') {
-      <app-history-list [sales]="boughtItems()" type="bought"></app-history-list>
-    }
-
-    @if (selectedTab() === 'soldItems') {
-      <app-history-list [sales]="soldItems()" type="sold"></app-history-list>
+    @if (loading()) {
+      <div class="spinner-container">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else {
+      @if (selectedTab() === 'boughtItems') {
+        <app-history-list [sales]="boughtItems()" type="bought"></app-history-list>
+      }
+  
+      @if (selectedTab() === 'soldItems') {
+        <app-history-list [sales]="soldItems()" type="sold"></app-history-list>
+      }
     }
   </div>
 </ion-content>

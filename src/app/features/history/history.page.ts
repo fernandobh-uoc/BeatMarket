@@ -1,7 +1,7 @@
-import { Component, effect, inject, linkedSignal, OnInit, signal } from '@angular/core';
+import { Component, computed, effect, inject, linkedSignal, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonSpinner } from '@ionic/angular/standalone';
 import { ActivatedRoute } from '@angular/router';
 import { Sale } from 'src/app/core/domain/models/sale.model';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
@@ -14,26 +14,18 @@ import { ViewDidEnter } from '@ionic/angular';
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],
   standalone: true,
-  imports: [HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonSpinner, HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
 })
-export class HistoryPage implements OnInit, ViewDidEnter {
-  private route = inject(ActivatedRoute);
+export class HistoryPage {
   private historyService = inject(HistoryService);
 
   boughtItems = linkedSignal<Sale[]>(() => this.historyService.historyState().boughtItems);
   soldItems = linkedSignal<Sale[]>(() => this.historyService.historyState().soldItems);
 
+  loading = computed(() => this.historyService.historyState().loading);
+  errorMessage = computed(() => this.historyService.historyState().errorMessage);
+
   selectedTab = signal<'boughtItems' | 'soldItems'>('boughtItems')
 
   constructor() {}
-
-  ngOnInit() {
-    this.boughtItems.set(this.route.snapshot.data['boughtItems']);
-    this.soldItems.set(this.route.snapshot.data['soldItems']);
-  }
-
-  ionViewDidEnter(): void {
-    this.boughtItems.set(this.route.snapshot.data['boughtItems']);
-    this.soldItems.set(this.route.snapshot.data['soldItems']);
-  }
 }
