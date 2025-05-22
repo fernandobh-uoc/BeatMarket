@@ -1,7 +1,7 @@
 import { Component, computed, effect, inject, input, OnInit, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonAvatar, IonIcon, IonButton } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonAvatar, IonIcon, IonButton, IonSpinner } from '@ionic/angular/standalone';
 import { PostDetailService } from './data-access/post-detail.service';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
@@ -19,7 +19,7 @@ import { CartService } from '../cart/data-access/cart.service';
   templateUrl: './post-detail.page.html',
   styleUrls: ['./post-detail.page.scss'],
   standalone: true,
-  imports: [RouterLink, KeyValuePairsPipe, ArticleCharacteristicsTranslatePipe, IonButton, IonIcon, IonAvatar, IonText, ToolbarComponent, PostImagesSliderComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, RouterLink, KeyValuePairsPipe, ArticleCharacteristicsTranslatePipe, IonButton, IonIcon, IonAvatar, IonText, ToolbarComponent, PostImagesSliderComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class PostDetailPage implements OnInit {
   private route = inject(ActivatedRoute);
@@ -28,6 +28,9 @@ export class PostDetailPage implements OnInit {
   private cartService = inject(CartService);
 
   postData = computed(() => this.postDetailService.postDetailState().postData);
+
+  loading = computed(() => this.postDetailService.postDetailState().loading);
+  errorMessage = computed(() => this.postDetailService.postDetailState().errorMessage);
 
   itemIsAdded = computed<boolean>(() => {
     return this.cartService.cartState().cartItems

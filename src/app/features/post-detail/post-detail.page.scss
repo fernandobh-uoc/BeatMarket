@@ -3,6 +3,14 @@
   flex-direction: column;
   gap: 1.5rem;
 
+  .loading-spinner-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 1rem 0;
+  }
+
   .images-slider {
     margin: calc(var(--top-content-padding) * -1) 0 1rem 0;
   }
