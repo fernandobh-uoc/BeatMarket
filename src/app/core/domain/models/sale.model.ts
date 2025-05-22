@@ -32,7 +32,6 @@ export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
   buyerData: SaleUserData;
   sellerData: SaleUserData;
   paymentData: SalePaymentData;
-  saleDate: Date;
 }
 
 export class Sale implements SaleModel {
@@ -47,7 +46,6 @@ export class Sale implements SaleModel {
   public buyerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
   public sellerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
   public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
-  public saleDate: Date = new Date();
 
   private constructor(sale: Partial<SaleModel> = {}) {
     Object.assign(this, { ...sale });
