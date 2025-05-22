@@ -80,6 +80,28 @@
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+
+    .finished-post-warning-wrapper {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      width: 100%;
+      min-height: 2.5rem;
+      margin: 0.5rem 0;
+      /* background-color: var(--ion-color-dark-shade); */
+      color: var(--ion-color-warning);
+      border: 1px solid var(--ion-color-warning-shade);
+      border-radius: 8px;
+
+      .finished-post-warning {
+        font-size: var(--body-medium-size, 0.875rem); 
+        font-style: normal;
+        font-weight: var(--body-medium-weight, 400);
+        line-height: var(--body-medium-line-height, 1.25rem);
+        letter-spacing: var(--body-medium-tracking, 0.01563rem);
+      }
+    }
+    
   }
 
   .condition-container,

@@ -48,10 +48,18 @@
   
     <div class="buttons-container">
       @if (!isOwnPost()) {
-        @if (itemIsAdded()) {
-          <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
+        @if (postData()?.isActive) {
+          @if (itemIsAdded()) {
+            <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
+          } @else {
+            <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>
+          }
         } @else {
-          <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>
+          <div class="finished-post-warning-wrapper">
+            <ion-text class="finished-post-warning">
+              Este anuncio ha finalizado
+            </ion-text>
+          </div>
         }
         <ion-button class="custom" fill="clear" [routerLink]="['/tabs/home']">Seguir comprando</ion-button>
       } 
