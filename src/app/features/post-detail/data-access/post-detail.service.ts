@@ -35,8 +35,6 @@ export class PostDetailService {
   private postResource = rxResource<PostModel | null, string | undefined>({
     request: () => this.postId(),
     loader: ({ request: postId }): Observable<PostModel | null> => {
-      console.log("loader");
-      if (!this.postRepository.getPostById$) return of(null);
       if (!postId) return of(null);
 
       try {
@@ -56,7 +54,6 @@ export class PostDetailService {
   }));
 
   setPostId(postId: string): void {
-    console.log("setting post id");
     this.postId.set(postId);
   }
 

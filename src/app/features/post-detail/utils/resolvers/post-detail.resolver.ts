@@ -4,6 +4,7 @@ import { PostDetailService } from '../../data-access/post-detail.service';
 import { Post } from 'src/app/core/domain/models/post.model';
 import { Observable } from 'rxjs';
 
+// UNUSED
 export const postDetailResolver: ResolveFn<boolean> = async (route, state) => {
   const postDetailService = inject(PostDetailService);
   const postId = route.paramMap.get('postId');
