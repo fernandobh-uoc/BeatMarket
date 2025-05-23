@@ -21,8 +21,6 @@ jobs:
       - name: Install dependencies
         run: |
           npm ci
-          npx ionic build
-          npx ionic cap copy
 
       - name: Install CocoaPods
         run: |
