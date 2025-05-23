@@ -34,7 +34,7 @@ jobs:
             -workspace App.xcworkspace \
             -configuration Debug \
             -sdk iphonesimulator \
-            -destination 'platform=iOS Simulator,name=iPhone 14' \
+            -destination 'platform=iOS Simulator,name=iPhone 16' \
             CODE_SIGNING_ALLOWED=NO \
             clean build
 
@@ -43,4 +43,4 @@ jobs:
         with:
           name: beatmarket
           path: |
-            ios/App/build/Debug-iphoneos/*.app
+            ios/App/build/Debug-iphonesimulator/*.app
