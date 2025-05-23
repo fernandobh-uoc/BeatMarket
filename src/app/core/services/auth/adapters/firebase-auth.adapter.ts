@@ -11,7 +11,9 @@ import {
   onAuthStateChanged,
   signOut,
   updateProfile, 
-  updatePassword
+  updatePassword,
+  sendPasswordResetEmail,
+  ActionCodeSettings
 } from '@angular/fire/auth';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from '../auth.interface';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
@@ -91,6 +93,15 @@ export class FirebaseAuthAdapter implements Auth {
   async logout(): Promise<void> {
     try {
       await signOut(this.authInstance);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    try {
+      console.log("resetting password");
+      await sendPasswordResetEmail(this.authInstance, email);
     } catch (authError: any) {
       throw authError;
     }

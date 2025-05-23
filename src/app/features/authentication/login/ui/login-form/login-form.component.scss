@@ -10,9 +10,31 @@ form {
 }
 
 .link {
-  color: var(--ion-color-primary);
   text-decoration: underline;
   cursor: pointer;
+}
+
+.password-labels-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: center;
+
+  .forgot-password {
+    font-size: var(--body-medium-size, 0.875rem);
+    font-style: normal;
+    font-weight: var(--body-medium-weight, 400);
+    line-height: var(--body-medium-line-height, 1.25rem);
+    letter-spacing: var(--body-medium-tracking, 0.01563rem);
+    text-decoration: underline;
+    cursor: pointer;
+    /* font-size: var(--label-large-size, 0.875rem);
+    font-style: normal;
+    font-weight: var(--label-large-weight-prominent, 600);
+    line-height: var(--label-large-line-height, 1.25rem);
+    letter-spacing: var(--label-large-tracking, 0.00625rem); */
+  }
 }
 
 .button-subtitle-container {

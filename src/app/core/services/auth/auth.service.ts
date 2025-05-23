@@ -201,6 +201,16 @@ export class AuthService {
     }
   }
 
+  async resetPassword(email: string): Promise<void> {
+    this.#setAuthMethod('email');
+    try {
+      await this.authMethod.resetPassword(email);
+    } catch (errorMessage: any) {
+      this.#errorMessage.set(errorMessage);
+      throw errorMessage;
+    }
+  }
+
   async #updateAuthStatus(user: User | null): Promise<void> {
     if (user) {
       this.#authStatus.set({
@@ -241,6 +251,7 @@ export interface AuthMethod {
   login(email?: string, password?: string): Promise<AuthReturnType>;
   logout(): Promise<void>;
   updatePassword(newPassword: string): Promise<void>;
+  resetPassword(email: string): Promise<void>;
 }
 
 /* @Injectable({ providedIn: 'root' })
@@ -279,6 +290,14 @@ export class EmailAuth implements AuthMethod {
     //return new Promise(res => res());
     try {
       return await this.auth.logout();
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+
+  async resetPassword(email: string): Promise<void> {
+    try {
+      return await this.auth.resetPassword(email);
     } catch (authError: any) {
       throw authError;
     }
@@ -323,6 +342,14 @@ export class GoogleAuth implements AuthMethod {
     }
   }
 
+  async resetPassword(email: string): Promise<void> {
+    try {
+      return await this.auth.resetPassword(email);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+
   async updatePassword(newPassword: string): Promise<void> {
     try {
       return await this.auth.updatePassword(newPassword);
@@ -357,6 +384,14 @@ export class AppleAuth implements AuthMethod {
   async logout(): Promise<void> {
     try {
       return await this.auth.logout();
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+  
+  async resetPassword(email: string): Promise<void> {
+    try {
+      return await this.auth.resetPassword(email);
     } catch (authError: any) {
       throw authError;
     }

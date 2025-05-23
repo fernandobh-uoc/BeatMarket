@@ -13,8 +13,9 @@
       [authErrorMessage]="errorMessage()"
       [submitAttempt]="submitAttempt()"
       [loading]="loading()"
+      [forgotPasswordVisible]="forgotPasswordVisible()"
       (controlFocus)="onControlFocus($event)"
-      (formSubmit)="login($event)">
-    </app-login-form>
+      (formSubmit)="login($event)"
+    ></app-login-form>
   </div>
 </ion-content>

@@ -27,6 +27,7 @@ export class LoginService {
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {
     this.loading.set(true);
+    this.errorMessage.set('');
 
     let email: string = emailOrUsername;
     let user: UserModel | null = null; 
@@ -56,5 +57,9 @@ export class LoginService {
       this.loading.set(false);
       this.errorMessage.set(loginError);
     } 
+  }
+
+  async resetPassword() {
+    
   }
 }

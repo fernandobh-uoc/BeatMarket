@@ -17,6 +17,7 @@ export class LoginFormComponent implements OnInit {
 
   submitAttempt = input<boolean>(false);
   loading = input<boolean>(false);
+  forgotPasswordVisible = input<boolean>(false);
 
   authErrorMessage = input<string>('');
 

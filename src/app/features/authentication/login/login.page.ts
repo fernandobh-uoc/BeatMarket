@@ -1,4 +1,4 @@
-import { Component, inject, signal, computed, linkedSignal, viewChild } from '@angular/core';
+import { Component, inject, signal, computed, linkedSignal, viewChild, effect } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
@@ -22,6 +22,12 @@ export class LoginPage {
 
   constructor() {
     addIcons({ arrowBackOutline });
+
+    effect(() => {
+      if (this.errorMessage()) {
+        this.forgotPasswordVisible.set(true);
+      }
+    })
   }
 
   loginFormComponent = viewChild(LoginFormComponent);
@@ -30,6 +36,7 @@ export class LoginPage {
 
   loading = computed(() => this.loginService.loginState().loading);
   errorMessage = linkedSignal(() => this.loginService.loginState().errorMessage ?? '');
+  forgotPasswordVisible = signal<boolean>(false);
 
   onControlFocus(control: string) {
     this.submitAttempt.set(false);
@@ -38,6 +45,7 @@ export class LoginPage {
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {
     this.submitAttempt.set(true);
+    this.errorMessage.set('');
     if (this.loginFormComponent()?.loginForm?.valid) {
       await this.loginService.login({ 
         emailOrUsername, 

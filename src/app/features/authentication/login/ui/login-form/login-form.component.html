@@ -9,19 +9,24 @@
   </div>
 
   <div class="input-wrapper">
-    <ion-label class="custom" color="light">Contraseña</ion-label>
-      <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('password')">
-        <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
-      </ion-input>
-      @if (submitAttempt()) {
-        @if (loginForm.get('password')?.errors?.['required']) {  
-          <ion-text class="error-text" color="danger">Introduce una contraseña</ion-text>
-        }
-  
-        @if (authErrorMessage()) {
-          <ion-text class="error-text auth-error" color="danger">{{ authErrorMessage() }}</ion-text>
-        }
+    <div class="password-labels-wrapper">
+      <ion-label class="custom" color="light">Contraseña</ion-label>
+      @if (forgotPasswordVisible()) {
+        <ion-label class="custom link forgot-password" [routerLink]="['/auth/password-reset']">¿Olvidaste la contraseña?</ion-label> 
+      } 
+    </div>
+    <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('password')">
+      <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
+    </ion-input>
+    @if (submitAttempt()) {
+      @if (loginForm.get('password')?.errors?.['required']) {  
+        <ion-text class="error-text" color="danger">Introduce una contraseña</ion-text>
       }
+
+      @if (authErrorMessage()) {
+        <ion-text class="error-text auth-error" color="danger">{{ authErrorMessage() }}</ion-text>
+      }
+    }
   </div>  
 </form>
 

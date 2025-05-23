@@ -15,6 +15,18 @@ export const AuthRoutes: Routes = [
     data: { authStatusMustBe: false }
   },
   {
+    path: 'password-reset',
+    loadComponent: () => import('./password-reset/pages/password-reset/password-reset.page').then(m => m.PasswordResetPage),
+    canMatch: [authGuard],
+    data: { authStatusMustBe: false }
+  },
+  {
+    path: 'password-reset-email-sent',
+    loadComponent: () => import('./password-reset/pages/password-reset-email-sent/password-reset-email-sent.page').then(m => m.PasswordResetEmailSentPage),
+    canMatch: [authGuard],
+    data: { authStatusMustBe: false }
+  },
+  {
     path: 'register',
     loadComponent: () => import('./register/pages/register/register.page').then(m => m.RegisterPage),
     canMatch: [authGuard],
