@@ -36,6 +36,7 @@ jobs:
             -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 16' \
             CODE_SIGNING_ALLOWED=NO \
+            -derivedDataPath build \
             clean build
 
       - name: Upload .app as artifact
@@ -43,4 +44,4 @@ jobs:
         with:
           name: beatmarket
           path: |
-            ios/App/build/Debug-iphonesimulator/*.app
+            ios/App/build/Build/Products/Debug-iphonesimulator/*.app
