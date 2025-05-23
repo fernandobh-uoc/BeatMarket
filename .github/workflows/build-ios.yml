@@ -31,7 +31,7 @@ jobs:
         run: |
           cd ios/App
           xcodebuild -scheme App \
-            -workspace ios/App/App.xcworkspace \
+            -workspace App.xcworkspace \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 14' \
