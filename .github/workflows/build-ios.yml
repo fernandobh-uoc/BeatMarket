@@ -39,6 +39,6 @@ jobs:
       - name: Upload .app as artifact
         uses: actions/upload-artifact@v4
         with:
-          name: capacitor-app
+          name: beatmarket
           path: |
             ios/App/build/Debug-iphonesimulator/*.app
