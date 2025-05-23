@@ -22,7 +22,7 @@ jobs:
         run: |
           npm ci
           npx ionic build
-          npx cap sync ios
+          npx ionic cap copy
 
       - name: Install CocoaPods
         run: |
