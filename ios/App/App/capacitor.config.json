@@ -1,0 +1,14 @@
+{
+	"appId": "edu.uoc.beatmarket",
+	"appName": "BeatMarket",
+	"webDir": "www",
+	"packageClassList": [
+		"MediaPlugin",
+		"AppPlugin",
+		"CAPCameraPlugin",
+		"HapticsPlugin",
+		"KeyboardPlugin",
+		"PushNotificationsPlugin",
+		"StatusBarPlugin"
+	]
+}
