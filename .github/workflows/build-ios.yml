@@ -31,11 +31,12 @@ jobs:
         run: |
           cd ios/App
           xcodebuild -scheme App \
+            -workspace ios/App/App.xcworkspace \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'platform=iOS Simulator,name=iPhone 14' \
             CODE_SIGNING_ALLOWED=NO \
-            build
+            clean build
 
       - name: Upload .app as artifact
         uses: actions/upload-artifact@v4
