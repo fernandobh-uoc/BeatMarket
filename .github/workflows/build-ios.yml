@@ -43,4 +43,4 @@ jobs:
         with:
           name: beatmarket
           path: |
-            ios/App/build/Debug-iphonesimulator/*.app
+            ios/App/build/Debug-iphoneos/*.app
