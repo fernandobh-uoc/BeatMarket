@@ -32,7 +32,7 @@ log.txt
 
 # Capacitor
 /android
-/ios
+#/ios
 
 # Node
 /node_modules
