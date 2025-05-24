@@ -32,19 +32,19 @@ export class LoginPage {
 
   loginFormComponent = viewChild(LoginFormComponent);
 
-  submitAttempt = signal<boolean>(false);
+  submitAttempted = signal<boolean>(false);
 
   loading = computed(() => this.loginService.loginState().loading);
   errorMessage = linkedSignal(() => this.loginService.loginState().errorMessage ?? '');
   forgotPasswordVisible = signal<boolean>(false);
 
   onControlFocus(control: string) {
-    this.submitAttempt.set(false);
+    this.submitAttempted.set(false);
     this.errorMessage.set('');
   }
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {
-    this.submitAttempt.set(true);
+    this.submitAttempted.set(true);
     this.errorMessage.set('');
     if (this.loginFormComponent()?.loginForm?.valid) {
       await this.loginService.login({ 

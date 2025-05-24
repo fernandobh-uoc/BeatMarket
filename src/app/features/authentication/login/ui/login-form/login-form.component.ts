@@ -15,7 +15,7 @@ export class LoginFormComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
   loginForm!: FormGroup;
 
-  submitAttempt = input<boolean>(false);
+  submitAttempted = input<boolean>(false);
   loading = input<boolean>(false);
   forgotPasswordVisible = input<boolean>(false);
 
