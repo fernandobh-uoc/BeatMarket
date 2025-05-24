@@ -7,7 +7,6 @@ import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
-import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
 import { FormGroup } from '@angular/forms';
 import { RegisterService } from '../../data-access/register.service';
