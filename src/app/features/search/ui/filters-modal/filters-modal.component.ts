@@ -11,7 +11,7 @@ import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.p
   selector: 'app-filters-modal',
   templateUrl: './filters-modal.component.html',
   styleUrls: ['./filters-modal.component.scss'],
-  imports: [IonIcon, IonCheckbox, IonRange, IonCol, IonRow, IonRadioGroup, IonRadio, IonSelect, IonSelectOption, IonLabel, IonText, IonInput, IonItem, IonContent, IonTitle, IonButton, IonButtons, IonToolbar, IonHeader],
+  imports: [IonIcon, IonCheckbox, IonCol, IonRow, IonRadioGroup, IonRadio, IonLabel, IonText, IonInput, IonContent, IonTitle, IonButton, IonButtons, IonToolbar, IonHeader],
   providers: [FormatCurrencyPipe]
 })
 export class FiltersModalComponent implements OnInit {

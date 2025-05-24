@@ -8,7 +8,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-conversations-list',
   templateUrl: './conversations-list.component.html',
   styleUrls: ['./conversations-list.component.scss'],
-  imports: [RouterLink, DatePipe, IonLabel, IonAvatar, IonList, IonText]
+  imports: [RouterLink, DatePipe, IonAvatar, IonList, IonText]
 })
 export class ConversationsListComponent  implements OnInit {
   conversations = input<ConversationModel[]>([]);

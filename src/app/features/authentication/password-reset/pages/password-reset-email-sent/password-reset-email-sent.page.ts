@@ -9,7 +9,7 @@ import { RouterLink } from '@angular/router';
   templateUrl: './password-reset-email-sent.page.html',
   styleUrls: ['./password-reset-email-sent.page.scss'],
   standalone: true,
-  imports: [RouterLink, IonButton, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [RouterLink, IonButton, IonContent, CommonModule, FormsModule]
 })
 export class PasswordResetEmailSentPage implements OnInit {
 
