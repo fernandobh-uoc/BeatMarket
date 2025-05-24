@@ -1,7 +1,7 @@
-import { Component, computed, ElementRef, inject, OnInit, Signal, signal, viewChild } from '@angular/core';
+import { Component, computed, ElementRef, inject, linkedSignal, OnInit, Signal, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { AbstractControl, FormArray, FormGroup, FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonInput } from '@ionic/angular/standalone';
+import { IonContent, IonHeader } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { PublishFormComponent } from '../../ui/publish-form/publish-form.component';
 import { SellService } from '../../data-access/sell.service';
@@ -14,23 +14,20 @@ import { ViewWillEnter, ViewDidEnter, ViewDidLeave } from '@ionic/angular';
   templateUrl: './publish.page.html',
   styleUrls: ['./publish.page.scss'],
   standalone: true,
-  imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [PublishFormComponent, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule]
 })
 export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
-  sellService = inject(SellService);
   router = inject(Router);
-
-  publishFormComponent = viewChild(PublishFormComponent);
-  titleInput = viewChild('titleInput');
-
-  publishErrorMessage = computed(() => this.sellService.errorMessage());
-
-  uploadedImagesURLs = computed(() => this.sellService.imagesDataURLs());
-  submitAttempted = signal<boolean>(false);
-
-  disabledPublishButton = signal<boolean>(false);
+  sellService = inject(SellService);
+  
+  uploadedImagesURLs = computed(() => this.sellService.sellState().imagesDataURLs);
+  loading = computed(() => this.sellService.sellState().loading);
+  errorMessage = linkedSignal(() => this.sellService.sellState().errorMessage ?? '');
 
   toolbar = viewChild(ToolbarComponent);
+  publishFormComponent = viewChild(PublishFormComponent);
+  submitAttempted = signal<boolean>(false);
+  titleInput = viewChild('titleInput');
 
   ngOnInit() {}
 
@@ -47,7 +44,7 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
 
   ionViewDidLeave(): void {
     this.submitAttempted.set(false);
-    this.disabledPublishButton.set(false);
+    //this.disabledPublishButton.set(false);
     this.publishFormComponent()?.resetForm();
     this.sellService.removeImages();
     this.toolbar()?.searchActive.set(false);
@@ -86,7 +83,7 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
       return;
     }
 
-    this.disabledPublishButton.set(true);
+    //this.disabledPublishButton.set(true);
 
     await this.sellService.publishPost({
       ...publishForm?.value.commonData,
@@ -96,7 +93,7 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
       },
     });
     
-    if (!this.publishErrorMessage()) {
+    if (!this.errorMessage()) {
       this.router.navigate(['/tabs/sell/splash']);
     }
   }

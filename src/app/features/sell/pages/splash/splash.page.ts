@@ -10,12 +10,12 @@ import { RouterLink } from '@angular/router';
   templateUrl: './splash.page.html',
   styleUrls: ['./splash.page.scss'],
   standalone: true,
-  imports: [RouterLink, IonButton, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [RouterLink, IonButton, IonContent, CommonModule, FormsModule]
 })
 export class SplashPage implements OnInit {
   sellService = inject(SellService);
   
-  postId = computed(() => this.sellService.latestPublishedPostId());
+  postId = computed(() => this.sellService.sellState().latestPublishedPostId);
 
   constructor() { }
 

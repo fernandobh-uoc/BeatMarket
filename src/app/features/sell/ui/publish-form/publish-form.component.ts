@@ -2,7 +2,7 @@ import { Component, computed, effect, inject, input, OnInit, output, Signal, sig
 import { FormBuilder, FormGroup, ReactiveFormsModule, Validators } from '@angular/forms';
 import { ViewDidEnter } from '@ionic/angular';
 import { ArticleCategory, ArticleCondition } from 'src/app/core/domain/models/article.model';
-import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge } from "@ionic/angular/standalone";
+import { IonIcon, IonLabel, IonInput, IonText, IonCheckbox, IonRadio, IonRadioGroup, IonSelect, IonSelectOption, IonRow, IonCol, IonButton, IonTextarea, IonBadge, IonSpinner } from "@ionic/angular/standalone";
 import { addIcons } from 'ionicons';
 import { cameraOutline, logoEuro } from 'ionicons/icons';
 import { AccesoryType, BookTheme, InstrumentBrands, InstrumentLevel, InstrumentType, ProfessionalType, RecordingFormat, RecordingGenre } from 'src/app/core/domain/models/articleCharacteristics.interface';
@@ -12,7 +12,7 @@ import { FormatCurrencyPipe } from 'src/app/shared/utils/pipes/format-currency.p
   selector: 'app-publish-form',
   templateUrl: './publish-form.component.html',
   styleUrls: ['./publish-form.component.scss'],
-  imports: [IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonCheckbox, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule],
+  imports: [IonSpinner, IonBadge, IonButton, IonCol, IonRow, IonRadioGroup, IonRadio, IonSelect, IonSelectOption, IonText, IonInput, IonLabel, IonIcon, IonTextarea, ReactiveFormsModule],
   providers: [FormatCurrencyPipe]
 })
 export class PublishFormComponent {
@@ -20,7 +20,6 @@ export class PublishFormComponent {
   currencyPipe = inject(FormatCurrencyPipe);
 
   publishForm!: FormGroup;
-  //@ViewChild('titleInput') titleInput!: IonInput;
   titleInput: Signal<IonInput | undefined> = viewChild('titleInput');
 
   formSubmit = output<void>();
@@ -51,7 +50,7 @@ export class PublishFormComponent {
   bookThemes: string[] = Object.values(BookTheme).filter(type => type !== BookTheme.None);
   professionalTypes: string[] = Object.values(ProfessionalType).filter(type => type !== ProfessionalType.None);
 
-  disabledPublishButton = input<boolean>(false);
+  loading = input<boolean>(false);
 
   constructor() {
     addIcons({ cameraOutline, logoEuro });

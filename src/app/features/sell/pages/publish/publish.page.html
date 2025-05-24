@@ -16,7 +16,7 @@
     <app-publish-form
       [submitAttempted]="submitAttempted()"
       [uploadedImagesURLs]="uploadedImagesURLs()"
-      [disabledPublishButton]="disabledPublishButton()"
+      [loading]="loading()"
       (controlFocus)="onControlFocus($event)"
       (uploadImages)="onImagesUpload()"
       (formSubmit)="handleFormSubmit()"

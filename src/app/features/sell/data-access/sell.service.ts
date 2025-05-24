@@ -1,4 +1,4 @@
-import { inject, Injectable, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { Post, PostModel } from 'src/app/core/domain/models/post.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { Camera, CameraResultType } from '@capacitor/camera';
@@ -12,24 +12,36 @@ import { ArticleCategory, ArticleModel } from 'src/app/core/domain/models/articl
 import { CloudStorage } from 'src/app/core/services/cloud-storage/cloudStorage.interface';
 import { parseFormattedCurrency } from 'src/app/shared/utils/currencyParser.service';
 
+type SellState = {
+  imagesDataURLs: string[],
+  latestPublishedPostId: string,
+  loading: boolean,
+  errorMessage: string
+}
+
 @Injectable({
   providedIn: 'root'
 })
 export class SellService {
-  #authService = inject(AuthService);
-  #postRepository = inject(PostRepository);
-  #userRepository = inject(UserRepository);
-  #cloudStorage = inject(CloudStorage);
+  private authService = inject(AuthService);
+  private postRepository = inject(PostRepository);
+  private userRepository = inject(UserRepository);
+  private cloudStorage = inject(CloudStorage);
 
-  imagesDataURLs = signal<string[]>([]);
-  //imagesDownloadURLs = signal<string[]>([]);
+  //imagesDataURLs = signal<string[]>([]);
+  //latestPublishedPostId = signal<string>(''); // For retrieval from splash page
 
-  latestPublishedPostId = signal<string>(''); // For retrieval from splash page
-  #errorMessage = signal<string>('');
+  private imagesDataURLs = signal<string[]>([]);
+  private latestPublishedPostId = signal<string>(''); // For retrieval from splash page
+  private loading = signal<boolean>(false);
+  private errorMessage = signal<string>('');
 
-  get errorMessage() {
-    return this.#errorMessage.asReadonly();
-  }
+  sellState = computed<SellState>(() => ({
+    imagesDataURLs: this.imagesDataURLs(),
+    latestPublishedPostId: this.latestPublishedPostId(),
+    loading: this.loading(),
+    errorMessage: this.errorMessage()
+  }));
 
   constructor() { }
 
@@ -86,11 +98,12 @@ export class SellService {
   }
 
   publishPost = async (postFormData: any): Promise<void> => {
-    const currentUser: User | null = this.#authService.currentUser();
+    const currentUser: User | null = this.authService.currentUser();
     if (!currentUser) return;
 
+    this.loading.set(true);
     try {
-      const post: Post | null = await this.#postRepository.savePost({
+      const post: Post | null = await this.postRepository.savePost({
         title: postFormData.title,
         description: postFormData.description,
         user: {
@@ -111,7 +124,7 @@ export class SellService {
       if (!post) return;
 
       const downloadURLs: string[] | null = await this.#uploadImagesToCloudStorage(post._id);
-      await this.#postRepository.updatePost({
+      await this.postRepository.updatePost({
         _id: post._id,
         mainImageURL: downloadURLs?.[0] ?? '',
         imagesURLs: downloadURLs ?? []
@@ -127,7 +140,7 @@ export class SellService {
       };
 
       //await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
-      await this.#userRepository.saveActivePost({
+      await this.userRepository.saveActivePost({
         userId: currentUser._id,
         activePostData: activePostData
       });
@@ -136,9 +149,12 @@ export class SellService {
       //currentUser.activePosts.push(post as Partial<Post>);
       //await this.#authService.updateUser(user);
 
+      this.loading.set(false);
+      this.errorMessage.set('');
     } catch (errorMessage: any) {
       console.error(errorMessage);
-      this.#errorMessage.set(errorMessage);
+      this.loading.set(false);
+      this.errorMessage.set(errorMessage);
     }
   }
 
@@ -156,7 +172,7 @@ export class SellService {
     //if (!imageDataURLs) return;
 
     const promises = imagesDataURLs.map(async (imageDataURL, index) => new Promise(async (resolve, reject) => {
-      const downloadURL = await this.#cloudStorage.upload(`postImages/${postId}/image_${index}`, dataUrlToBlob(imageDataURL));
+      const downloadURL = await this.cloudStorage.upload(`postImages/${postId}/image_${index}`, dataUrlToBlob(imageDataURL));
       if (downloadURL) {
         resolve(downloadURL);
       }

@@ -506,6 +506,10 @@
 </form>
 
 <div class="button-container">
-  <ion-button [disabled]="disabledPublishButton()" type="button"
-  (click)="formSubmit.emit()">Publicar anuncio</ion-button>
+  <ion-button [disabled]="loading()" (click)="formSubmit.emit()">
+    Publicar anuncio
+    @if (loading()) {
+      <ion-spinner name="crescent"></ion-spinner>
+    }
+  </ion-button>
 </div>
