@@ -20,6 +20,13 @@ export class LoginPage {
   private router = inject(Router);
   private loginService = inject(LoginService);
 
+  loading = computed(() => this.loginService.loginState().loading);
+  errorMessage = linkedSignal(() => this.loginService.loginState().errorMessage ?? '');
+  
+  loginFormComponent = viewChild(LoginFormComponent);
+  submitAttempted = signal<boolean>(false);
+  forgotPasswordVisible = signal<boolean>(false);
+
   constructor() {
     addIcons({ arrowBackOutline });
 
@@ -30,13 +37,6 @@ export class LoginPage {
     })
   }
 
-  loginFormComponent = viewChild(LoginFormComponent);
-
-  submitAttempted = signal<boolean>(false);
-
-  loading = computed(() => this.loginService.loginState().loading);
-  errorMessage = linkedSignal(() => this.loginService.loginState().errorMessage ?? '');
-  forgotPasswordVisible = signal<boolean>(false);
 
   onControlFocus(control: string) {
     this.submitAttempted.set(false);
