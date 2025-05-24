@@ -10,49 +10,55 @@
 
   <div class="container">
 
-    <div class="user-front-container">
-      <ion-avatar class="user-avatar">
-        <img src="{{ userData()?.profilePictureURL ?? '' }}" alt="Avatar del usuario">
-      </ion-avatar>
-      <ion-text class="user-username">
-        {{ userData()?.username ?? '' }}
-      </ion-text>
-      <div class="user-location-wrapper">
-        <ion-icon class="location-icon" name="location-outline" color="light" size="small"></ion-icon>
-        <ion-text class="user-location">
-          @if (userData()?.address?.city) { …
-            {{ userData()?.address?.city ?? '' }} ,
-          } 
-          {{ userData()?.address?.country ?? '' }} 
+    @if (loading()) {
+      <div class="loading-spinner-container">
+        <ion-spinner name="crescent"></ion-spinner>
+      </div>
+    } @else {
+      <div class="user-front-container">
+        <ion-avatar class="user-avatar">
+          <img src="{{ userData()?.profilePictureURL ?? '' }}" alt="Avatar del usuario">
+        </ion-avatar>
+        <ion-text class="user-username">
+          {{ userData()?.username ?? '' }}
         </ion-text>
+        <div class="user-location-wrapper">
+          <ion-icon class="location-icon" name="location-outline" color="light" size="small"></ion-icon>
+          <ion-text class="user-location">
+            @if (userData()?.address?.city) { …
+              {{ userData()?.address?.city ?? '' }} ,
+            } 
+            {{ userData()?.address?.country ?? '' }} 
+          </ion-text>
+        </div>
       </div>
-    </div>
-  
-    @if (userData()?.bio) {
-      <div class="user-bio-container">
-        <ion-text class="user-bio-label">Biografía</ion-text>
-        <ion-text class="user-bio-text">
-          {{ userData()?.bio ?? '' }}
-        </ion-text>
-      </div>
-    }
-  
-    @if ((userData()?.activePosts?.length || 0) > 0) {
-      <div class="user-posts-list">
-        <ion-text class="posts-list-label">Artículos en venta</ion-text>
-        @for (post of userData()?.activePosts ?? []; track post._id) {
-          <ion-item class="post-item" [routerLink]="['/tabs/post-detail/' + post._id]"> 
-            <ion-thumbnail slot="start" class="post-image">
-              <img [src]="post.mainImageURL" alt="Imagen principal del anuncio">
-            </ion-thumbnail>
-            <div class="labels-container">
-              <ion-text class="post-title">{{ post.title }}</ion-text>
-              <ion-label class="post-category">{{ post.category }}</ion-label>
-              <ion-text class="post-price">{{ post.price | formatCurrency }}</ion-text>
-            </div>
-          </ion-item>
-        }
-      </div>
+    
+      @if (userData()?.bio) {
+        <div class="user-bio-container">
+          <ion-text class="user-bio-label">Biografía</ion-text>
+          <ion-text class="user-bio-text">
+            {{ userData()?.bio ?? '' }}
+          </ion-text>
+        </div>
+      }
+    
+      @if ((userData()?.activePosts?.length || 0) > 0) {
+        <div class="user-posts-list">
+          <ion-text class="posts-list-label">Artículos en venta</ion-text>
+          @for (post of userData()?.activePosts ?? []; track post._id) {
+            <ion-item class="post-item" [routerLink]="['/tabs/post-detail/' + post._id]"> 
+              <ion-thumbnail slot="start" class="post-image">
+                <img [src]="post.mainImageURL" alt="Imagen principal del anuncio">
+              </ion-thumbnail>
+              <div class="labels-container">
+                <ion-text class="post-title">{{ post.title }}</ion-text>
+                <ion-label class="post-category">{{ post.category }}</ion-label>
+                <ion-text class="post-price">{{ post.price | formatCurrency }}</ion-text>
+              </div>
+            </ion-item>
+          }
+        </div>
+      }
     }
   </div>
 </ion-content>

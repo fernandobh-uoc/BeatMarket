@@ -2,6 +2,14 @@
   display: flex;
   flex-direction: column;
   gap: 3rem;
+
+  .loading-spinner-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 3rem 0;
+  }
   
   .user-front-container {
     display: flex;

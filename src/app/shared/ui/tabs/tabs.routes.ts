@@ -51,10 +51,10 @@ export const TabsRoutes: Routes = [
       {
         path: 'user-detail/:userId',
         loadComponent: () => import('src/app/features/user-detail/user-detail.page').then(m => m.UserDetailPage),
-        resolve: {
+        /* resolve: {
           userData: userDetailResolver,
           userData$: userDetailResolver$
-        }
+        } */
       },
       {
         path: 'history',
