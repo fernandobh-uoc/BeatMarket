@@ -1,6 +1,6 @@
 import { effect, inject, Injectable, signal } from '@angular/core';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { AuthService, CacheAuthState } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 
 @Injectable()
@@ -61,12 +61,12 @@ export class UserDataItemEditService {
       }
 
       this.userRepository.updateUser({
-        _id: (await this.cache.get<AuthStatus>('authStatus'))?.userId ?? '',
+        _id: (await this.cache.get<CacheAuthState>('authState'))?.userId ?? '',
         [key]: data as string
       });
 
       if (key === 'username') {
-        this.cache.set('authStatus', { ...(await this.cache.get<AuthStatus>('authStatus')), username: data as string });
+        this.cache.set('authState', { ...(await this.cache.get<CacheAuthState>('authState')), username: data as string });
       }
 
       this.resetEditingInputStates();

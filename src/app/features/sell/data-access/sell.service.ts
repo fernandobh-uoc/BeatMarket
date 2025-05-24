@@ -5,7 +5,7 @@ import { Camera, CameraResultType } from '@capacitor/camera';
 import { images } from 'ionicons/icons';
 import { environment } from 'src/environments/environment.dev';
 import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 import { ActivePost, User, UserModel } from 'src/app/core/domain/models/user.model';
 import { ArticleCategory, ArticleModel } from 'src/app/core/domain/models/article.model';

@@ -31,7 +31,7 @@ export class ConversationPage implements OnInit {
       .reverse()
       .map((message) => ({
         ...message,
-        type: message.senderId === this.authService.authStatus().userId ? 'sent' : 'received'
+        type: message.senderId === this.authService.authState().userId ? 'sent' : 'received'
       })) ?? []
   }); 
   role = computed(() => this.conversationService.conversationState().role);

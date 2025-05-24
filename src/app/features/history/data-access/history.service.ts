@@ -18,7 +18,7 @@ export class HistoryService {
   private authService = inject(AuthService);
   
   private boughtItems = resource<Sale[], string>({
-    request: () => this.authService.authStatus().userId,
+    request: () => this.authService.authState().userId,
     loader: async ({ request: userId }): Promise<Sale[]> => {
       if (!userId) return [];
       try {
@@ -31,7 +31,7 @@ export class HistoryService {
   })
 
   private soldItems = resource<Sale[], string>({
-    request: () => this.authService.authStatus().userId,
+    request: () => this.authService.authState().userId,
     loader: async ({ request: userId }): Promise<Sale[]> => {
       if (!userId) return [];
       try {

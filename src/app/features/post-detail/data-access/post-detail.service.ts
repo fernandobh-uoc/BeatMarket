@@ -4,7 +4,7 @@ import { Cart, CartItemModel } from 'src/app/core/domain/models/cart.model';
 import { Post, PostModel } from 'src/app/core/domain/models/post.model';
 import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
-import { AuthService, AuthStatus } from 'src/app/core/services/auth/auth.service';
+import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { CartService } from '../../cart/data-access/cart.service';
 import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
@@ -29,9 +29,9 @@ export class PostDetailService {
   private conversationService = inject(ConversationService);
   private router = inject(Router);
 
-  private postId = signal<string | undefined>(undefined);
   private errorMessage = signal<string>('');
   
+  private postId = signal<string | undefined>(undefined);
   private postResource = rxResource<PostModel | null, string | undefined>({
     request: () => this.postId(),
     loader: ({ request: postId }): Observable<PostModel | null> => {

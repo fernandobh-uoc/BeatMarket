@@ -6,25 +6,25 @@ export const routes: Routes = [
     path: 'auth',
     loadChildren: () => import('src/app/features/authentication/auth.routes').then(m => m.AuthRoutes),
     canMatch: [authGuard],
-    data: { authStatusMustBe: false }
+    data: { authStateMustBe: false }
   },
   {
     path: '',
     loadChildren: () => import('./shared/ui/tabs/tabs.routes').then(m => m.TabsRoutes),
     canMatch: [authGuard],
-    data: { authStatusMustBe: true }
+    data: { authStateMustBe: true }
   },
   {
     path: 'cart',
     loadComponent: () => import('src/app/features/cart/cart.page').then(m => m.CartPage),
     canMatch: [authGuard],
-    data: { authStatusMustBe: true }
+    data: { authStateMustBe: true }
   },
   {
     path: 'checkout',
     loadChildren: () => import('./features/checkout/checkout.routes').then(m => m.CheckoutRoutes),
     canMatch: [authGuard],
-    data: { authStatusMustBe: true }
+    data: { authStateMustBe: true }
   },
   {
     path: 'search',

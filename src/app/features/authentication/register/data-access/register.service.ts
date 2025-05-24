@@ -62,6 +62,7 @@ export class RegisterService {
 
   registerUser = async (userFormData: any): Promise<void> => {
     this.loading.set(true);
+    
     try {
       const fcmToken = await this.cache.get<string | null>('fcmToken');
       const user: User | null = await this.authService.register({

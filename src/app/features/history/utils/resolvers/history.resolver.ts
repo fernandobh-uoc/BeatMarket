@@ -10,8 +10,7 @@ export const boughtItemsResolver: ResolveFn<Sale[] | null> = async (route, state
   const authService = inject(AuthService);
   const saleRepository = inject(SaleRepository);
   
-  const userId = authService.authStatus().userId;
-  if (!userId) return [];
+  const userId = authService.authState().userId;
   return await saleRepository.getSalesByBuyerId(userId) ?? [];
 };
 
@@ -19,7 +18,6 @@ export const soldItemsResolver: ResolveFn<Sale[] | null> = async (route, state) 
   const authService = inject(AuthService);
   const saleRepository = inject(SaleRepository);
 
-  const userId = authService.authStatus().userId;
-  if (!userId) return [];
+  const userId = authService.authState().userId;
   return await saleRepository.getSalesBySellerId(userId) ?? [];
 };

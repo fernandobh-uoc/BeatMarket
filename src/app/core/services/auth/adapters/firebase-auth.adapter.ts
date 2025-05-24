@@ -13,7 +13,8 @@ import {
   updateProfile, 
   updatePassword,
   sendPasswordResetEmail,
-  ActionCodeSettings
+  ActionCodeSettings,
+  UserCredential
 } from '@angular/fire/auth';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from '../auth.interface';
 import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
@@ -21,28 +22,23 @@ import { UserRepository } from 'src/app/core/domain/repositories/user.repository
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthAdapter implements Auth {
   private firebaseAuth = inject(FirebaseAuth);
-  private userRepository = inject(UserRepository);
-
-  constructor() {
-    onAuthStateChanged(this.firebaseAuth, async (firebaseUser: FirebaseUser | null): Promise<void> => {
-      this.#firebaseUser.set(firebaseUser);
-    });
-  }
-
-  #firebaseUser = signal<FirebaseUser | null>(null);
-
-  get authInstance() {
-    return this.firebaseAuth;
-  }
+  
+  private _firebaseUser = signal<FirebaseUser | null>(null);
 
   get firebaseUser() {
-    return this.#firebaseUser.asReadonly();
+    return this._firebaseUser.asReadonly();
+  }
+  
+  constructor() {
+    onAuthStateChanged(this.firebaseAuth, async (firebaseUser: FirebaseUser | null): Promise<void> => {
+      this._firebaseUser.set(firebaseUser);
+    });
   }
 
   async registerWithEmail(userData: UserAuthData): Promise<AuthReturnType> {
     try {
       const firebaseUser: FirebaseUser = await createUserWithEmailAndPassword(
-        this.authInstance, 
+        this.firebaseAuth, 
         userData.email, 
         userData.password
       ).then(userCred => userCred.user);
@@ -63,16 +59,11 @@ export class FirebaseAuthAdapter implements Auth {
   }
 
   async loginWithEmail(email: string, password: string): Promise<AuthReturnType> {
-    /* const test = await this.userService.getUser("123");
-    return new Promise(res => res(null)); */
     try {
-      const firebaseUser: FirebaseUser = await signInWithEmailAndPassword(this.authInstance, email, password)
-        .then(userCred => userCred.user);
-      //return this.userRepository.getUserById(firebaseUser.uid);
+      const userCredential: UserCredential = await signInWithEmailAndPassword(this.firebaseAuth, email, password);
+      const firebaseUser: FirebaseUser = userCredential.user;
       return { uid: firebaseUser.uid };
 
-      //return await this.userService.getUpdatedUser();
-      //return this.userService.user$();
     } catch (authError: any) {
       throw this.getErrorMessage(authError.code || authError.message);
     }
@@ -83,8 +74,11 @@ export class FirebaseAuthAdapter implements Auth {
       const authProvider = provider === 'google' ?
         new GoogleAuthProvider() :
         new OAuthProvider('apple.com');
-      const firebaseUser: FirebaseUser = await signInWithPopup(this.authInstance, authProvider).then(userCred => userCred.user);
-      return this.userRepository.getUserById(firebaseUser.uid);
+
+      const userCredential: UserCredential = await signInWithPopup(this.firebaseAuth, authProvider);
+      const firebaseUser: FirebaseUser = userCredential.user;
+
+      return { uid: firebaseUser.uid };
     } catch (authError: any) {
       throw this.getErrorMessage(authError.code || authError.message);
     }
@@ -92,7 +86,7 @@ export class FirebaseAuthAdapter implements Auth {
 
   async logout(): Promise<void> {
     try {
-      await signOut(this.authInstance);
+      await signOut(this.firebaseAuth);
     } catch (authError: any) {
       throw authError;
     }
@@ -101,7 +95,7 @@ export class FirebaseAuthAdapter implements Auth {
   async resetPassword(email: string): Promise<void> {
     try {
       console.log("resetting password");
-      await sendPasswordResetEmail(this.authInstance, email);
+      await sendPasswordResetEmail(this.firebaseAuth, email);
     } catch (authError: any) {
       throw authError;
     }
@@ -109,7 +103,7 @@ export class FirebaseAuthAdapter implements Auth {
 
   async updatePassword(newPassword: string): Promise<void> {
     try {
-      const firebaseUser: FirebaseUser | null = await this.firebaseUser();
+      const firebaseUser: FirebaseUser | null = this._firebaseUser();
       if (!firebaseUser) return;
       
       await updatePassword(firebaseUser, newPassword);

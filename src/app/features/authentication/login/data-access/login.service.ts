@@ -54,8 +54,8 @@ export class LoginService {
       this.errorMessage.set('');
       this.loading.set(false);
     } catch (loginError: any) {
-      this.loading.set(false);
       this.errorMessage.set(loginError);
+      this.loading.set(false);
     } 
   }
 

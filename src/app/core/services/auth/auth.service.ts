@@ -1,68 +1,88 @@
-import { EnvironmentInjector, Inject, Injectable, InjectionToken, Provider, Signal, Type, WritableSignal, effect, inject, runInInjectionContext, signal, untracked } from '@angular/core';
-import { UserRepository } from '../../domain/repositories/user.repository'; 
-import { Role, User, UserModel, isUserModel } from 'src/app/core/domain/models/user.model';
+import { EnvironmentInjector, Injectable, inject, runInInjectionContext, signal, computed, effect  } from '@angular/core'; 
+import { Observable, of } from 'rxjs';
+import { rxResource } from '@angular/core/rxjs-interop';
+
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from './auth.interface';
-import { environment } from 'src/environments/environment.dev';
+import { UserRepository } from '../../domain/repositories/user.repository'; 
+import { User, UserModel, isUserModel } from 'src/app/core/domain/models/user.model';
 import { LocalStorageService } from '../../storage/local-storage.service';
 import { CloudStorage } from '../cloud-storage/cloudStorage.interface';
-import { user } from '@angular/fire/auth';
-
 import { dataUrlToBlob } from 'src/app/shared/utils/file.service';
-import { firstValueFrom, Observable, of } from 'rxjs';
-import { toSignal } from '@angular/core/rxjs-interop';
 
-export interface AuthStatus {
+
+type AuthState = {
   isAuthenticated: boolean,
   userId: string,
-  username: string,
-  userRoles: Role[],
+  currentUser: UserModel | null,
+  errorMessage: string | null,
 }
 
-const defaultAuthStatus: AuthStatus = {
-  isAuthenticated: false,
-  userId: '',
-  username: '',
-  userRoles: [],
+export type CacheAuthState = {
+  isAuthenticated: boolean,
+  userId: string,
+  username: string
 }
 
 @Injectable({ providedIn: 'root' })
 export class AuthService {
-  #currentUser = signal<User | null>(null);
-  #authStatus = signal<AuthStatus>(defaultAuthStatus);
-  #errorMessage = signal<string | null>(null);
+  private injector = inject(EnvironmentInjector);
+  private userRepository = inject(UserRepository);
+  private cloudStorage = inject(CloudStorage);
+  private cache = inject(LocalStorageService);
+  private authMethod!: AuthMethod;
+  
+  private errorMessage = signal<string | null>(null);
+  
+  private userId = signal<string | undefined>(undefined);
+  private _currentUser = rxResource<User | null, string | undefined>({
+    request: () => this.userId(),
+    loader: ({ request: userId }): Observable<User | null> => {
+      if (!userId) return of(null);
 
-  userRepository = inject(UserRepository);
-  cloudStorage = inject(CloudStorage);
-  cache = inject(LocalStorageService);
-  authMethod!: AuthMethod;
+      try {
+        const user$ = this.userRepository.getUserById$(userId);
+        return user$ ?? of(null);
+      } catch (error) {
+        this.errorMessage.set((error as any)?.message ?? 'Unknown error');
+        return of(null);
+      }
+    }
+  });
 
-  constructor(
-    private injector: EnvironmentInjector,
-    /* private userRepository: UserRepository,
-    private cache: LocalStorageService */
-  ) {};
+  authState = computed<AuthState>(() => ({
+    isAuthenticated: Boolean(this._currentUser.value()),
+    userId: this._currentUser.value()?._id ?? '',
+    currentUser: this._currentUser.value() ?? null,
+    errorMessage: this.errorMessage()
+  }))
 
-  get currentUser() {
-    return this.#currentUser.asReadonly();
-  }
+  // Direct accessor to currentUser for QoL
+  currentUser = computed<User | null>(() => this._currentUser.value() ?? null);
 
-  get authStatus() {
-    return this.#authStatus.asReadonly();
-  }
-
-  get errorMessage() {
-    return this.#errorMessage.asReadonly();
-  }
+  constructor() {
+    effect(async () => {
+      await this.cache.set('authState', {
+        isAuthenticated: this.authState().isAuthenticated,
+        userId: this.authState().currentUser?._id ?? '',
+        username: this.authState().currentUser?.username ?? ''
+      })
+      
+    })
+  };
 
   init = async (): Promise<void> => {
     try {
-      await this.#loadUserFromStorage();
+      await this.loadUserFromCache();
     } catch (error) {
       console.error(error);
     }
   }
 
-  #setAuthMethod(method: 'email' | 'google' | 'apple') {
+  private setUserId(userId: string | undefined): void {
+    this.userId.set(userId);
+  }
+
+  private setAuthMethod(method: 'email' | 'google' | 'apple') {
     runInInjectionContext(this.injector, () => {
       if (method === 'email' && !(this.authMethod instanceof EmailAuth)) {
         this.authMethod = inject(EmailAuth);
@@ -76,7 +96,7 @@ export class AuthService {
     });
   }
 
-  #isUidObject(value: any): value is { uid: string } {
+  private isUidObject(value: any): value is { uid: string } {
     return value && typeof value === 'object' && value.uid && typeof value.uid === 'string';
   }
 
@@ -97,7 +117,7 @@ export class AuthService {
   }
 
   async register({ method, userData }: { method: 'email' | AuthProvider, userData: UserAuthData }): Promise<User | null> {
-    this.#setAuthMethod(method);
+    this.setAuthMethod(method);
     
     try {
       // Register with auth provider
@@ -107,7 +127,7 @@ export class AuthService {
         username: userData.username
       });
 
-      if (this.#isUidObject(result)) {
+      if (this.isUidObject(result)) {
         userData._id = result.uid;
       }
       
@@ -126,122 +146,77 @@ export class AuthService {
       
       // Save to storage
       return await this.userRepository.saveUser(userDataWithoutPassword);
-
-      //let user: User | boolean | null = null;
-      //if (user = await this.userRepository.saveUser(userDataWithoutPassword) && user) {
-      //  this.#currentUser.set(user);
-      //  this.#updateAuthStatus(user);
-      //};
       
     } catch (errorMessage: any) {
-      this.#errorMessage.set(errorMessage);
+      this.errorMessage.set(errorMessage);
       throw errorMessage;
     }
-    //return this.#currentUser();
   }
 
-  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<User | null> {
-    this.#setAuthMethod(method);
+  async login({ method, credentials }: { method: 'email' | AuthProvider, credentials?: { email: string, password: string } }): Promise<void> {
+    this.setAuthMethod(method);
     
     try {
       const result = await this.authMethod.login(credentials?.email, credentials?.password);
       
       // Static user, return it
       if (isUserModel(result)) {
-        return result as User;
+        //return result as User;
+        this.setUserId(result._id);
+        return;
       }
 
-      if (!this.#isUidObject(result)) {
-        return null;
+      if (!this.isUidObject(result)) {
+        return;
       }
 
-      if (this.userRepository.getUserById$) {
-        let user$: Observable<User | null> | null = this.userRepository.getUserById$(result.uid, true);
-
-        if (user$) {
-          user$.subscribe(user => {
-            this.#currentUser.set(user);
-          });
-          this.#updateAuthStatus(await firstValueFrom(user$));
-          return null;
-        }
-      }
-
-      let user: User | null = await this.userRepository.getUserById(result.uid, true);
-      if (user) {
-        return user;
-      }
-      return null;
+      this.setUserId(result.uid);   // Activate rxResourceLoader
     } catch (errorMessage: any) {
-      this.#errorMessage.set(errorMessage);
+      this.errorMessage.set(errorMessage);
       throw errorMessage;
     }
   }
 
   async logout(): Promise<void> {
-    this.#setAuthMethod('email');
+    this.setAuthMethod('email');
     try {
       await this.authMethod.logout();
-      this.#currentUser.set(null);
-      this.#authStatus.set(defaultAuthStatus);
-      await this.cache.set('authStatus', this.#authStatus());
+      this.setUserId(undefined);  // Deactivate rxResourceLoader
+      this._currentUser.set(null);
     } catch (errorMessage: any) {
-      this.#errorMessage.set(errorMessage);
+      this.errorMessage.set(errorMessage);
       throw errorMessage;
     }
   }
 
   async updatePassword(newPassword: string): Promise<void> {
-    this.#setAuthMethod('email');
+    this.setAuthMethod('email');
     try {
       await this.authMethod.updatePassword(newPassword);
     } catch (errorMessage: any) {
-      this.#errorMessage.set(errorMessage);
+      this.errorMessage.set(errorMessage);
       throw errorMessage;
     }
   }
 
   async resetPassword(email: string): Promise<void> {
-    this.#setAuthMethod('email');
+    this.setAuthMethod('email');
     try {
       await this.authMethod.resetPassword(email);
     } catch (errorMessage: any) {
-      this.#errorMessage.set(errorMessage);
+      this.errorMessage.set(errorMessage);
       throw errorMessage;
     }
   }
 
-  async #updateAuthStatus(user: User | null): Promise<void> {
-    if (user) {
-      this.#authStatus.set({
-        isAuthenticated: true,
-        userId: user._id,
-        username: user.username,
-        userRoles: user.roles
-      });
-      await this.cache.set('authStatus', this.#authStatus());
-    }
-  }
+  private async loadUserFromCache(): Promise<void> {
+    const cacheState = await this.cache.get<CacheAuthState>('authState');
 
-  async #loadUserFromStorage(): Promise<void> {
-    const authStatus: AuthStatus | null = await this.cache.get<AuthStatus>('authStatus');
-
-    if (authStatus != null && authStatus.isAuthenticated) {
-      const id: string = authStatus.userId;
-      if (this.userRepository.getUserById$) {
-        const user$ = this.userRepository.getUserById$(id);
-        if (user$) {
-          user$.subscribe(user => {
-            this.#currentUser.set(user);
-          });
-  
-          this.#updateAuthStatus(await firstValueFrom(user$)); // Wait for the user to be loaded before the app starts
-          return;
-        }
+    if (cacheState != null && cacheState.isAuthenticated) {
+      this.setUserId(cacheState.userId);   // Activate rxResourceLoader
+      while (!this._currentUser.hasValue()) {
+        await new Promise(resolve => setTimeout(resolve, 10));
       }
-
-      const user = await this.userRepository.getUserById(id);
-      this.#currentUser.set(user);
     }
   }
 }
@@ -254,50 +229,15 @@ export interface AuthMethod {
   resetPassword(email: string): Promise<void>;
 }
 
-/* @Injectable({ providedIn: 'root' })
-export abstract class AuthMethod {
-  constructor(@Inject(environment.authToken) protected auth: Aut?.emah) {};
-  abstract register(userData: UserData): Promise<User | null>;
-  abstract login(email?: string, password?: string): Promise<User | null>;
-  abstract logout(): Promise<void>;
-} */
+abstract class CommonAuth implements AuthMethod {
+  protected auth = inject(Auth);
 
-@Injectable({ providedIn: 'root' })
-export class EmailAuth implements AuthMethod {
-  //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  //constructor(@Inject(environment.authToken) private auth: Auth) { }
-  private auth = inject(Auth);
-
-  async register(userData: UserAuthData): Promise<AuthReturnType> {
-    //return new Promise(res => res(null));
-    try {
-      return await this.auth.registerWithEmail(userData);
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async login(email: string, password: string): Promise<AuthReturnType> {
-    //return new Promise(res => res(null));
-    try {
-      return await this.auth.loginWithEmail(email, password);
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
+  abstract register(userData: UserAuthData): Promise<AuthReturnType>;
+  abstract login(email?: string, password?: string): Promise<AuthReturnType>;
 
   async logout(): Promise<void> {
-    //return new Promise(res => res());
     try {
       return await this.auth.logout();
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async resetPassword(email: string): Promise<void> {
-    try {
-      return await this.auth.resetPassword(email);
     } catch (authError: any) {
       throw authError;
     }
@@ -310,14 +250,37 @@ export class EmailAuth implements AuthMethod {
       throw authError;
     }
   }
+
+  async resetPassword(email: string): Promise<void> {
+    try {
+      return await this.auth.resetPassword(email);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
 }
 
 @Injectable({ providedIn: 'root' })
-export class GoogleAuth implements AuthMethod {
-  //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  //constructor(@Inject(environment.authToken) private auth: Auth) { }
-  private auth = inject(Auth);
+export class EmailAuth extends CommonAuth implements AuthMethod {
+  async register(userData: UserAuthData): Promise<AuthReturnType> {
+    try {
+      return await this.auth.registerWithEmail(userData);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
 
+  async login(email: string, password: string): Promise<AuthReturnType> {
+    try {
+      return await this.auth.loginWithEmail(email, password);
+    } catch (authError: any) {
+      throw authError;
+    }
+  }
+}
+
+@Injectable({ providedIn: 'root' })
+export class GoogleAuth extends CommonAuth implements AuthMethod {
   async register(): Promise<AuthReturnType> {
     try {
       return await this.auth.registerWithProvider('google');
@@ -333,38 +296,10 @@ export class GoogleAuth implements AuthMethod {
       throw authError;
     }
   }
-
-  async logout(): Promise<void> {
-    try {
-      return await this.auth.logout();
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async resetPassword(email: string): Promise<void> {
-    try {
-      return await this.auth.resetPassword(email);
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async updatePassword(newPassword: string): Promise<void> {
-    try {
-      return await this.auth.updatePassword(newPassword);
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
 }
 
 @Injectable({ providedIn: 'root' })
-export class AppleAuth implements AuthMethod {
-  //constructor(@Inject(FIREBASE_AUTH_TOKEN) private auth: Auth) {}
-  //constructor(@Inject(environment.authToken) private auth: Auth) { }
-  private auth = inject(Auth);
-
+export class AppleAuth extends CommonAuth implements AuthMethod {
   async register(): Promise<AuthReturnType> {
     try {
       return await this.auth.loginWithProvider('apple');
@@ -376,30 +311,6 @@ export class AppleAuth implements AuthMethod {
   async login(): Promise<AuthReturnType> {
     try {
       return await this.auth.loginWithProvider('apple');
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async logout(): Promise<void> {
-    try {
-      return await this.auth.logout();
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-  
-  async resetPassword(email: string): Promise<void> {
-    try {
-      return await this.auth.resetPassword(email);
-    } catch (authError: any) {
-      throw authError;
-    }
-  }
-
-  async updatePassword(newPassword: string): Promise<void> {
-    try {
-      return await this.auth.updatePassword(newPassword);
     } catch (authError: any) {
       throw authError;
     }
