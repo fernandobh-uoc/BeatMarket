@@ -32,7 +32,7 @@ export class RegisterPage {
 
   registerFormComponent = viewChild(RegisterFormComponent);
 
-  step = signal<number>(3);
+  step = signal<number>(1);
   totalSteps = 4;
   progressBarValue = computed(() => (this.step() / this.totalSteps));
 
