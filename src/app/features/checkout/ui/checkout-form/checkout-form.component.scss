@@ -3,6 +3,7 @@
   flex-direction: column;
   flex: 1;
   justify-content: space-between;
+  gap: 4rem;
 }
 
 .expiration-cvc-row {
@@ -18,8 +19,8 @@
     .expiration-inputs-wrapper {
       display: flex;
       flex-direction: row;
-      gap: 0.5rem;  
-  
+      gap: 0.5rem;
+
       .expiration-input {
         width: 50%;
         --highlight-color-focused: none;
@@ -33,7 +34,7 @@
   .cvc-wrapper {
     display: flex;
     flex-direction: column;
-    max-width: 4rem;
+    max-width: 5rem;
 
     .cvc-input {
       --highlight-color-focused: none;
@@ -41,5 +42,11 @@
       --highlight-color-invalid: none;
       --highlight-height: 0px;
     }
+  }
+}
+
+.buttons-container {
+  &:has(ion-button.ios) {
+    margin-bottom: 24px;
   }
 }

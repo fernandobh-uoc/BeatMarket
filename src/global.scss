@@ -182,10 +182,11 @@ ion-button {
 // Alert buttons
 
 .cancel-button {
-  color: var(--ion-color-light) !important;
+	color: var(--ion-color-light) !important;
 }
+
 .delete-button {
-  color: var(--ion-color-danger) !important;
+	color: var(--ion-color-danger) !important;
 }
 
 ion-item.custom {
@@ -277,6 +278,8 @@ form {
 		right: var(--padding-end);
 	}
 
+
+
 	ion-input .input-bottom {
 		display: flex;
 		justify-content: left;
@@ -351,4 +354,8 @@ ion-text:has(.inline-link) {
 	font-weight: 600;
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+.custom-action-sheet {
+	--button-color: var(--ion-color-light);
 }

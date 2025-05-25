@@ -156,11 +156,11 @@
 
           <div class="input-wrapper country-input-wrapper">
             <ion-label class="custom" color="light">País</ion-label>
-            <ion-select formControlName="country" aria-label="Country" interface="action-sheet" color="light"
+            <ion-select formControlName="country" aria-label="Country" interface="action-sheet" [interfaceOptions]="{ cssClass: 'custom-action-sheet' }"
               class="custom select-input">
               <ion-icon slot="start" name="globe-outline"></ion-icon>
               @for (country of countries; track country.iso2) {
-                <ion-select-option [value]="country.nameES">{{ country.nameES }}</ion-select-option>
+                <ion-select-option [value]="country.nameES" color="light">{{ country.nameES }}</ion-select-option>
               }
             </ion-select>
           </div>

@@ -94,4 +94,10 @@
     }
 
   }
+
+  .buttons-container {
+    &:has(ion-button.ios) { 
+      margin-bottom: 24px;
+    }
+  }
 }

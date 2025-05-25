@@ -2,3 +2,14 @@ ion-tab-bar {
   padding-bottom: var(--ion-safe-area-bottom);
   min-height: 5rem;
 }
+
+ion-tab-button
+
+ion-label {
+  padding-top: 0.25rem;
+  font-size: var(--label-medium-size, 0.875rem);
+  font-style: normal;
+  font-weight: var(--label-medium-weight-normal, 400);
+  line-height: var(--label-medium-line-height, 1.25rem);
+  letter-spacing: var(--label-medium-tracking, 0.00625rem);
+}

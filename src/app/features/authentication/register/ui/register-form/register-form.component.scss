@@ -3,6 +3,7 @@
   flex-direction: column;
   flex: 1 0 0;
   justify-content: space-between;
+  gap: 2rem;
 }
 
 ion-datetime-button.custom {
@@ -69,6 +70,10 @@ ion-datetime-button::part(native) {
   display: flex;
   flex-direction: column;
   align-items: flex-start;
+
+  &:has(ion-button.ios) { 
+    margin-bottom: 24px;
+  }
 }
 
 .button-subtitle-container {
@@ -77,6 +82,12 @@ ion-datetime-button::part(native) {
   flex-direction: column;
   align-items: flex-start;
   gap: 0.5rem;
+}
+
+.custom-action-sheet {
+	--button-color: var(--ion-color-light);
+	--button-background-hover: var(--ion-color-light-tint);
+	--button-color-activated: var(--ion-color-light-shade);
 }
 
 /* ion-select::part(placeholder) {

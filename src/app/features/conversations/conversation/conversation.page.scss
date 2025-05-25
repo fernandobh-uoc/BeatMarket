@@ -1,3 +1,7 @@
+ion-toolbar ion-title.ios {
+  inset-inline-start: 10%;
+}
+
 ion-content {
   --padding-top: 0px;
 }
@@ -155,7 +159,14 @@ ion-content {
 
 .footer {
   background-color: var(--ion-background-color);
-  padding: var(--top-content-padding, 16px) 0 /* var(--horizontal-margin, 24px) */ 24px var(--horizontal-margin, 24px);
+
+  &.md {
+    padding: var(--top-content-padding, 16px) 0 24px var(--horizontal-margin, 24px);
+  }
+
+  &.ios {
+    padding: var(--top-content-padding, 16px) 0 48px var(--horizontal-margin, 24px);
+  }
 
   .message-input-container {
     display: flex;
