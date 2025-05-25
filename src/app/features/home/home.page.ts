@@ -17,7 +17,7 @@ import { ViewDidEnter, ViewDidLeave } from '@ionic/angular';
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
   standalone: true,
-  imports: [IonSpinner, IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonToolbar, IonTitle, IonContent]
+  imports: [IonSpinner, IonText, PostCardsRowComponent, ToolbarComponent, IonHeader, IonContent]
 })
 export class HomePage implements ViewDidEnter, ViewDidLeave {
   route = inject(ActivatedRoute);

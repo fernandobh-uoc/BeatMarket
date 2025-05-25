@@ -19,7 +19,7 @@ import { CartService } from '../cart/data-access/cart.service';
   templateUrl: './post-detail.page.html',
   styleUrls: ['./post-detail.page.scss'],
   standalone: true,
-  imports: [IonSpinner, RouterLink, KeyValuePairsPipe, ArticleCharacteristicsTranslatePipe, IonButton, IonIcon, IonAvatar, IonText, ToolbarComponent, PostImagesSliderComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, RouterLink, KeyValuePairsPipe, ArticleCharacteristicsTranslatePipe, IonButton, IonIcon, IonAvatar, IonText, ToolbarComponent, PostImagesSliderComponent, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class PostDetailPage implements OnInit {
   private route = inject(ActivatedRoute);

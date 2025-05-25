@@ -14,7 +14,7 @@ import { ViewDidEnter } from '@ionic/angular';
   templateUrl: './history.page.html',
   styleUrls: ['./history.page.scss'],
   standalone: true,
-  imports: [IonSpinner, HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonSpinner, HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule]
 })
 export class HistoryPage {
   private historyService = inject(HistoryService);

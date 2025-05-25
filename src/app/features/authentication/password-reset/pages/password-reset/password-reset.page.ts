@@ -11,7 +11,7 @@ import { PasswordResetService } from '../../data-access/password-reset.service';
   templateUrl: './password-reset.page.html',
   styleUrls: ['./password-reset.page.scss'],
   standalone: true,
-  imports: [PasswordResetFormComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [PasswordResetFormComponent, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule]
 })
 export class PasswordResetPage {
   private passwordResetService = inject(PasswordResetService);

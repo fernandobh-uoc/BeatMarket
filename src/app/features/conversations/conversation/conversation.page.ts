@@ -17,7 +17,7 @@ import { FormatTimestampPipe } from '../conversation/utils/pipes/format-timestam
   templateUrl: './conversation.page.html',
   styleUrls: ['./conversation.page.scss'],
   standalone: true,
-  imports: [FormatTimestampPipe, IonFooter, IonAvatar, RouterLink, IonIcon, IonInput, IonText, ToolbarComponent, IonThumbnail, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [FormatTimestampPipe, IonFooter, IonAvatar, RouterLink, IonIcon, IonInput, IonText, ToolbarComponent, IonThumbnail, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class ConversationPage implements OnInit {
   private route = inject(ActivatedRoute);

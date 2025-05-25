@@ -21,7 +21,7 @@ import { toSignal } from '@angular/core/rxjs-interop';
   templateUrl: './search.page.html',
   styleUrls: ['./search.page.scss'],
   standalone: true,
-  imports: [IonSpinner, TranslateFilterKeyPipe, TranslateFilterValuePipe, IonBadge, IonIcon, RouterLink, IonLabel, IonThumbnail, IonItem, IonText, IonSelect, IonSelectOption, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, TranslateFilterKeyPipe, TranslateFilterValuePipe, IonBadge, IonIcon, RouterLink, IonLabel, IonThumbnail, IonItem, IonText, IonSelect, IonSelectOption, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class SearchPage implements OnInit {
   private route = inject(ActivatedRoute);

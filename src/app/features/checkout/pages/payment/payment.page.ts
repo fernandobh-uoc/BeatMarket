@@ -15,7 +15,7 @@ import { Router } from '@angular/router';
   templateUrl: './payment.page.html',
   styleUrls: ['./payment.page.scss'],
   standalone: true,
-  imports: [IonSpinner, ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonSpinner, ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class PaymentPage implements OnInit {
   router = inject(Router);
@@ -39,10 +39,7 @@ export class PaymentPage implements OnInit {
   totalPrice = computed<number>(() => this.itemsArticlesTotal() + this.itemsShippingTotal());
 
 
-  constructor() { 
-    effect(() => console.log({ loading: this.loading() }));
-
-  }
+  constructor() { }
 
   ngOnInit() {
   }

@@ -13,7 +13,7 @@ import { Conversation } from 'src/app/core/domain/models/conversation.model';
   templateUrl: './conversations-list.page.html',
   styleUrls: ['./conversations-list.page.scss'],
   standalone: true,
-  imports: [IonSpinner, ToolbarComponent, ConversationsListComponent, IonText, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule]
+  imports: [IonSpinner, ToolbarComponent, ConversationsListComponent, IonText, IonContent, IonHeader, CommonModule, FormsModule]
 })
 export class ConversationsListPage {
   private route = inject(ActivatedRoute);

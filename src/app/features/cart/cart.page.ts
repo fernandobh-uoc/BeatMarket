@@ -14,7 +14,7 @@ import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pip
   templateUrl: './cart.page.html',
   styleUrls: ['./cart.page.scss'],
   standalone: true,
-  imports: [IonIcon, RouterLink, IonButton, IonText, CartItemsListComponent, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonIcon, RouterLink, IonButton, IonText, CartItemsListComponent, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class CartPage {
   private cartService = inject(CartService);

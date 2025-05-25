@@ -14,7 +14,7 @@ import { UserPostsListComponent } from './ui/user-posts-list/user-posts-list.com
   templateUrl: './profile.page.html',
   styleUrls: ['./profile.page.scss'],
   standalone: true,
-  imports: [UserDataListComponent, UserPostsListComponent, IonText, ToolbarComponent, IonContent, IonHeader, IonTitle, IonToolbar, CommonModule, FormsModule],
+  imports: [UserDataListComponent, UserPostsListComponent, IonText, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule],
   providers: [UserDataItemEditService]
 })
 export class ProfilePage implements OnInit, ViewDidLeave {
