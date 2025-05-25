@@ -1,1 +1,0 @@
-import{f as a}from"./chunk-FIPIWZQS.js";var o,e=a(()=>{o=[{path:"",redirectTo:"payment",pathMatch:"full"},{path:"payment",loadComponent:()=>import("./chunk-7A55D7JH.js").then(t=>t.PaymentPage)},{path:"splash",loadComponent:()=>import("./chunk-RENAXOHV.js").then(t=>t.SplashPage)}]});e();export{o as CheckoutRoutes};
