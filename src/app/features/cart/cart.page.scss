@@ -1,3 +1,15 @@
+ion-content {
+  --padding-bottom: 0;
+}
+
+.loading-spinner-container {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 3rem 0;
+}
+
 .container-empty {
   position: relative;
   min-height: 100%;
@@ -39,10 +51,18 @@
     bottom: 0;
     left: 0;
     right: 0;
-    margin-top: 1rem;
+    margin-top: 3rem;
     padding-top: 0.5rem;
     background-color: var(--ion-color-dark);
     border-top: 1px solid var(--ion-color-medium-shade);
+
+    &:has(ion-button.md) {
+      padding-bottom: var(--bottom-content-padding);
+    }
+
+    &:has(ion-button.ios) {
+      padding-bottom: calc(var(--bottom-content-padding) + 24px);
+    }
   
     display: flex;
     flex-direction: column;

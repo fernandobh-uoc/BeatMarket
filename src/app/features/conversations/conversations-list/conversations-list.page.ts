@@ -16,25 +16,18 @@ import { Conversation } from 'src/app/core/domain/models/conversation.model';
   imports: [IonSpinner, ToolbarComponent, ConversationsListComponent, IonText, IonContent, IonHeader, CommonModule, FormsModule]
 })
 export class ConversationsListPage {
-  private route = inject(ActivatedRoute);
   private conversationsListService = inject(ConversationsListService);
 
   selectedTab = signal<'conversationsAsBuyer' | 'conversationsAsSeller'>('conversationsAsBuyer');
-  
-  /* conversationsAsBuyer = computed(() => {
-    const source = this.conversationsListService.conversationsListState().conversationsAsBuyer;
-    const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsBuyer'];
-    return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
-  });
 
-  conversationsAsSeller = computed(() => {
-    const source = this.conversationsListService.conversationsListState().conversationsAsSeller;
-    const conversations = source.length > 0 ? source : this.route.snapshot.data['conversationsAsSeller'];
-    return conversations.filter((conversation: Conversation) => conversation.messages.length > 0);
-  }); */
-
-  conversationsAsBuyer = computed(() => this.conversationsListService.conversationsListState().conversationsAsBuyer);
-  conversationsAsSeller = computed(() => this.conversationsListService.conversationsListState().conversationsAsSeller);
+  conversationsAsBuyer = computed(() => 
+    this.conversationsListService.conversationsListState().conversationsAsBuyer
+      .filter((conversation: Conversation) => conversation.messages.length > 0)
+  );
+  conversationsAsSeller = computed(() => 
+    this.conversationsListService.conversationsListState().conversationsAsSeller
+      .filter((conversation: Conversation) => conversation.messages.length > 0)
+  );
 
   conversations = computed(() => ({
     asBuyer: this.conversationsAsBuyer(),

@@ -11,8 +11,10 @@
             <img [src]="sale.postData.mainImageURL" alt="Imagen principal del anuncio">
           </ion-thumbnail>
           <div class="labels-container">
-            <ion-text class="post-title">{{ sale.postData.title }}</ion-text>
-            <ion-label class="post-condition">{{ sale.postData.articleCondition }}</ion-label> 
+            <div class="title-condition-wrapper">
+              <ion-text class="post-title">{{ sale.postData.title }}</ion-text>
+              <ion-label class="post-condition"><span class="condition-label">Estado: </span> {{ sale.postData.articleCondition }}</ion-label>  
+            </div>
             <ion-text class="post-price">{{ sale.postData.price | formatCurrency }}</ion-text>
           </div>
         </div>

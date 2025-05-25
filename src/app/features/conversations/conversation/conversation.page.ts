@@ -53,9 +53,6 @@ export class ConversationPage implements OnInit {
       this.conversationMessages();
       setTimeout(() => this.scrollToBottom(), 10);
     })
-
-    effect(() => console.log(this.conversationService.conversationState()));
-    effect(() => console.log(this.conversationMessages()));
   }
 
   async ngOnInit() {
