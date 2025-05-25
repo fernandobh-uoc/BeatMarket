@@ -50,8 +50,7 @@ export class ToolbarComponent implements OnInit {
 
   constructor() {
     addIcons({ menu, arrowBack, arrowBackOutline, arrowBackSharp, searchOutline, cartOutline });
-    //this.mode = this.platform.is('ios') ? 'ios' : 'md';
-    this.mode = 'ios';
+    this.mode = this.platform.is('ios') ? 'ios' : 'md';
   }
 
   ngOnInit() {
