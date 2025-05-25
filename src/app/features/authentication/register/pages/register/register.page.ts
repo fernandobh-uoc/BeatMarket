@@ -14,11 +14,13 @@ import { UserModel } from 'src/app/core/domain/models/user.model';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
 
+import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
-  imports: [IonContent, IonHeader, IonProgressBar, IonIcon, IonButtons, IonBackButton, IonTitle, IonToolbar, IonButton, RegisterFormComponent]
+  imports: [ToolbarComponent, IonContent, IonHeader, RegisterFormComponent]
 })
 export class RegisterPage {
   private router = inject(Router);
@@ -32,7 +34,7 @@ export class RegisterPage {
 
   step = signal<number>(1);
   totalSteps = 4;
-  progress = computed(() => (this.step() / this.totalSteps));
+  progressBarValue = computed(() => (this.step() / this.totalSteps));
 
   errorMessage = computed(() => this.registerService.registerState().errorMessage);
   profilePictureDataURL = computed(() => this.registerService.registerState().profilePictureDataURL);

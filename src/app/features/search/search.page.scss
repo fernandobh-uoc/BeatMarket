@@ -1,7 +1,7 @@
 .container {
   display: flex;
   flex-direction: column;
-  gap: 3rem;
+  gap: 2rem;
   padding-top: 1rem;
 
   .filters-container {
@@ -66,6 +66,7 @@
     font-weight: var(--headline-small-weight, 400);
     line-height: var(--headline-small-line-height, 2rem);
     letter-spacing: var(--headline-small-tracking, 0rem);
+    margin-bottom: 1rem;
   }
 
   .search-results-list {

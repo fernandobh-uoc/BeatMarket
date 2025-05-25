@@ -37,10 +37,13 @@ export class LoginPage {
     })
   }
 
-
   onControlFocus(control: string) {
     this.submitAttempted.set(false);
     this.errorMessage.set('');
+  }
+
+  onBackPressed() {
+    this.router.navigate(['/auth/landing']);
   }
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {

@@ -92,7 +92,15 @@ ion-toolbar {
 		font-variant: small-caps;
 		letter-spacing: var(--title-large-tracking, 0rem);
 
-		padding-inline: 0px;
+		&.md {
+			margin-left: 0.5rem;
+			padding-inline: 0px;
+		}
+
+		&.ios {
+			width: 90%;
+			inset-inline-start: 5%;
+		}
 	}
 
 	ion-button {
@@ -137,14 +145,25 @@ ion-button {
 	width: 100%;
 	display: block;
 	min-height: 3rem;
+
+	font-size: var(--body-large-size, 1rem);
+	font-style: normal;
+	font-weight: var(--body-large-weight-prominent, 600);
+	line-height: var(--body-large-line-height, 1.5rem);
+	letter-spacing: var(--body-large-tracking, 0.03125rem);
 	text-transform: none;
 
 	--background: var(--ion-color-light);
 	--color: var(--ion-color-dark);
+	--background-hover: var(--ion-color-light-shade);
+	--color-hover: var(--ion-color-dark-shade);
+	--background-activated: var(--ion-color-light-tint);
 
 	&[fill="clear"] {
 		--background: var(--ion-color-dark-tint);
 		--color: var(--ion-color-light);
+		--background-hover: var(--ion-color-dark-tint);
+		--color-hover: var(--ion-color-light-shade);
 	}
 
 	&[fill="outline"] {
@@ -155,6 +174,8 @@ ion-button {
 
 	ion-spinner {
 		margin-left: 1rem;
+		width: 24px;
+		height: 24px;
 	}
 }
 
@@ -232,13 +253,13 @@ form {
 		--padding-start: 1rem;
 		--padding-end: 0.5rem;
 
+		border: 1px inset transparent;
 		max-width: 100%;
 		overflow: hidden;
 	}
 
 	ion-input.custom:focus-within {
-		border: 1px solid var(--ion-color-medium);
-		border-style: inset;
+		border: 1px inset var(--ion-color-medium);
 		border-radius: 8px;
 	}
 

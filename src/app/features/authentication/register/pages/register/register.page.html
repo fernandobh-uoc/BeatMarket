@@ -1,6 +1,16 @@
 
 <ion-header>
-  <ion-toolbar color="dark">
+  <app-toolbar
+    type="arrow-back"
+    title="Registro"
+    [showSearch]="false"
+    [showCart]="false"
+    [showProgressBar]="true"
+    [progressBarValue]="progressBarValue()"
+    [backActionType]="step() === 1 ? 'default' : 'emit'"
+    (backPressed)="prevStep()"
+  ></app-toolbar>
+  <!-- <ion-toolbar color="dark">
     <ion-buttons slot="start">
       @if (step() > 1) {
         <ion-button (click)="prevStep()">
@@ -13,7 +23,7 @@
     </ion-buttons>
     <ion-title size="large">Registro</ion-title>
     <ion-progress-bar [value]="progress()"></ion-progress-bar>
-  </ion-toolbar>
+  </ion-toolbar> -->
 </ion-header>
       
 <ion-content [fullscreen]="true">

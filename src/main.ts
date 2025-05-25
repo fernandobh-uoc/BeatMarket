@@ -34,7 +34,9 @@ import { PushNotificationsService } from './app/core/services/push-notifications
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
-    provideIonicAngular(),
+    provideIonicAngular({
+      mode: 'ios'
+    }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
     provideFirebaseApp(() => {
       const app = initializeApp(environment.firebase);

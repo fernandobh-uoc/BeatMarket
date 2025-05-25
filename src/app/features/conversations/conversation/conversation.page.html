@@ -8,12 +8,6 @@
 </ion-header>
 
 <ion-content [fullscreen]="true" #scrollContainer>
-  <ion-header collapse="condense">
-    <ion-toolbar>
-      <ion-title size="large">{{ displayedUserData().username }}</ion-title>
-    </ion-toolbar>
-  </ion-header>
-
   <div class="container">
     <div class="post-data-container" [routerLink]="['/tabs/post-detail/' + conversation()?.relatedPost?.postId]">
       

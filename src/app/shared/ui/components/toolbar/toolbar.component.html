@@ -3,9 +3,9 @@
     <!-- <ion-button (click)="goTo()">
       <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
     </ion-button>    -->
-    @if (searchActive()) {
+    @if (mode === 'md' && searchActive()) {
       <ion-searchbar
-        class="searchbar"
+        class="searchbar md-searchbar"
         showCancelButton="always"
         placeholder="Buscar..."
         [value]="searchDefaultValue()"
@@ -16,15 +16,15 @@
     } @else {
       @if (type() === 'arrow-back') {
         @if (backActionType() === 'default') {
-          <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button> 
+          <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light" text=""></ion-back-button> 
         } @else if (backActionType() === 'emit') {
-          <ion-button (click)="backPressed.emit()">
-            <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
+          <ion-button class="toolbar-button" (click)="backPressed.emit()">
+            <ion-icon slot="icon-only" name="arrow-back" color="light"></ion-icon>
           </ion-button>
         }
       } @else if (type() === 'menu') {
         <ion-menu-toggle>
-          <ion-button>
+          <ion-button class="toolbar-button">
             <ion-icon slot="icon-only" name="menu" color="light"></ion-icon>
           </ion-button>
         </ion-menu-toggle>
@@ -39,12 +39,12 @@
   </ion-buttons>
   <ion-buttons slot="end">
     @if (showSearch() && !searchActive()) {
-      <ion-button (click)="openSearchBar()">
+      <ion-button class="toolbar-button" (click)="openSearchBar()">
         <ion-icon slot="icon-only" name="search-outline" color="light"></ion-icon>
       </ion-button>
     }
     @if (showCart()) {
-      <ion-button (click)="this.router.navigate(['/cart'])">
+      <ion-button class="toolbar-button" (click)="goToCart()">
         <div class="cart-icon-wrapper">
           <ion-icon slot="icon-only" name="cart-outline" color="light"></ion-icon>
           @if (cartItemsAmount() > 0) {
@@ -54,13 +54,32 @@
       </ion-button>
     }
   </ion-buttons>
+
   <ion-title 
     [class.large]="titleFontSize() === 'large'" 
     [class.medium]="titleFontSize() === 'medium'"
     [class.small]="titleFontSize() === 'small'"
     [attr.size]="largeTitle() ? 'large' : undefined"
   >{{ title() }}</ion-title>
+  
+
   @if (showProgressBar()) {
     <ion-progress-bar color="light" [value]="progressBarValue()"></ion-progress-bar>
   }
 </ion-toolbar>
+
+@if (mode === 'ios' && searchActive()) {
+  <ion-toolbar class="ios-search-toolbar">
+    <ion-searchbar
+      class="searchbar ios-searchbar"
+      showCancelButton="always"
+      cancelButtonText="Cancelar"
+      color="light"
+      placeholder="Buscar..."
+      [value]="searchDefaultValue()"
+      (ionInput)="searchQuery.set($event.target.value ?? '')"
+      (keyup.enter)="submitSearch()"
+      (ionCancel)="closeSearchBar()"
+    ></ion-searchbar>
+  </ion-toolbar>
+}
