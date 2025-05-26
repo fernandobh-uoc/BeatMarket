@@ -123,6 +123,6 @@ export class FirebaseAuthAdapter implements Auth {
     };
 
     return errorMessages[errorCode] || 'Autenticacion fallida. Por favor, inténtalo de nuevo.'; */
-    return 'Las credenciales son incorrectas.';	
+    return errorCode;	
   }
 }

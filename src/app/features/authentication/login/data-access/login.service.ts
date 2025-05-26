@@ -4,6 +4,8 @@ import { UserRepository } from 'src/app/core/domain/repositories/user.repository
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 
+export const defaultErrorMessage = 'Credenciales incorrectas.';
+
 type LoginState = {
   loading: boolean;
   errorMessage: string;
@@ -38,9 +40,10 @@ export class LoginService {
       if (!user) {
         user = await this.userRepository.getUserByUsername(emailOrUsername);
         if (!user) {
-          this.errorMessage.set('Ese usuario no existe.');
+          throw new Error('Credenciales incorrectas.');
+          /* this.errorMessage.set('Credenciales incorrectas.');
           this.loading.set(false);
-          return;
+          return; */
         }
         email = user.email;
       }
@@ -54,7 +57,8 @@ export class LoginService {
       this.errorMessage.set('');
       this.loading.set(false);
     } catch (loginError: any) {
-      this.errorMessage.set(loginError);
+      console.warn(loginError); 
+      this.errorMessage.set(defaultErrorMessage);
       this.loading.set(false);
     } 
   }
