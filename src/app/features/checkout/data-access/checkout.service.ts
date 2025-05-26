@@ -64,7 +64,6 @@ export class CheckoutService {
   constructor() {}
 
   async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<Sale[] | null> {
-
     this.loading.set(true);
 
     // TODO: Stripe checkout
