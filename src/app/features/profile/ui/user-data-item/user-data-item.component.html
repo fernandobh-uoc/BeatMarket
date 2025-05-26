@@ -17,11 +17,13 @@
             @case ('number') {
               <ion-input #editInput class="custom" type="text" inputmode="numeric" [value]="data()" (ionFocus)="controlFocus.emit()" (ionInput)="controlInput.emit(editInput.value)"></ion-input>
             }
-            @case ('avatar') {
-              <ion-avatar #editInput class="custom" (ionFocus)="controlFocus.emit()"></ion-avatar>
+            @case ('profilePicture') {
+              <ion-avatar #editInput class="custom" (ionFocus)="controlFocus.emit()">
+                <img alt="Avatar" [src]="profilePictureURL()" /> 
+              </ion-avatar>
             }
             @case('select') {
-              <ion-select #editInput interface="action-sheet" color="light" class="custom select-input" (ionFocus)="controlFocus.emit()" (ionChange)="selectChange.emit()">
+              <ion-select #editInput interface="action-sheet" [interfaceOptions]="{ cssClass: 'custom-action-sheet' }" color="light" class="custom select-input" (ionFocus)="controlFocus.emit()" (ionChange)="selectChange.emit()">
                 @for (option of selectOptions(); track option.iso2) {
                   <ion-select-option [value]="option.nameES">{{ option.nameES }}</ion-select-option>
                 }
@@ -30,6 +32,7 @@
           }
         </form>
       </div>
+
       <div class="edit-buttons-wrapper">
         <!-- <ion-text 
           class="inline-link-save"
@@ -73,10 +76,19 @@
       </div>
     } @else {
       <div class="data-display-wrapper" [class.min-height-wrapper]="editable()">
-        <ion-text color="light">{{ data() }}</ion-text>
+        @switch (type()) {
+          @case ('profilePicture') {
+            <ion-avatar #editInput class="custom" (ionFocus)="controlFocus.emit()">
+              <img alt="Avatar" [src]="profilePictureURL()" /> 
+            </ion-avatar>
+          }
+          @default {
+            <ion-text color="light">{{ data() }}</ion-text>
+          }
+        }
         @if (editable()) {
           <!-- <ion-text class="inline-link-edit" (click)="toggleEditingState.emit()">Editar</ion-text> -->
-          <div class="edit-icon-wrapper" (click)="toggleEditingState.emit()">
+          <div class="edit-icon-wrapper" (click)="toggleEditingState.emit(); type() === 'profilePicture' && editAvatar.emit()">
             <ion-icon name="create-outline" size="large"></ion-icon>
           </div>
         }

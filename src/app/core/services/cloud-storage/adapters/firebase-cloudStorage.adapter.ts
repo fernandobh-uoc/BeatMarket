@@ -7,29 +7,50 @@ export class FirebaseCloudStorageAdapter implements CloudStorage {
   constructor(private storage: FirebaseStorage) {}
 
   async upload(path: string, file: File | Blob, metadata: Record<string, any> = {}): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    await uploadBytes(storageRef, file, metadata);
-    return await getDownloadURL(storageRef);
+    try {
+      const storageRef = ref(this.storage, path);
+      await uploadBytes(storageRef, file, metadata);
+      return await getDownloadURL(storageRef);
+    } catch (cloudStorageError) {
+      throw cloudStorageError;
+    }
   }
 
   async delete(path: string): Promise<void> {
-    const storageRef = ref(this.storage, path);
-    await deleteObject(storageRef);
+    try {
+      const storageRef = ref(this.storage, path);
+      console.log({storageRef});
+      await deleteObject(storageRef);
+    } catch (cloudStorageError) {
+      throw cloudStorageError;
+    }
   }
 
   async getDownloadURL(path: string): Promise<string> {
-    const storageRef = ref(this.storage, path);
-    return await getDownloadURL(storageRef);
+    try {
+      const storageRef = ref(this.storage, path);
+      return await getDownloadURL(storageRef);
+    } catch (cloudStorageError) {
+      throw cloudStorageError;
+    }
   }
 
   async getMetadata(path: string): Promise<any> {
-    const storageRef = ref(this.storage, path);
-    return await getMetadata(storageRef);
+    try {
+      const storageRef = ref(this.storage, path);
+      return await getMetadata(storageRef);
+    } catch (cloudStorageError) {
+      throw cloudStorageError;
+    }
   }
 
   async list(path: string): Promise<string[]> {
-    const storageRef = ref(this.storage, path);
-    const result = await listAll(storageRef);
-    return result.items.map(item => item.name);
+    try {
+      const storageRef = ref(this.storage, path);
+      const result = await listAll(storageRef);
+      return result.items.map(item => item.name);
+    } catch (cloudStorageError) {
+      throw cloudStorageError;
+    }
   }
 }

@@ -5,7 +5,7 @@ import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonLabel } from '
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { UserDataListComponent } from './ui/user-data-list/user-data-list.component';
-import { UserDataItemEditService } from './utils/user-data-item-edit.service';
+import { ProfileService } from './data-access/profile.service';
 import { ViewDidLeave } from '@ionic/angular';
 import { UserPostsListComponent } from './ui/user-posts-list/user-posts-list.component';
 
@@ -15,11 +15,11 @@ import { UserPostsListComponent } from './ui/user-posts-list/user-posts-list.com
   styleUrls: ['./profile.page.scss'],
   standalone: true,
   imports: [UserDataListComponent, UserPostsListComponent, IonText, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule],
-  providers: [UserDataItemEditService]
+  providers: [ProfileService]
 })
 export class ProfilePage implements OnInit, ViewDidLeave {
   authService = inject(AuthService);
-  userDataEditService = inject(UserDataItemEditService);
+  profileService = inject(ProfileService);
 
   selectedTab = signal<string>('profileData');
 
@@ -30,7 +30,7 @@ export class ProfilePage implements OnInit, ViewDidLeave {
   constructor() {}
 
   ionViewDidLeave(): void {
-    this.userDataEditService.resetEditingInputStates();
+    this.profileService.resetEditingInputStates();
     this.toolbar()?.searchActive.set(false);
   }
 

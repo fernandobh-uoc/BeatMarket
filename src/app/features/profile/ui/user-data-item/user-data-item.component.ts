@@ -13,10 +13,11 @@ import { CountryData } from 'src/app/shared/utils/countries';
 })
 export class UserDataItemComponent  implements OnInit {
   keyTag = input<string>('');
-  type = input<'text' | 'password' | 'number' | 'avatar' | 'select'>('text');
+  type = input<'text' | 'password' | 'number' | 'profilePicture' | 'select'>('text');
   editable = input<boolean>(true);
   label = input<string>('');
   data = input<string>('');
+  profilePictureURL = input<string>('');
   disabledSaveButtonPending = input<boolean>(false);
   disabledSaveButtonManual = input<boolean>(false);
   editingStateActive = input<boolean>(false);
@@ -27,6 +28,7 @@ export class UserDataItemComponent  implements OnInit {
   
   save = output<string | number | null | undefined>();
   toggleEditingState = output<void>();
+  editAvatar = output<void>();
   controlFocus = output<void>();
   controlInput = output<string | number | null | undefined>();
   selectChange = output<void>();

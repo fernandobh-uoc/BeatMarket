@@ -5,7 +5,7 @@
     keyTag="email"
     type="text"
     label="Email"
-    data="{{ user()?.email }}"
+    [data]="user()?.email ?? ''"
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -13,7 +13,15 @@
     keyTag="username"
     type="text"
     label="Nombre de usuario"
-    data="{{ user()?.username }}"
+    [data]="user()?.username ?? ''"
+  ></app-user-data-item-wrapper>
+
+  <app-user-data-item-wrapper
+    [editable]="true"
+    keyTag="profilePicture"
+    type="profilePicture"
+    label="Avatar"
+    [data]="user()?.profilePictureURL ?? ''"
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -29,7 +37,7 @@
     keyTag="first"
     type="text"
     label="Nombre"
-    data="{{ user()?.name?.first }}"
+    [data]="user()?.name?.first ?? ''" 
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -37,7 +45,7 @@
     keyTag="last"
     type="text"
     label="Apellidos"
-    data="{{ user()?.name?.last }}"
+    [data]="user()?.name?.last ?? ''"
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -45,7 +53,7 @@
     keyTag="line1"
     type="text"
     label="Dirección"
-    data="{{ user()?.address?.line1 }}"
+    [data]="user()?.address?.line1 ?? ''"
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -53,7 +61,7 @@
     keyTag="zipcode"
     type="number"
     label="Código postal"
-    data="{{ user()?.address?.zipcode }}"
+    [data]="user()?.address?.zipcode ?? ''"
   ></app-user-data-item-wrapper>
 
   <app-user-data-item-wrapper
@@ -61,6 +69,6 @@
     keyTag="country"
     type="select"
     label="País"
-    data="{{ user()?.address?.country ?? '' }}"
+    [data]="user()?.address?.country ?? ''"
   ></app-user-data-item-wrapper>
 </div>
