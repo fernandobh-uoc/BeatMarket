@@ -16,13 +16,15 @@ import { Router } from '@angular/router';
 
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 
+import { ViewDidLeave } from '@ionic/angular';
+
 @Component({
   selector: 'app-register',
   templateUrl: './register.page.html',
   styleUrls: ['./register.page.scss'],
   imports: [ToolbarComponent, IonContent, IonHeader, RegisterFormComponent]
 })
-export class RegisterPage {
+export class RegisterPage implements ViewDidLeave {
   private router = inject(Router);
   private registerService = inject(RegisterService);
   
@@ -53,6 +55,10 @@ export class RegisterPage {
     register: linkedSignal<boolean>(() => this.registerService.registerState().loading)
   }
 
+  ionViewDidLeave(): void {
+    this.registerService.removeProfilePicture();
+  }
+
   onControlFocus(control: string) {
     this.submitAttempts['email'].set(false);
     this.submitAttempts['userData'].set(false);
@@ -63,19 +69,19 @@ export class RegisterPage {
   nextStep = () => {
     if (this.step() === 1) {
       this.submitAttempts['email'].set(true);
-      this.#handleNextStepEmail(this.registerFormComponent()?.registerForm);
+      this.handleNextStepEmail(this.registerFormComponent()?.registerForm);
       return;
     }
 
     if (this.step() === 2) {
       this.submitAttempts['userData'].set(true);
-      this.#handleNextStepUserData(this.registerFormComponent()?.registerForm);
+      this.handleNextStepUserData(this.registerFormComponent()?.registerForm);
       return;
     }
 
     if (this.step() === 3) {
       this.submitAttempts['personalData'].set(true);
-      this.#handleNextStepPersonalData(this.registerFormComponent()?.registerForm);
+      this.handleNextStepPersonalData(this.registerFormComponent()?.registerForm);
       return;
     }
   }
@@ -99,21 +105,19 @@ export class RegisterPage {
     this.registerService.setAvatarDataNotNative(event);
   }
 
-  #handleNextStepEmail = async (registerForm: FormGroup<any> | undefined) => {
+  private handleNextStepEmail = async (registerForm: FormGroup<any> | undefined) => {
     const emailControl = registerForm?.get('emailData.email');
     if (!emailControl) return;
 
     emailControl?.updateValueAndValidity();
 
     if (emailControl.pending) {
-      //this.disabledNextButtons.email.set(true);
       this.loadingStates.email.set(true);
       await firstValueFrom(
         emailControl.statusChanges.pipe(
           filter(status => status !== 'PENDING')
         )
       );
-      //this.disabledNextButtons.email.set(false);
       this.loadingStates.email.set(false);
     }
 
@@ -123,7 +127,7 @@ export class RegisterPage {
     }
   }
 
-  #handleNextStepUserData = async (registerForm: FormGroup<any> | undefined) => {
+  private handleNextStepUserData = async (registerForm: FormGroup<any> | undefined) => {
     const usernameControl = registerForm?.get('userData.username');
     const passwordControl = registerForm?.get('userData.password');
     if (!usernameControl || !passwordControl) return;
@@ -146,14 +150,14 @@ export class RegisterPage {
     }
   }
 
-  #handleNextStepPersonalData = async (registerForm: FormGroup<any> | undefined) => {
+  private handleNextStepPersonalData = async (registerForm: FormGroup<any> | undefined) => {
     const firstNameControl = registerForm?.get('personalData.firstName');
     const lastNameControl = registerForm?.get('personalData.lastName');
     const addressControl = registerForm?.get('personalData.address');
     const zipcodeControl = registerForm?.get('personalData.zipcode');
     const countryControl = registerForm?.get('personalData.country');
 
-    if (!firstNameControl || !lastNameControl /* || !dobControl */ || !addressControl || !zipcodeControl || !countryControl) return;
+    if (!firstNameControl || !lastNameControl || !addressControl || !zipcodeControl || !countryControl) return;
 
     firstNameControl?.updateValueAndValidity();
     lastNameControl?.updateValueAndValidity();

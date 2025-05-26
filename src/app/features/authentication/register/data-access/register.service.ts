@@ -60,6 +60,10 @@ export class RegisterService {
     reader.readAsDataURL(file);
   }
 
+  removeProfilePicture = async (): Promise<void> => {
+    this.profilePictureDataURL.set(null);
+  }
+
   registerUser = async (userFormData: any): Promise<void> => {
     this.loading.set(true);
     

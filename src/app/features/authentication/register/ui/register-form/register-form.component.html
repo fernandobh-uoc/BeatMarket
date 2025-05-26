@@ -57,7 +57,7 @@
 
         <div class="input-wrapper">
           <ion-label class="custom" color="light">Contraseña</ion-label>
-          <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('userData')">
+          <ion-input formControlName="password" type="password" [clearOnEdit]="false" class="custom" (ionFocus)="controlFocus.emit('userData')">
             <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
           </ion-input>
           @if (submitAttempts()['userData']() && registerForm.get('userData.password')?.errors) {

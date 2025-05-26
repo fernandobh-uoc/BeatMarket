@@ -15,7 +15,7 @@
         <ion-label class="custom link forgot-password" [routerLink]="['/auth/password-reset']">¿Olvidaste la contraseña?</ion-label> 
       } 
     </div>
-    <ion-input formControlName="password" type="password" class="custom" (ionFocus)="controlFocus.emit('password')">
+    <ion-input formControlName="password" type="password" [clearOnEdit]="false" class="custom" (ionFocus)="controlFocus.emit('password')">
       <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
     </ion-input>
     @if (submitAttempted()) {
