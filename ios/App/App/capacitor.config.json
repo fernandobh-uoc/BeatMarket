@@ -5,6 +5,7 @@
 	"packageClassList": [
 		"MediaPlugin",
 		"AppPlugin",
+		"CAPBrowserPlugin",
 		"CAPCameraPlugin",
 		"HapticsPlugin",
 		"KeyboardPlugin",
