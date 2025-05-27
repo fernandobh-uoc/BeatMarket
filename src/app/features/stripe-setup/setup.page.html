@@ -1,0 +1,24 @@
+<ion-header [translucent]="true">
+  <app-toolbar
+    [title]="'Activación'"
+  ></app-toolbar>
+</ion-header>
+
+<ion-content [fullscreen]="true">
+  <div class="container">
+    <div class="text-container">
+      <ion-text class="text">Para poder publicar anuncios o comprar artículos, debes activar tu cuenta de Stripe.</ion-text>
+    </div>
+
+    <div class="background-logo"></div>
+
+    <div class="button-container">
+      <ion-button class="custom" [disabled]="loading()" (click)="goToStripe()">
+        Activar cuenta de Stripe
+        @if (loading()) {
+          <ion-spinner name="crescent"></ion-spinner>
+        }  
+      </ion-button>
+    </div>
+  </div>
+</ion-content>

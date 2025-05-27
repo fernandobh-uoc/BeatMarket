@@ -1,0 +1,41 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  height: 100%;
+  position: relative;
+
+  .text-container {
+    margin-top: 10%;
+    text-align: center;
+
+    .text {
+      color: var(--ion-color-light-shade);
+      font-size: var(--body-larger-size, 1.25rem);
+      line-height: 1.25rem;
+    }
+  }
+
+  .background-logo {
+    width: 60dvw;
+    height: 60dvw;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-image: url('src/assets/stripe-logo.png');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: center;
+    opacity: 0.2;
+  }
+
+  .button-container {
+    width: 100%;
+
+    &:has(ion-button.ios) {
+      margin-bottom: 24px;
+    }
+  }
+}

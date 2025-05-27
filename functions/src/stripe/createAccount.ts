@@ -23,7 +23,17 @@ export const createStripeAccount = onDocumentCreated(
         transfers: { requested: true }
       },
       business_type: 'individual',
-      email: userData?.email
+      email: userData?.email,
+      individual: {
+        first_name: userData?.name?.first,
+        last_name: userData?.name?.last,
+        address: {
+          line1: userData?.address.line1,
+          line2: userData?.address.line2,
+          postal_code: userData?.address.zipcode,
+        }
+      },
+      country: userData?.address.country,
     })
 
     await db.collection('users').doc(userId).update({

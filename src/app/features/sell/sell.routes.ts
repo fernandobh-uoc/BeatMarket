@@ -1,4 +1,5 @@
 import { Routes } from "@angular/router";
+import { stripeGuard } from "src/app/core/guards/stripe.guard";
 
 export const SellRoutes: Routes = [
   {
@@ -8,7 +9,8 @@ export const SellRoutes: Routes = [
   },
   {
     path: 'publish',
-    loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage)
+    loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage),
+    canMatch: [stripeGuard]
   },
   {
     path: 'splash',

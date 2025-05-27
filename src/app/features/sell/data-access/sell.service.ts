@@ -12,6 +12,7 @@ import { ArticleCategory, ArticleModel } from 'src/app/core/domain/models/articl
 import { CloudStorage } from 'src/app/core/services/cloud-storage/cloudStorage.interface';
 import { parseFormattedCurrency } from 'src/app/shared/utils/currencyParser.service';
 
+
 type SellState = {
   imagesDataURLs: string[],
   latestPublishedPostId: string,
