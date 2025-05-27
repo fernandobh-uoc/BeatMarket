@@ -59,6 +59,7 @@ export interface UserModel extends JSONSerializable<UserModel>, Timestamps {
   //messages: Partial<MessageModel>[] | string[];
 
   fcmToken: string | null;
+  stripeAccountId: string | null;
 
   providerId?: string;
   providerData?: Array<{
@@ -82,6 +83,7 @@ export class User implements UserModel {
   public bio: string = '';
   public activePosts: ActivePost[] = [];
   public fcmToken: string | null = '';
+  public stripeAccountId: string | null = '';
 
   private constructor(user: Partial<UserModel> = {}) {
     Object.assign(this, { ...user });

@@ -24,6 +24,7 @@ export interface FirestoreUserModel {
   roles: string[];
   bio: string;
   fcmToken: string | null;
+  stripeAccountId: string | null;
   createdAt: Timestamp;
   updatedAt: Timestamp;
 }
@@ -49,6 +50,7 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
         : user.roles,
       bio: user.bio,
       fcmToken: user.fcmToken,
+      stripeAccountId: user.stripeAccountId,
       createdAt: isValidDateInput(user.createdAt)
         ? Timestamp.fromDate(new Date(user.createdAt))
         : isFieldValue(user.createdAt)
@@ -81,6 +83,7 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
       roles: (data.roles ?? []).map(role => role as Role),
       bio: data.bio ?? '',
       fcmToken: data.fcmToken,
+      stripeAccountId: data.stripeAccountId,
       createdAt: isFirestoreTimestamp(data.createdAt) 
         ? data.createdAt.toDate() 
         : null,
