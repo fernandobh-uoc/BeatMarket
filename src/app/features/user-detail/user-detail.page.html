@@ -25,8 +25,8 @@
         <div class="user-location-wrapper">
           <ion-icon class="location-icon" name="location-outline" color="light" size="small"></ion-icon>
           <ion-text class="user-location">
-            @if (userData()?.address?.city) { …
-              {{ userData()?.address?.city ?? '' }} ,
+            @if (userData()?.address?.city) { 
+              {{ userData()?.address?.city ?? '' }},
             } 
             {{ userData()?.address?.country ?? '' }} 
           </ion-text>
