@@ -59,19 +59,11 @@ export class AuthService {
   // Direct accessor to currentUser for QoL
   currentUser = computed<User | null>(() => this._currentUser.value() ?? null);
 
-  constructor() {
-    effect(async () => {
-      await this.cache.set('authState', {
-        isAuthenticated: this.authState().isAuthenticated,
-        userId: this.authState().currentUser?._id ?? '',
-        username: this.authState().currentUser?.username ?? ''
-      })
-      
-    })
-  };
+  constructor() {};
 
   init = async (): Promise<void> => {
     try {
+      console.log("init");
       await this.loadUserFromCache();
     } catch (error) {
       console.error(error);
@@ -171,6 +163,12 @@ export class AuthService {
       }
 
       this.setUserId(result.uid);   // Activate rxResourceLoader
+      await this.waitForUserData();
+      await this.cache.set('authState', {
+        isAuthenticated: true,
+        userId: this._currentUser.value()?._id ?? '',
+        username: this._currentUser.value()?.username ?? ''
+      });
     } catch (errorMessage: any) {
       this.errorMessage.set(errorMessage);
       throw errorMessage;
@@ -183,6 +181,12 @@ export class AuthService {
       await this.authMethod.logout();
       this.setUserId(undefined);  // Deactivate rxResourceLoader
       this._currentUser.set(null);
+
+      await this.cache.set('authState', {
+        isAuthenticated: false,
+        userId: '',
+        username: ''
+      });
     } catch (errorMessage: any) {
       this.errorMessage.set(errorMessage);
       throw errorMessage;
@@ -210,14 +214,28 @@ export class AuthService {
   }
 
   private async loadUserFromCache(): Promise<void> {
+    console.log("loadUserFromCache");
+
     const cacheState = await this.cache.get<CacheAuthState>('authState');
+
+    console.log({ cacheState });
 
     if (cacheState != null && cacheState.isAuthenticated) {
       this.setUserId(cacheState.userId);   // Activate rxResourceLoader
-      while (!this._currentUser.hasValue()) {
-        await new Promise(resolve => setTimeout(resolve, 10));
-      }
+      await this.waitForUserData();
     }
+  }
+
+  private waitForUserData(): Promise<void> {
+    return new Promise((resolve) => {
+    const checkInterval = setInterval(() => {
+      console.log("checkInterval");
+      if (this._currentUser.hasValue() && this._currentUser.value() !== null) {
+        clearInterval(checkInterval);
+        resolve();
+      }
+    }, 20);
+  });
   }
 }
 
