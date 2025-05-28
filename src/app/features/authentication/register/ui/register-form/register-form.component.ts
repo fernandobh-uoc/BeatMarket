@@ -5,10 +5,11 @@ import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton
 
 import { EmailValidator } from '../../utils/validators/email.validator';
 import { UsernameValidator } from '../../utils/validators/username.validator';
+import { ZipcodeValidator } from '../../utils/validators/zipcode.validator';
 import { addIcons } from 'ionicons';
-import { calendarOutline, checkmarkCircleOutline, closeCircleOutline, globeOutline } from 'ionicons/icons';
+import { at, atCircle, atCircleOutline, atOutline, calendarOutline, checkmarkCircleOutline, closeCircleOutline, globeOutline, homeOutline, keyOutline, locationOutline, mailOutline, personCircleOutline, personOutline, pinOutline } from 'ionicons/icons';
 
-import { countries } from "../../../../../shared/utils/countries" ;
+import { countries } from "../../../../../shared/utils/countries";
 import { Role } from 'src/app/core/domain/models/user.model';
 
 @Component({
@@ -22,6 +23,7 @@ export class RegisterFormComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
   emailValidator = new EmailValidator();
   usernameValidator = new UsernameValidator();
+  zipcodeValidator = new ZipcodeValidator();
   registerForm!: FormGroup;
   //localErrorMessage = signal<string>('');
 
@@ -29,7 +31,7 @@ export class RegisterFormComponent implements OnInit {
   nextStep = output<void>();
   formSubmit = output<void>();
 
-  submitAttempts = input<Record<string, WritableSignal<boolean>>>({ 
+  submitAttempts = input<Record<string, WritableSignal<boolean>>>({
     email: signal<boolean>(false),
     userData: signal<boolean>(false),
     personalData: signal<boolean>(false),
@@ -63,7 +65,19 @@ export class RegisterFormComponent implements OnInit {
   ];
 
   constructor() {
-    addIcons({ checkmarkCircleOutline, closeCircleOutline, calendarOutline, globeOutline });
+    addIcons({
+      atOutline,
+      personCircleOutline,
+      keyOutline,
+      checkmarkCircleOutline, 
+      closeCircleOutline, 
+      calendarOutline, 
+      globeOutline, 
+      pinOutline, 
+      mailOutline, 
+      homeOutline, 
+      locationOutline, 
+      personOutline });
   }
 
   ngOnInit(): void {
@@ -91,25 +105,30 @@ export class RegisterFormComponent implements OnInit {
         }),
       }),
       personalData: this.fb.group({
-        firstName: this.fb.control('', { 
-          validators: [Validators.required], 
-          updateOn: 'blur' 
+        firstName: this.fb.control('', {
+          validators: [Validators.required],
+          updateOn: 'blur'
         }),
-        lastName: this.fb.control('', { 
-          validators: [Validators.required], 
-          updateOn: 'blur' 
+        lastName: this.fb.control('', {
+          validators: [Validators.required],
+          updateOn: 'blur'
         }),
-        address: this.fb.control('', { 
-          validators: [Validators.required], 
-          updateOn: 'blur' 
+        address: this.fb.control('', {
+          validators: [Validators.required],
+          updateOn: 'blur'
         }),
-        zipcode: this.fb.control('', { 
-          validators: [Validators.required, Validators.minLength(4)], 
-          updateOn: 'blur' 
+        country: this.fb.control('España', {
+          validators: [Validators.required],
+          updateOn: 'blur'
         }),
-        country: this.fb.control('', { 
-          validators: [Validators.required], 
-          updateOn: 'blur' 
+        zipcode: this.fb.control('', {
+          validators: [Validators.required, Validators.minLength(3)],
+          asyncValidators: [this.zipcodeValidator.validate()],
+          updateOn: 'blur'
+        }),
+        city: this.fb.control('', {
+          validators: [Validators.required],
+          updateOn: 'blur'
         }),
       }),
       otherData: this.fb.group({
@@ -127,5 +146,15 @@ export class RegisterFormComponent implements OnInit {
       const index = roles.controls.findIndex(control => control.value === event.detail.value);
       if (index >= 0) roles.removeAt(index);
     }
+  }
+
+  async onCountryChange(event: CustomEvent) {
+    const newValue = event.detail.value;
+
+    const countryControl = this.registerForm.get('personalData.country');
+    const zipcodeControl = this.registerForm.get('personalData.zipcode');
+    /* console.log({ value: countryControl?.value }); */
+    countryControl?.setValue(newValue);
+    zipcodeControl?.updateValueAndValidity();
   }
 }

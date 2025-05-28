@@ -8,7 +8,7 @@ import { arrowBackOutline } from 'ionicons/icons';
 import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
-import { FormGroup } from '@angular/forms';
+import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
 import { RegisterService } from '../../data-access/register.service';
 import { UserModel } from 'src/app/core/domain/models/user.model';
 import { Capacitor } from '@capacitor/core';
@@ -17,6 +17,7 @@ import { Router } from '@angular/router';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 
 import { ViewDidLeave } from '@ionic/angular';
+import { CountryNameToCodePipe } from 'src/app/shared/utils/pipes/country-name-to-code.pipe';
 
 @Component({
   selector: 'app-register',
@@ -154,15 +155,17 @@ export class RegisterPage implements ViewDidLeave {
     const firstNameControl = registerForm?.get('personalData.firstName');
     const lastNameControl = registerForm?.get('personalData.lastName');
     const addressControl = registerForm?.get('personalData.address');
+    const cityControl = registerForm?.get('personalData.city');
     const zipcodeControl = registerForm?.get('personalData.zipcode');
     const countryControl = registerForm?.get('personalData.country');
 
-    if (!firstNameControl || !lastNameControl || !addressControl || !zipcodeControl || !countryControl) return;
+    if (!firstNameControl || !lastNameControl || !addressControl || !cityControl || !zipcodeControl || !countryControl) return;
 
     firstNameControl?.updateValueAndValidity();
     lastNameControl?.updateValueAndValidity();
     addressControl?.updateValueAndValidity();
-    zipcodeControl?.updateValueAndValidity();
+    
+    cityControl?.updateValueAndValidity();
     countryControl?.updateValueAndValidity();
 
     if (firstNameControl.pending) {

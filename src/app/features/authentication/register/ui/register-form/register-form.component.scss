@@ -3,7 +3,7 @@
   flex-direction: column;
   flex: 1 0 0;
   justify-content: space-between;
-  gap: 2rem;
+  gap: 3rem;
 }
 
 ion-datetime-button.custom {
@@ -19,24 +19,25 @@ ion-datetime-button::part(native) {
   gap: 0.5rem;
 }
 
-.country-zipcode-container {
+.zipcode-city-container {
   display: flex;
   flex-direction: row;
   justify-content: space-between;
+  gap: 1rem;
+
+  .zipcode-input {
+    width: 40%;
+    min-height: 8rem;
+  }
+
+  .city-input {
+    width: 55%;
+  }
 }
 
-.zipcode-input {
-  /* display: flex; */
-  width: 35%;
-  /* max-width: 12rem;
-  min-height: 7rem; */
-  /* flex-direction: column;
-  align-items: flex-start; */
-}
 
 .country-input-wrapper {
-  width: 70%;
-  max-width: calc(70% - 3rem);
+  width: 100%;
 }
 
 .roles-subtitle {
