@@ -23,9 +23,7 @@ export const generateStripeOnboardingLink = onCall(
 
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
-      refresh_url: 'https://yourapp.com/reauth',
-      return_url: 'https://yourapp.com/return',
-      type: 'account_onboarding',
+      type: 'account_onboarding'
     });
 
     return { url: accountLink.url };
