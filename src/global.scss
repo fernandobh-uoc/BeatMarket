@@ -181,6 +181,11 @@ ion-button {
 
 // Alert buttons
 
+.alert .alert-wrapper {
+	box-shadow: none !important;
+	-webkit-box-shadow: none !important;
+}
+
 .cancel-button {
 	color: var(--ion-color-light) !important;
 }
@@ -204,9 +209,10 @@ ion-label.custom {
 	gap: 0.5rem;
 	align-self: stretch;
 
+	color: var(--ion-color-light-shade)!important;
 	font-size: var(--body-large-size, 1rem);
 	font-style: normal;
-	font-weight: 600;
+	font-weight: var(--body-large-weight, 400);
 	line-height: var(--body-large-line-height, 1.5rem);
 	/* 150% */
 	letter-spacing: var(--body-large-tracking, 0.03125rem);
@@ -278,8 +284,6 @@ form {
 		right: var(--padding-end);
 	}
 
-
-
 	ion-input .input-bottom {
 		display: flex;
 		justify-content: left;
@@ -322,13 +326,19 @@ form {
 			border-radius: 8px;
 		}
 	}
+
+	ion-input ion-icon,
+	ion-select ion-icon {
+		width: 20px;
+		height: 20px;
+	}
 }
 
 ion-icon {
-	min-height: 20px;
 	min-width: 20px;
-	height: 24px;
+	min-height: 20px;
 	width: 24px;
+	height: 24px;
 }
 
 ion-avatar {
@@ -354,6 +364,14 @@ ion-text:has(.inline-link) {
 	font-weight: 600;
 	text-decoration: underline;
 	cursor: pointer;
+}
+
+.custom-popover {
+	--box-shadow: none;
+
+	&::part(content) {
+		border: 1px solid var(--ion-color-medium);
+	}
 }
 
 .custom-action-sheet {

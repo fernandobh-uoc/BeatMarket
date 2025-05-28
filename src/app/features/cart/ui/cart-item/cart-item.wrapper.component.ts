@@ -13,6 +13,11 @@ import { CartService } from '../../data-access/cart.service';
     ></app-cart-item>
   `,
   styles: `
+    .alert .alert-wrapper {
+      --background: red;
+      box-shadow: none;
+    }
+
     .cancel-button {
       color: var(--ion-color-light);
     }
@@ -37,6 +42,7 @@ export class CartItemWrapperComponent {
     const alert = await this.alertController.create({
       header: '¿Estás seguro?',
       message: 'Estás a punto de eliminar el artículo de tu carrito',
+      cssClass: 'alert',
       buttons: [
         {
           text: 'Cancelar',
