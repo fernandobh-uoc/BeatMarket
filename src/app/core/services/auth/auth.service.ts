@@ -63,7 +63,6 @@ export class AuthService {
 
   init = async (): Promise<void> => {
     try {
-      console.log("init");
       await this.loadUserFromCache();
     } catch (error) {
       console.error(error);
@@ -214,12 +213,7 @@ export class AuthService {
   }
 
   private async loadUserFromCache(): Promise<void> {
-    console.log("loadUserFromCache");
-
     const cacheState = await this.cache.get<CacheAuthState>('authState');
-
-    console.log({ cacheState });
-
     if (cacheState != null && cacheState.isAuthenticated) {
       this.setUserId(cacheState.userId);   // Activate rxResourceLoader
       await this.waitForUserData();
@@ -229,7 +223,6 @@ export class AuthService {
   private waitForUserData(): Promise<void> {
     return new Promise((resolve) => {
     const checkInterval = setInterval(() => {
-      console.log("checkInterval");
       if (this._currentUser.hasValue() && this._currentUser.value() !== null) {
         clearInterval(checkInterval);
         resolve();
