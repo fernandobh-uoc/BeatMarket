@@ -5,6 +5,7 @@ import { isUserModel, User, UserModel } from 'src/app/core/domain/models/user.mo
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { CartService } from 'src/app/features/cart/data-access/cart.service';
+import { CountryNameToCodePipe } from 'src/app/shared/utils/pipes/country-name-to-code.pipe';
 
 type RegisterState = {
   profilePictureDataURL: string;
@@ -13,12 +14,14 @@ type RegisterState = {
 }
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class RegisterService {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
   private cache = inject(LocalStorageService);
+
+  private countryNameToCodePipe = inject(CountryNameToCodePipe);
 
   private profilePictureDataURL = signal<string | undefined | null>(null);
 
@@ -83,6 +86,7 @@ export class RegisterService {
             line1: userFormData.address ?? '',
             city: userFormData.city ?? '',
             country: userFormData.country ?? '',
+            countryCode: this.countryNameToCodePipe.transform(userFormData.country),
             zipcode: userFormData.zipcode ?? ''
           },
           roles: userFormData.roles ?? [],

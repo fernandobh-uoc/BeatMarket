@@ -13,12 +13,12 @@ export interface FirestoreUserModel {
     middle?: string;
     last: string;
   };
-  //dateOfBirth: Timestamp | null;
   address: {
     line1: string;
     line2?: string;
     city: string;
     country: string;
+    countryCode: string;
     zipcode: string;
   };
   roles: string[];
@@ -43,7 +43,6 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
       username: user.username,
       profilePictureURL: user.profilePictureURL,
       name: user.name,
-      //dateOfBirth: isValidDateInput(user.dateOfBirth) ? Timestamp.fromDate(new Date(user.dateOfBirth as string | number | Date)) : null,
       address: user.address,
       roles: Array.isArray(user.roles)
         ? user.roles.map(role => role.toString())
@@ -73,11 +72,11 @@ export class FirestoreUserConverter implements FirestoreDataConverter<UserModel,
       username: data.username ?? '',
       profilePictureURL: data.profilePictureURL ?? '',
       name: data.name ?? { first: '', last: '' },
-      //dateOfBirth: data?.dateOfBirth?.toDate() ?? null,
       address: data.address ?? {
         line1: '',
         city: '',
         country: '',
+        countryCode: '',
         zipcode: ''
       },
       roles: (data.roles ?? []).map(role => role as Role),

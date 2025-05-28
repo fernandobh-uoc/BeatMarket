@@ -14,15 +14,9 @@ interface Address {
   line2?: string,
   city: string,
   country: string,
+  countryCode: string,
   zipcode: string
 }
-
-/* interface ActivePost {
-  postId: PostModel["_id"];
-  title: PostModel["title"];
-  category: PostModel["product"]["category"];
-  price: PostModel["price"];
-} */
 
 export enum Role {
   None = '',
@@ -46,17 +40,11 @@ export interface UserModel extends JSONSerializable<UserModel>, Timestamps {
   username: string;
   profilePictureURL: string;
   name: FullName;
-  //dateOfBirth: Date | number | null;
   address: Address;
   roles: Role[];
   bio: string;
 
   activePosts: ActivePost[]; // Subcollection
-
-  /* boughtPosts: PostModel[] | string[];
-  soldPosts: PostModel[] | string[]; */
-
-  //messages: Partial<MessageModel>[] | string[];
 
   fcmToken: string | null;
   stripeAccountId: string | null;
@@ -77,8 +65,7 @@ export class User implements UserModel {
   public username: string = '';
   public profilePictureURL: string = '';
   public name: FullName = { first: '', middle: '', last: '' };
-  //public dateOfBirth: Date | number | null = null;
-  public address: Address = { line1: '', city: '', country: '', zipcode: '' };
+  public address: Address = { line1: '', city: '', country: '', countryCode: '', zipcode: '' };
   public roles: Role[] = [];
   public bio: string = '';
   public activePosts: ActivePost[] = [];
