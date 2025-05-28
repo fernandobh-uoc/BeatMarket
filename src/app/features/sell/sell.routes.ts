@@ -4,13 +4,17 @@ import { stripeGuard } from "src/app/core/guards/stripe.guard";
 export const SellRoutes: Routes = [
   {
     path: '',
-    redirectTo: 'publish',
+    redirectTo: '/tabs/sell/stripe-setup',
     pathMatch: 'full'
   },
   {
     path: 'publish',
     loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage),
-    canMatch: [stripeGuard]
+    /* canMatch: [stripeGuard] */
+  },
+  {
+    path: 'stripe-setup',
+    loadComponent: () => import('src/app/features/stripe-setup/setup.page').then(m => m.SetupPage)
   },
   {
     path: 'splash',

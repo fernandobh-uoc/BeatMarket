@@ -8,6 +8,7 @@ import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.c
 import { Capacitor } from '@capacitor/core';
 import { Browser } from '@capacitor/browser';
 import { getFunctions, httpsCallable } from 'firebase/functions';
+import { ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-setup',
@@ -16,14 +17,17 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
   standalone: true,
   imports: [IonSpinner, IonText, ToolbarComponent, IonButton, IonContent, IonHeader, CommonModule, FormsModule] 
 })
-export class SetupPage implements OnInit, OnDestroy {
+export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
   private router = inject(Router);
   private stripeService = inject(StripeService);
 
   redirectTo = signal<string>('');
 
+  accountActive = computed(() => this.stripeService.stripeState().accountActive);
   stripeOnboardingUrl = computed(() => this.stripeService.stripeState().onboardingLink);
-  loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading);
+
+  loadingAccountStatus = computed(() => this.stripeService.stripeState().loading.accountStatus);
+  loadingOnboardingLink = computed(() => this.stripeService.stripeState().loading.onboardingLink);
   errorMessage = computed<string>(() => this.stripeService.stripeState().errorMessage);
 
   constructor() { 
@@ -43,8 +47,25 @@ export class SetupPage implements OnInit, OnDestroy {
     }
   }
 
+  async ionViewDidEnter() {
+    await this.stripeService.getStripeAccountStatus();
+
+    //this.accountActive.set(true);
+    //this.router.navigate(['/tabs/sell/publish']);
+
+    if (this.accountActive()) {
+      this.router.navigate(['/tabs/sell/publish']);
+      return;
+    }
+
+    if (!this.stripeOnboardingUrl()) {
+      await this.stripeService.getStripeOnboardingLink();
+      console.log({ url: this.stripeOnboardingUrl() });
+    }
+  }
+
   async ngOnInit() {
-    const nav = this.router.getCurrentNavigation();
+    /* const nav = this.router.getCurrentNavigation();
     const urls = {
       '/publish': '/tabs/sell/publish',
       '/checkout': '/checkout/payment',
@@ -52,34 +73,31 @@ export class SetupPage implements OnInit, OnDestroy {
     const fromUrlKey = nav?.extras?.state?.['fromUrl'];
     if (fromUrlKey === '/publish' || fromUrlKey === '/checkout') {
       this.redirectTo.set(urls[fromUrlKey as '/publish' | '/checkout']);
+    } */
+
+    /* await this.stripeService.getStripeAccountStatus();
+
+    this.accountActive.set(true);
+
+    if (this.accountActive()) {
+      this.router.navigate(['/tabs/sell/publish']);
+      return;
     }
 
     if (!this.stripeOnboardingUrl()) {
       await this.stripeService.getStripeOnboardingLink();
       console.log({ url: this.stripeOnboardingUrl() });
-    }
+    } */
 
     Browser.addListener('browserFinished', async () => {
       console.log("browserFinished");
-      const isActive =await this.getStripeAccountStatus();
+      await this.stripeService.getStripeAccountStatus();
+      const isActive = this.accountActive();
+      console.log({ isActive });
       if (isActive) {
-        this.router.navigate([this.redirectTo()]);
+        this.router.navigate(['/tabs/sell/publish']);
       }
     })
-  }
-
-  async getStripeAccountStatus() {
-    const functions = getFunctions();
-    const checkStatus = httpsCallable(functions, 'checkStripeAccountStatus');
-    const result: any = await checkStatus();
-
-    return result.data?.isActive;
-
-    //console.log({result});
-
-    if (result.data?.isActive) {
-      this.router.navigate(['/tabs/sell/setup']);
-    }
   }
 
   async ngOnDestroy() {
