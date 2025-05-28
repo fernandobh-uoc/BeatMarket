@@ -16,7 +16,7 @@ import { ViewDidEnter } from '@ionic/angular';
   standalone: true,
   imports: [IonSpinner, HistoryListComponent, IonText, ToolbarComponent, IonContent, IonHeader, CommonModule, FormsModule]
 })
-export class HistoryPage {
+export class HistoryPage implements ViewDidEnter {
   private historyService = inject(HistoryService);
 
   boughtItems = linkedSignal<Sale[]>(() => this.historyService.historyState().boughtItems);
@@ -28,4 +28,8 @@ export class HistoryPage {
   selectedTab = signal<'boughtItems' | 'soldItems'>('boughtItems')
 
   constructor() {}
+
+  ionViewDidEnter(): void {
+    this.historyService.reloadResources();
+  }
 }
