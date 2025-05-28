@@ -1,4 +1,4 @@
-import { Component, computed, effect, inject, OnInit, signal, viewChild } from '@angular/core';
+import { afterNextRender, Component, computed, effect, inject, Injector, OnInit, runInInjectionContext, signal, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonThumbnail, IonText, IonInput, IonIcon, IonAvatar, IonFooter } from '@ionic/angular/standalone';
@@ -11,6 +11,7 @@ import { addIcons } from 'ionicons';
 import { navigateOutline } from 'ionicons/icons';
 import { Conversation, MessageModel } from 'src/app/core/domain/models/conversation.model';
 import { FormatTimestampPipe } from '../conversation/utils/pipes/format-timestamp.pipe';
+import { ViewDidEnter } from '@ionic/angular';
 
 @Component({
   selector: 'app-conversation',
@@ -19,13 +20,13 @@ import { FormatTimestampPipe } from '../conversation/utils/pipes/format-timestam
   standalone: true,
   imports: [FormatTimestampPipe, IonFooter, IonAvatar, RouterLink, IonIcon, IonInput, IonText, ToolbarComponent, IonThumbnail, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
-export class ConversationPage implements OnInit {
+export class ConversationPage implements OnInit, ViewDidEnter {
   private route = inject(ActivatedRoute);
   private conversationService = inject(ConversationService);
   private authService = inject(AuthService);
 
   conversation = computed<Conversation | null>(() => this.conversationService.conversationState().conversation);
-  conversationMessages = computed<(MessageModel & { type: 'sent' | 'received' })[]>(() => { 
+  conversationMessages = computed<(MessageModel & { type: 'sent' | 'received' })[]>(() => {
     return this.conversation()?.messages
       .slice()
       .reverse()
@@ -33,7 +34,7 @@ export class ConversationPage implements OnInit {
         ...message,
         type: message.senderId === this.authService.authState().userId ? 'sent' : 'received'
       })) ?? []
-  }); 
+  });
   role = computed(() => this.conversationService.conversationState().role);
   loading = computed(() => this.conversationService.conversationState().loading);
   errorMessage = computed(() => this.conversationService.conversationState().errorMessage);
@@ -47,16 +48,20 @@ export class ConversationPage implements OnInit {
 
   scrollContainer = viewChild<IonContent>('scrollContainer');
 
-  constructor() { 
+  constructor() {
     addIcons({ navigateOutline });
-    effect(async () => {
-      this.conversationMessages();
-      setTimeout(() => this.scrollToBottom(), 10);
-    })
+    effect(() => {
+        this.conversationMessages();
+        setTimeout(() => this.scrollToBottom(), 50);
+    });
   }
 
   async ngOnInit() {
     this.conversationService.setConversationId(this.route.snapshot.paramMap.get('conversationId') ?? '');
+  }
+
+  ionViewDidEnter() {
+    this.conversationService.reloadConversationResource();
   }
 
   async sendMessage() {
@@ -66,7 +71,7 @@ export class ConversationPage implements OnInit {
   }
 
   async scrollToBottom() {
-    await this.scrollContainer()?.scrollToBottom();
+    await this.scrollContainer()?.scrollToBottom(500);
   }
 
 }

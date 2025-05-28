@@ -4,6 +4,7 @@ import { Observable, of } from 'rxjs';
 import { Conversation, ConversationModel, ParticipantModel, RelatedPostModel } from 'src/app/core/domain/models/conversation.model';
 import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
+import { ViewDidEnter } from '@ionic/angular';
 
 type ConversationState = {
   conversation: ConversationModel | null;
@@ -47,6 +48,10 @@ export class ConversationService {
   }));
 
   constructor() {}
+
+  reloadConversationResource() {
+    this.conversation.reload();
+  }
 
   setConversationId(conversationId: string): void {
     this.conversationId.set(conversationId);
