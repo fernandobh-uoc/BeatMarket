@@ -24,16 +24,12 @@ export const routes: Routes = [
   {
     path: 'checkout',
     loadChildren: () => import('./features/checkout/checkout.routes').then(m => m.CheckoutRoutes),
-    canMatch: [authGuard, stripeGuard],
+    canMatch: [authGuard],
     data: { authStateMustBe: true }
   },
   {
     path: 'search',
     loadComponent: () => import('./features/search/search.page').then(m => m.SearchPage)
-  },
-  {
-    path: 'stripe-setup',
-    loadComponent: () => import('src/app/features/stripe-setup/setup.page').then(m => m.SetupPage)
   },
   {
     path: 'conversation/:conversationId',
