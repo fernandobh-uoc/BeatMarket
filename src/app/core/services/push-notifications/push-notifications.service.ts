@@ -92,7 +92,7 @@ export class PushNotificationsService {
           case 'message':
             const conversationId = action.notification.data?.conversationId;
             if (conversationId) {
-              this.router.navigate([`/tabs/conversation/${conversationId}`]);
+              this.router.navigate([`/conversation/${conversationId}`]);
             }
             break;
           default: 
