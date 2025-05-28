@@ -2,7 +2,14 @@
 
   <div class="input-wrapper">
     <ion-label class="custom" color="light">Email o nombre de usuario</ion-label>
-    <ion-input formControlName="emailOrUsername" type="email" class="custom" (ionFocus)="controlFocus.emit('emailOrUsername')"></ion-input>
+    <ion-input 
+      formControlName="emailOrUsername" 
+      type="email" 
+      class="custom" 
+      (ionFocus)="controlFocus.emit('emailOrUsername')"
+    >
+      <ion-icon slot="start" name="person-circle-outline"></ion-icon>
+    </ion-input>
     @if (submitAttempted() && loginForm.get('emailOrUsername')?.errors?.['required']) {
       <ion-text class="error-text" color="danger">Introduce un email o un nombre de usuario</ion-text>
     }
@@ -15,7 +22,14 @@
         <ion-label class="custom link forgot-password" [routerLink]="['/auth/password-reset']">¿Olvidaste la contraseña?</ion-label> 
       } 
     </div>
-    <ion-input formControlName="password" type="password" [clearOnEdit]="false" class="custom" (ionFocus)="controlFocus.emit('password')">
+    <ion-input 
+      formControlName="password" 
+      type="password" 
+      class="custom" 
+      [clearOnEdit]="false" 
+      (ionFocus)="controlFocus.emit('password')"
+    >
+      <ion-icon slot="start" name="key-outline"></ion-icon>
       <ion-input-password-toggle slot="end" color="light"></ion-input-password-toggle>
     </ion-input>
     @if (submitAttempted()) {

@@ -1,15 +1,15 @@
 import { Component, inject, input, OnInit, output, signal, WritableSignal } from '@angular/core';
 import { ReactiveFormsModule, FormsModule, FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { RouterLink } from '@angular/router';
-import { IonInput, IonInputPasswordToggle, IonButton, IonLabel, IonText, IonSpinner } from '@ionic/angular/standalone';
+import { IonInput, IonInputPasswordToggle, IonButton, IonLabel, IonText, IonSpinner, IonIcon } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
-import { closeCircleOutline } from 'ionicons/icons';
+import { closeCircleOutline, keyOutline, personCircleOutline } from 'ionicons/icons';
 
 @Component({
   selector: 'app-login-form',
   templateUrl: './login-form.component.html',
   styleUrls: ['./login-form.component.scss'],
-  imports: [IonSpinner, RouterLink, IonText, IonLabel, IonInput, IonInputPasswordToggle, IonButton, FormsModule, ReactiveFormsModule]
+  imports: [IonIcon, IonSpinner, RouterLink, IonText, IonLabel, IonInput, IonInputPasswordToggle, IonButton, FormsModule, ReactiveFormsModule]
 })
 export class LoginFormComponent implements OnInit {
   fb: FormBuilder = inject(FormBuilder);
@@ -24,7 +24,11 @@ export class LoginFormComponent implements OnInit {
   controlFocus = output<string>();
 
   constructor() {
-    addIcons({ closeCircleOutline });
+    addIcons({ 
+      personCircleOutline,
+      keyOutline,
+      closeCircleOutline 
+    });
   }
 
   ngOnInit(): void {
