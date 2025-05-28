@@ -1,1 +1,0 @@
-import{f as p}from"./chunk-FIPIWZQS.js";var o,h=p(()=>{o=[{path:"",redirectTo:"publish",pathMatch:"full"},{path:"publish",loadComponent:()=>import("./chunk-X7ARLBQ7.js").then(t=>t.PublishPage)},{path:"splash",loadComponent:()=>import("./chunk-5TAMUTUH.js").then(t=>t.SplashPage)}]});h();export{o as SellRoutes};
