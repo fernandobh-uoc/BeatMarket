@@ -1,4 +1,4 @@
-import { inject } from "@angular/core";
+import { inject, signal } from "@angular/core";
 import { AbstractControl, AsyncValidatorFn, ValidationErrors } from "@angular/forms";
 import { HttpClient, HttpParams } from "@angular/common/http";
 import { environment } from "src/environments/environment.dev";
@@ -14,6 +14,8 @@ export class ZipcodeValidator {
   private lastCountry: string | null = null;
   private lastResult: ValidationErrors | null = null;
  
+  public cityResult = signal<string | null>(null);
+
   validate(): AsyncValidatorFn {
     return async (control: AbstractControl): Promise<ValidationErrors | null> => {
       const parent = control.parent;
@@ -41,28 +43,23 @@ export class ZipcodeValidator {
           .get('https://api.zipcodestack.com/v1/search', { params })
         );
 
-        console.log({ response });
-
         const results = response?.results ?? [];
 
         const valid = results && !Array.isArray(results) && results[zipCode]?.length > 0;
 
         if (!valid) {
+          this.cityResult.set(null);
           this.setCache(zipCode, country, { invalidZipCode: true });
           return { invalidZipCode: true };
         }
 
-        const cityControl = parent.get('city');
-        if (cityControl) {
-          const cityName = results[zipCode][0]?.city;
-          if (cityName) {
-            cityControl.setValue(cityName);
-          }
-        }
-
+        const cityName = results[zipCode][0]?.city ?? null;
+        this.cityResult.set(cityName);
         this.setCache(zipCode, country, null);
+        
         return null;
       } catch {
+        this.cityResult.set(null);
         this.setCache(zipCode, country, { zipValidationFailed: true });
         return { zipValidationFailed: true };
       }

@@ -1,4 +1,4 @@
-import { Component, signal, input, output, WritableSignal, inject, OnInit } from '@angular/core';
+import { Component, signal, input, output, WritableSignal, inject, OnInit, effect } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, FormArray } from '@angular/forms';
 import { IonInput, IonSelect, IonSelectOption, IonInputPasswordToggle, IonButton, IonLabel, IonAvatar, IonText, IonIcon, IonModal, IonCheckbox, IonTextarea, IonSpinner } from '@ionic/angular/standalone';
@@ -25,6 +25,7 @@ export class RegisterFormComponent implements OnInit {
   usernameValidator = new UsernameValidator();
   zipcodeValidator = new ZipcodeValidator();
   registerForm!: FormGroup;
+  formReady = signal<boolean>(false);
   //localErrorMessage = signal<string>('');
 
   step = input<number>(1);
@@ -77,14 +78,27 @@ export class RegisterFormComponent implements OnInit {
       mailOutline, 
       homeOutline, 
       locationOutline, 
-      personOutline });
+      personOutline 
+    });
+
+    effect(() => {
+      if (!this.formReady()) return;
+
+      const cityResult = this.zipcodeValidator.cityResult();
+      const cityControl = this.registerForm.get('personalData.city');
+
+      if (cityResult && cityControl) {
+        cityControl.setValue(cityResult);
+      }
+    });
   }
 
   ngOnInit(): void {
-    this.#initForm();
+    this.initForm();
+    this.formReady.set(true);
   }
 
-  #initForm() {
+  private initForm() {
     this.registerForm = this.fb.group({
       emailData: this.fb.group({
         email: this.fb.control('', {
@@ -153,7 +167,6 @@ export class RegisterFormComponent implements OnInit {
 
     const countryControl = this.registerForm.get('personalData.country');
     const zipcodeControl = this.registerForm.get('personalData.zipcode');
-    /* console.log({ value: countryControl?.value }); */
     countryControl?.setValue(newValue);
     zipcodeControl?.updateValueAndValidity();
   }
