@@ -18,26 +18,12 @@ export const stripeGuard: CanMatchFn = async (route: Route, segments: UrlSegment
     const functions = getFunctions();
     const checkStatus = httpsCallable(functions, 'checkStripeAccountStatus');
     const result: any = await checkStatus();
-
-    //console.log({result});
-
+    
     if (result.data?.isActive) {
       return true;
     } else {
-      const attemptedUrl = '/' + segments.map(s => s.path).join('/');
-
-      router.navigate(['/stripe-setup'], {
-        state: { fromUrl: attemptedUrl }
-      });
-      
+      router.navigate(['/tabs/sell/stripe-setup']);
       return false;
-      /* const getLink = httpsCallable(functions, 'generateStripeOnboardingLink');
-      const linkResult: any = await getLink();
-      
-      router.navigate(['/tabs/sell/setup'], {
-        state: { stripeOnboardingUrl: linkResult.data.url }
-      })
-      return false; */
     }
   } catch (err) {
     console.error('Stripe account check failed:', err);
