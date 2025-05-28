@@ -46,12 +46,15 @@
       </div>
     
       <div class="buttons-container">
-        @if (!isOwnPost()) {
+        
           @if (postData()?.isActive) {
-            @if (itemIsAdded()) {
-              <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
-            } @else {
-              <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>
+            @if (!isOwnPost()) {
+              @if (itemIsAdded()) {
+                <ion-button class="custom" [routerLink]="['/cart']">Ir al carrito</ion-button>
+              } @else {
+                <ion-button class="custom" (click)="addToCart()">Añadir al carrito</ion-button>
+              }
+              <ion-button class="custom" fill="clear" [routerLink]="['/tabs/home']">Seguir comprando</ion-button>
             }
           } @else {
             <div class="finished-post-warning-wrapper">
@@ -60,8 +63,7 @@
               </ion-text>
             </div>
           }
-          <ion-button class="custom" fill="clear" [routerLink]="['/tabs/home']">Seguir comprando</ion-button>
-        } 
+        
       </div>
     
       <div class="condition-container">
