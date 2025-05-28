@@ -30,14 +30,16 @@ import { Auth } from './app/core/services/auth/auth.interface';
 import { FirebaseCloudStorageAdapter } from './app/core/services/cloud-storage/adapters/firebase-cloudStorage.adapter';
 import { CloudStorage } from './app/core/services/cloud-storage/cloudStorage.interface';
 import { PushNotificationsService } from './app/core/services/push-notifications/push-notifications.service';
+import { provideHttpClient } from '@angular/common/http';
 
 bootstrapApplication(AppComponent, {
   providers: [
     { provide: RouteReuseStrategy, useClass: IonicRouteStrategy },
     provideIonicAngular({
-      mode: 'ios'
+      mode: 'md'
     }),
     provideRouter(routes, withPreloading(PreloadAllModules)),
+    provideHttpClient(),
     provideFirebaseApp(() => {
       const app = initializeApp(environment.firebase);
       if (Capacitor.isNativePlatform()) {
