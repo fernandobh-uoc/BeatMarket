@@ -58,10 +58,10 @@ export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
       return;
     }
 
-    if (!this.stripeOnboardingUrl()) {
-      await this.stripeService.getStripeOnboardingLink();
-      console.log({ url: this.stripeOnboardingUrl() });
-    }
+    console.log("getting onboarding link");
+    // Renew the onboarding link every time for now
+    await this.stripeService.getStripeOnboardingLink();
+    console.log({ url: this.stripeOnboardingUrl() });
   }
 
   async ngOnInit() {
@@ -83,11 +83,12 @@ export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
       this.router.navigate(['/tabs/sell/publish']);
       return;
     }
+      */
 
     if (!this.stripeOnboardingUrl()) {
       await this.stripeService.getStripeOnboardingLink();
       console.log({ url: this.stripeOnboardingUrl() });
-    } */
+    }
 
     Browser.addListener('browserFinished', async () => {
       console.log("browserFinished");

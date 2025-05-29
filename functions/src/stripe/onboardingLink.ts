@@ -24,8 +24,8 @@ export const generateStripeOnboardingLink = onCall(
     const accountLink = await stripe.accountLinks.create({
       account: stripeAccountId,
       type: 'account_onboarding',
-      refresh_url: 'https://beatmarket.app/tabs/home',
-      return_url: 'https://beatmarket.app/tabs/home'
+      refresh_url: 'https://beatmarket-uoc.web.app/stripe-onboarding-canceled',
+      return_url: 'https://beatmarket-uoc.web.app/stripe-onboarding-complete'
     });
 
     return { url: accountLink.url };
