@@ -14,7 +14,50 @@ export const onPostStatusChange = onDocumentUpdated('posts/{postId}', async (eve
   const after = event.data?.after?.data();
   const postId = event.params.postId;
 
-  if (before?.isActive && !(after?.isActive)) { 
+  if (before?.isActive && !after?.isActive) {
+    // Remove from user carts using a transaction per cart
+    const cartsSnap = await db.collection('carts').get();
+    const cartRemovals = cartsSnap.docs.map(async (cartDoc) => {
+      await db.runTransaction(async (tx) => {
+        const snap = await tx.get(cartDoc.ref);
+        const data = snap.data();
+        if (!data?.items?.length) return;
+
+        const filteredItems = data.items.filter((item: any) => item.postId !== postId);
+        if (filteredItems.length !== data.items.length) {
+          tx.update(cartDoc.ref, { items: filteredItems });
+        }
+      });
+    });
+
+    // Remove from seller's active posts
+    const userId = after?.user?.userId;
+    if (userId) {
+      const activePostRef = db
+        .collection('users')
+        .doc(userId)
+        .collection('activePosts')
+        .doc(postId);
+      await activePostRef.delete().catch(console.error); // delete outside batch
+    }
+
+    // Update conversations where post title matches
+    const conversationsSnap = await db.collection('conversations')
+      .where('relatedPost.title', '==', after?.title)
+      .get();
+
+    const convoUpdates = conversationsSnap.docs.map(doc =>
+      doc.ref.update({
+        'relatedPost.isActive': false,
+        lastUpdatedAt: admin.firestore.FieldValue.serverTimestamp(),
+      })
+    );
+
+    // Wait for all updates to complete
+    await Promise.all([...cartRemovals, ...convoUpdates]);
+  }
+
+  /* if (before?.isActive && !(after?.isActive)) { 
     const batch = db.batch();
 
     // Remove from carts
@@ -54,5 +97,5 @@ export const onPostStatusChange = onDocumentUpdated('posts/{postId}', async (eve
     });
 
     await batch.commit();
-  }
+  } */
 });
