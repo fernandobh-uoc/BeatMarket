@@ -12,20 +12,47 @@
 
 <ion-content [fullscreen]="true">
   <div class="container">
-    @if (step() === 1) {
-      <div class="payment">
+    <div class="payment" [class.hidden]="step() !== 1">
+      <div class="payment-content">
         <ion-text class="payment-label">Datos de pago</ion-text>
-        <app-checkout-form
+        
+        <div class="inputs-container">
+          <div class="card-number-wrapper">
+            <ion-label>Nombre del titular de la tarjeta (opcional)</ion-label>
+            <ion-input class="custom" type="text" [(ngModel)]="cardName"></ion-input>
+          </div>
+          
+          <div class="stripe-card-wrapper">
+            <ion-label>Datos de la tarjeta</ion-label>
+            <app-stripe-card
+              #stripeCardComponent
+              (cardReadyEvent)="onStripeCardReady()"
+              (cardCompleteEvent)="onStripeCardComplete()"
+              (cardErrorEvent)="onStripeCardError($event)"
+            ></app-stripe-card>
+          </div>
+        </div>
+        <!-- <app-checkout-form
           [userFullName]="userFullName()"
           [submitAttempted]="submitAttempted()"
           (nextStep)="nextStep()"
           (controlFocus)="onControlFocus($event)"
           (formSubmit)="handleFormSubmit()"
-        ></app-checkout-form>
+        ></app-checkout-form> -->
       </div>
-    }
-    @if (step() === 2) {
-      <div class="summary">
+
+      <div class="buttons-container">
+        <ion-button class="custom" [disabled]="!stripeCardReady() || !stripeCardComplete() || stripeCardError()" (click)="goToSummary()">
+          Continuar
+          @if (!stripeCardReady()) {
+            <ion-spinner name="crescent"></ion-spinner>
+          }
+        </ion-button> 
+      </div>
+    </div>
+
+    <div class="summary" [class.hidden]="step() !== 2">
+      <div class="summary-content-wrapper">
         <ion-text class="summary-label">Resumen</ion-text>
         <div class="summary-content">
           <div class="summary-items-rows">
@@ -48,13 +75,14 @@
       </div>
       
       <div class="buttons-container">
-        <ion-button class="custom" [disabled]="loading()" (click)="handleCheckout()">
-          Pagar
-          @if (loading()) {
+        <ion-button class="custom" [disabled]="checkoutLoading()" (click)="handleCheckout()">
+          Confirmar pago
+          @if (checkoutLoading()) {
             <ion-spinner name="crescent"></ion-spinner>
           }
         </ion-button> 
       </div>
-    }
+    </div>
+    
   </div>
 </ion-content>

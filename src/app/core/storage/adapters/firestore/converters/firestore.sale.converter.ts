@@ -1,5 +1,5 @@
 import { DocumentData, FirestoreDataConverter, QueryDocumentSnapshot, serverTimestamp, SnapshotOptions, Timestamp, WithFieldValue } from "firebase/firestore";
-import { Sale, SaleModel, SalePaymentData, SalePostData, SaleUserData } from "src/app/core/domain/models/sale.model";
+import { Sale, SaleModel, SalePostData, SaleUserData } from "src/app/core/domain/models/sale.model";
 import { isFieldValue, isFirestoreTimestamp, isValidDateInput } from "./utils/converter.utils";
 import { FirestoreSaleRepository } from "src/app/core/storage/adapters/firestore/repositories/firestore.sale.repository";
 import { ArticleCondition } from "src/app/core/domain/models/article.model";
@@ -22,13 +22,7 @@ export interface FirestoreSaleModel {
     username: string;
     profilePictureURL: string;
   };
-  paymentData: {
-    cardName: string;
-    cardNumber: string;
-    expirationMonth: string;
-    expirationYear: string;
-    cvc: string;
-  },
+  stripePaymentId: string;
   createdAt: Timestamp,
   updatedAt: Timestamp;
 }
@@ -53,7 +47,7 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         userId: (<SaleUserData>sale.sellerData).userId,
         username: (<SaleUserData>sale.sellerData).username,
       }, */
-      paymentData: sale.paymentData,
+      stripePaymentId: sale.stripePaymentId,
       createdAt: isValidDateInput(sale.createdAt)
         ? Timestamp.fromDate(new Date(sale.createdAt))
         : isFieldValue(sale.createdAt)
@@ -89,13 +83,7 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
         username: data.sellerData.username,
         profilePictureURL: data.sellerData.profilePictureURL,
       },
-      paymentData: {
-        cardName: data.paymentData.cardName,
-        cardNumber: data.paymentData.cardNumber,
-        expirationMonth: data.paymentData.expirationMonth,
-        expirationYear: data.paymentData.expirationYear,
-        cvc: data.paymentData.cvc,
-      },
+      stripePaymentId: data.stripePaymentId,
       createdAt: data.createdAt.toDate(),
       updatedAt: data.updatedAt.toDate()
     });

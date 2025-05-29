@@ -9,6 +9,10 @@ import { catchError, combineLatest, forkJoin, map, Observable, of } from 'rxjs';
 import { User } from 'src/app/core/domain/models/user.model';
 import { Sale } from 'src/app/core/domain/models/sale.model';
 import { rxResource } from '@angular/core/rxjs-interop';
+import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
+import { StripeService } from '../../stripe-setup/data-access/stripe.service';
+import { StripeCardElement } from '@stripe/stripe-js';
+import { Stripe } from '@stripe/stripe-js';
 
 type CheckoutState = {
   cartItems: CartItemModel[],
@@ -23,7 +27,9 @@ type CheckoutState = {
 export class CheckoutService {
   private authService = inject(AuthService);
   private cartService = inject(CartService);
+  private stripeService = inject(StripeService);
   private postRepository = inject(PostRepository);
+  private userRepository = inject(UserRepository);
   private saleRepository = inject(SaleRepository);
 
   private cartItems = computed<CartItemModel[]>(() => this.cartService.cartState()?.cartItems ?? []);
@@ -50,8 +56,8 @@ export class CheckoutService {
 
   //private loading = computed<boolean>(() => this.cartItemsPosts.isLoading());
   //private loading = linkedSignal<boolean>(() => this.cartItemsPosts.isLoading());
-  private loading = signal<boolean>(false);
-  private errorMessage = signal<string>('');
+  private loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading.paymentIntent);
+  private errorMessage = linkedSignal<string>(() => this.stripeService.stripeState().errorMessage);
 
   checkoutState = computed<CheckoutState>(() => ({
     cartItems: this.cartItems(),
@@ -61,77 +67,140 @@ export class CheckoutService {
   }));
 
 
-  constructor() {}
+  constructor() {
+    effect(() => {
+      console.log(this.errorMessage());
+    })
+  }
 
-  async checkout(saleFormData: { items: CartItemModel[], paymentData: any }): Promise<Sale[] | null> {
+  async checkout({ stripeInstance, stripeCardElement, cardName }: { stripeInstance: Stripe, stripeCardElement: StripeCardElement, cardName: string }): Promise<Sale[] | null> { 
     this.loading.set(true);
 
-    // TODO: Stripe checkout
-    await new Promise(resolve => setTimeout(resolve, 1000));
-
+    const completedSales: Sale[] = [];
     try {
+      const groupedItemsBySeller = await this.getGroupedItemsBySeller({
+        cartItems: this.cartItems(),
+        cartItemsPosts: this.cartItemsPosts.value() ?? []
+      });
+      
+      for (const [sellerStripeId, items] of groupedItemsBySeller.entries()) {
+        const totalAmount = items.reduce((acc, item) => acc + item.price + item.shipping, 0) * 100;
 
-      const currentUser: User | null = this.authService.currentUser();
-      const saleDate = new Date();
-      const completedSales: Sale[] = [];
+        console.log({ totalAmount });
 
-      for (let item of this.cartItems()) {
-        let sale: Sale | null;
-        //const postData = this.cartItemsPosts()?.find(post => post._id === item.postId);
-        const postData = this.cartItemsPosts.value()?.find(post => post._id === item.postId);
-        if (!postData) return null;
-        
-        // Just in case someone bought the product before
-        if (!postData.isActive) throw new Error('Post is inactive'); 
+        const paymentIntent = await this.stripeService.createPaymentIntent({ totalAmount, currency: 'eur', sellerStripeId });
+        const clientSecret = paymentIntent?.clientSecret;
 
-        const saleData = {
-          postData: {
-            postId: item.postId,
-            title: item.title,
-            articleCondition: postData.article.condition,
-            price: item.price,
-            mainImageURL: postData.mainImageURL
-          },
-          buyerData: {
-            userId: currentUser?._id ?? '',
-            username: currentUser?.username ?? '',
-            profilePictureURL: currentUser?.profilePictureURL ?? '',
-          },
-          sellerData: {
-            userId: postData.user.userId,
-            username: postData.user.username,
-            profilePictureURL: postData.user.profilePictureURL,
-          },
-          paymentData: {
-            cardName: saleFormData.paymentData.cardName,
-            cardNumber: saleFormData.paymentData.cardNumber,
-            expirationMonth: saleFormData.paymentData.expirationMonth,
-            expirationYear: saleFormData.paymentData.expirationYear,
-            cvc: saleFormData.paymentData.cvc,
-          },
-          saleDate: saleDate
+        console.log({ clientSecret });
+
+        if (!clientSecret) continue; 
+
+        const paymentIntentResult = await this.stripeService.confirmPayment({
+          stripeInstance,
+          clientSecret,
+          stripeCard: stripeCardElement,
+          cardName,
+        });
+
+        console.log({ paymentIntentResult });
+
+        if (!paymentIntentResult 
+          || paymentIntentResult?.error 
+          || paymentIntentResult.paymentIntent.status !== 'succeeded'
+        ) {
+          continue;
         }
 
-        if (sale = await this.saleRepository.saveSale(saleData)) {
+        for (const item of items) {
+          const itemPost = this.cartItemsPosts.value()?.find(post => post._id === item.postId);
+          if (!itemPost) continue;
+          const completedSale = await this.saveSale({
+            item: item,
+            itemPost: itemPost,
+            paymentIntentId: paymentIntentResult.paymentIntent.id,
+            currentUser: this.authService.currentUser()!
+          })
 
-          // Mark post as inactive (handled in firebase trigger)
-          /* this.postRepository.updatePost({
-            _id: postData._id,
-            isActive: false,
-            finishedAt: saleDate
-          }) */
-
-          // Empty user's cart (handled in firebase trigger)
-          // this.cartService.clearCart();
-          completedSales.push(sale);
+          if (completedSale) {
+            completedSales.push(completedSale);
+          }
         }
       }
 
       this.loading.set(false);
+      //return null;
+      console.log({ completedSales });
       return completedSales;
     } catch (error) {
       console.error(error);
       return null;
     }
+  }
+
+  private async getGroupedItemsBySeller({ cartItems, cartItemsPosts }: { cartItems: CartItemModel[], cartItemsPosts: PostModel[] }): Promise<Map<string, CartItemModel[]>> {
+    const groupedItemsBySeller = new Map<string, CartItemModel[]>();
+
+    try {
+      for (const item of cartItems) {
+        const post = cartItemsPosts?.find(p => p._id === item.postId);
+        if (!post) continue;
+  
+        const sellerUser = await this.userRepository.getUserById(post.user.userId);
+        const sellerStripeId = sellerUser?.stripeAccountId;
+        if (!sellerStripeId) continue;
+  
+        if (!groupedItemsBySeller.has(sellerStripeId)) {
+          groupedItemsBySeller.set(sellerStripeId, []);
+        }
+  
+        groupedItemsBySeller.get(sellerStripeId)?.push(item);
+      }
+      return groupedItemsBySeller;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  private async saveSale({ item, itemPost, paymentIntentId, currentUser }: { item: CartItemModel, itemPost: PostModel, paymentIntentId: string, currentUser: User }): Promise<Sale | null> {
+    let sale: Sale | null;
+    
+    // Just in case someone bought the product before
+    if (!itemPost.isActive) throw new Error('Post is inactive'); 
+
+    const saleData = {
+      postData: {
+        postId: item.postId,
+        title: item.title,
+        articleCondition: itemPost.article.condition,
+        price: item.price,
+        mainImageURL: itemPost.mainImageURL
+      },
+      buyerData: {
+        userId: currentUser?._id ?? '',
+        username: currentUser?.username ?? '',
+        profilePictureURL: currentUser?.profilePictureURL ?? '',
+      },
+      sellerData: {
+        userId: itemPost.user.userId,
+        username: itemPost.user.username,
+        profilePictureURL: itemPost.user.profilePictureURL,
+      },
+      stripePaymentId: paymentIntentId,
+      saleDate: new Date()
+    }
+
+    if (sale = await this.saleRepository.saveSale(saleData)) {
+      // Mark post as inactive (handled in firebase trigger)
+      // this.postRepository.updatePost({
+      //   _id: postData._id,
+      //   isActive: false,
+      //   finishedAt: saleDate
+      // })
+
+      // Empty user's cart (handled in firebase trigger)
+      // this.cartService.clearCart();
+      return sale;
+    }
+    return null;
   }
 }

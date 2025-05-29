@@ -1,0 +1,4 @@
+<div #cardElement id="cardElement" class="stripe-card-element"></div>
+@if (cardErrorMessage()) {
+  <ion-text class="error-text" color="danger">{{ cardErrorMessage() }}</ion-text>
+}

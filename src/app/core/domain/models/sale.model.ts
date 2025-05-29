@@ -18,20 +18,21 @@ export interface SaleUserData {
   profilePictureURL: UserModel["profilePictureURL"];
 }
 
-export interface SalePaymentData {
+/* export interface SalePaymentData {
   cardName: string;
   cardNumber: string;
   expirationMonth: string;
   expirationYear: string;
   cvc: string;
-}
+} */
 
 export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
   _id: string;
   postData: SalePostData;
   buyerData: SaleUserData;
   sellerData: SaleUserData;
-  paymentData: SalePaymentData;
+  stripePaymentId: string;
+  //paymentData: SalePaymentData;
 }
 
 export class Sale implements SaleModel {
@@ -45,7 +46,8 @@ export class Sale implements SaleModel {
   };
   public buyerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
   public sellerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
-  public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
+  //public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
+  public stripePaymentId: string = '';
 
   private constructor(sale: Partial<SaleModel> = {}) {
     Object.assign(this, { ...sale });

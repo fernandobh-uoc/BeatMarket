@@ -1,0 +1,21 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.stripe-card-element {
+  background-color: var(--ion-color-dark-tint);
+  padding: 1rem; 
+  /* border: 1px solid var(--ion-color-light);  */
+  border-radius: 8px;
+  min-height: 3rem;
+}
+
+.error-text {
+  font-size: var(--label-large-size, 0.875rem);
+  font-style: normal;
+  font-weight: var(--label-large-weight-prominent, 600);
+  line-height: var(--label-large-line-height, 1.25rem);
+  letter-spacing: var(--label-large-tracking, 0.00625rem);
+}

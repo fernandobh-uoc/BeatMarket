@@ -7,3 +7,4 @@ export function getStripe(secretKey: string) {
 export * from './createAccount';
 export * from './onboardingLink';
 export * from './checkAccountStatus';
+export * from './createPaymentIntent';
