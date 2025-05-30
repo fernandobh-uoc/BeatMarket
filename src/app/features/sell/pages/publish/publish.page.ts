@@ -31,20 +31,12 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
 
   ngOnInit() {}
 
-  /* ionViewWillEnter(): void {
-    this.submitAttempted.set(false);
-    this.disabledPublishButton.set(false);
-    this.publishFormComponent()?.resetForm();
-  } */
-
   ionViewDidEnter(): void {
-    //this.publishFormComponent()?.initForm();
     this.publishFormComponent()?.focusTitleInput();
   }
 
   ionViewDidLeave(): void {
     this.submitAttempted.set(false);
-    //this.disabledPublishButton.set(false);
     this.publishFormComponent()?.resetForm();
     this.sellService.removeImages();
     this.toolbar()?.searchActive.set(false);
@@ -82,8 +74,6 @@ export class PublishPage implements OnInit, ViewDidEnter, ViewDidLeave {
     if (this.uploadedImagesURLs().length === 0) {
       return;
     }
-
-    //this.disabledPublishButton.set(true);
 
     await this.sellService.publishPost({
       ...publishForm?.value.commonData,
