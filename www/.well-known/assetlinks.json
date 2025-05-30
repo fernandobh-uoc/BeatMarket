@@ -1,0 +1,14 @@
+[
+  {
+    "relation": [
+      "delegate_permission/common.handle_all_urls"
+    ],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "edu.uoc.beatmarket",
+      "sha256_cert_fingerprints": [
+        "B5:26:7F:02:C4:C0:42:CB:32:A9:E7:54:74:83:70:E6:86:C8:7B:ED:17:D8:2F:38:13:24:14:EF:14:FF:70:67"
+      ]
+    }
+  }
+]

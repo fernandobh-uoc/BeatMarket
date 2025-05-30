@@ -1,0 +1,1 @@
+import{a,b,c,d,e,f}from"./chunk-JT567OVO.js";import"./chunk-NY55XGVK.js";import"./chunk-UHVVQU73.js";import"./chunk-FIPIWZQS.js";f();export{e as MENU_BACK_BUTTON_PRIORITY,d as OVERLAY_BACK_BUTTON_PRIORITY,b as blockHardwareBackButton,a as shouldUseCloseWatcher,c as startHardwareBackButton};
