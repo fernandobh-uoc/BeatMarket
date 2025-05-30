@@ -10,12 +10,14 @@ import { AuthService } from '../auth/auth.service';
 import { UserRepository } from '../../domain/repositories/user.repository';
 import { Router } from '@angular/router';
 import { LocalStorageService } from '../../storage/local-storage.service';
+import { ConversationService } from 'src/app/features/conversations/conversation/data-access/conversation.service';
 
 @Injectable({
   providedIn: 'root'
 })
 export class PushNotificationsService {
   private authService = inject(AuthService);
+  private conversationService = inject(ConversationService);
   private userRepository = inject(UserRepository);
   private cache = inject(LocalStorageService);
   private router = inject(Router);
@@ -92,6 +94,8 @@ export class PushNotificationsService {
           case 'message':
             const conversationId = action.notification.data?.conversationId;
             if (conversationId) {
+              this.conversationService.setConversationId(conversationId);
+              this.conversationService.reloadConversationResource();
               this.router.navigate([`/conversation/${conversationId}`]);
             }
             break;
