@@ -1,7 +1,6 @@
 import { Component, computed, input, OnInit } from '@angular/core';
 import { PostModel } from 'src/app/core/domain/models/post.model';
 import { IonCard, IonCardHeader, IonCardTitle, IonCardSubtitle, IonCardContent } from "@ionic/angular/standalone";
-import { TruncateTextLinesPipe } from 'src/app/shared/utils/pipes/truncate-text-lines.pipe';
 import { FormatCurrencyPipe } from "../../../../shared/utils/pipes/format-currency.pipe";
 import { RouterLink } from '@angular/router';
 
@@ -9,7 +8,7 @@ import { RouterLink } from '@angular/router';
   selector: 'app-post-cards-row',
   templateUrl: './post-cards-row.component.html',
   styleUrls: ['./post-cards-row.component.scss'],
-  imports: [RouterLink, IonCardContent, IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard, TruncateTextLinesPipe, FormatCurrencyPipe]
+  imports: [RouterLink, IonCardContent, IonCardSubtitle, IonCardTitle, IonCardHeader, IonCard, FormatCurrencyPipe]
 })
 export class PostCardsRowComponent implements OnInit {
   posts = input<Partial<PostModel>[]>([]);

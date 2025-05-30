@@ -7,7 +7,7 @@
       <div class="card-content-wrapper">
         <ion-card-header>
           <ion-card-title class="card-title">{{ post.article?.category }}</ion-card-title>
-          <ion-card-subtitle class="card-subtitle">{{ post.title ?? '' | truncateTextLines: 2 }}</ion-card-subtitle>
+          <ion-card-subtitle class="card-subtitle">{{ post.title ?? '' }}</ion-card-subtitle> 
         </ion-card-header>
         <ion-card-content class="card-price">
           {{ post.price ?? 0 | formatCurrency }}
