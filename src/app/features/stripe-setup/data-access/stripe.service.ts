@@ -49,10 +49,8 @@ export class StripeService {
   constructor() {}
 
   async getStripeAccountStatus(): Promise<void> {
-    console.log("setting loading accouint status true")
     this.loadingAccountStatus.set(true);
     try {
-      console.log("calling getStripeAccountStatus");
       const functions = getFunctions();
       const checkStatus = httpsCallable(functions, 'checkStripeAccountStatus');
       const result: any = await checkStatus();
@@ -75,7 +73,6 @@ export class StripeService {
       const linkResult: any = await getLink();
       this.errorMessage.set('');
       this.onboardingLink.set(linkResult.data.url);
-      console.log({ linkResult: linkResult.data });
     } catch (err) {
       console.error('Stripe account check failed:', err);
       this.errorMessage.set('Error al generar el enlace de activación de Stripe');
@@ -95,7 +92,6 @@ export class StripeService {
         sellerStripeId
       });
 
-      console.log({ paymentIntentResult });
       return paymentIntentResult.data;
     } catch (err) {
       console.error('Stripe payment intent creation failed:', err);
@@ -119,8 +115,6 @@ export class StripeService {
           }
         }
       })
-  
-      console.log({ result });
   
       if (!result) {
         this.errorMessage.set('Error al confirmar el pago');

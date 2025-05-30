@@ -56,7 +56,6 @@ export class CartService {
 
   async addItemToCart(item: CartItemModel): Promise<void> {
     const cart = this.cartResource.value();
-    console.log({ cart });
     if (!cart) return;
 
     const exists = cart.items.find(i => i.postId === item.postId);

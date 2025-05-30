@@ -19,7 +19,6 @@ export class FirebaseCloudStorageAdapter implements CloudStorage {
   async delete(path: string): Promise<void> {
     try {
       const storageRef = ref(this.storage, path);
-      console.log({storageRef});
       await deleteObject(storageRef);
     } catch (cloudStorageError) {
       throw cloudStorageError;

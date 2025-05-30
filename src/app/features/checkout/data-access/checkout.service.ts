@@ -54,8 +54,6 @@ export class CheckoutService {
     }
   })
 
-  //private loading = computed<boolean>(() => this.cartItemsPosts.isLoading());
-  //private loading = linkedSignal<boolean>(() => this.cartItemsPosts.isLoading());
   private loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading.paymentIntent);
   private errorMessage = linkedSignal<string>(() => this.stripeService.stripeState().errorMessage);
 
@@ -67,11 +65,7 @@ export class CheckoutService {
   }));
 
 
-  constructor() {
-    effect(() => {
-      console.log(this.errorMessage());
-    })
-  }
+  constructor() {}
 
   async checkout({ stripeInstance, stripeCardElement, cardName }: { stripeInstance: Stripe, stripeCardElement: StripeCardElement, cardName: string }): Promise<Sale[] | null> { 
     this.loading.set(true);
@@ -86,12 +80,8 @@ export class CheckoutService {
       for (const [sellerStripeId, items] of groupedItemsBySeller.entries()) {
         const totalAmount = items.reduce((acc, item) => acc + item.price + item.shipping, 0) * 100;
 
-        console.log({ totalAmount });
-
         const paymentIntent = await this.stripeService.createPaymentIntent({ totalAmount, currency: 'eur', sellerStripeId });
         const clientSecret = paymentIntent?.clientSecret;
-
-        console.log({ clientSecret });
 
         if (!clientSecret) continue; 
 
@@ -101,8 +91,6 @@ export class CheckoutService {
           stripeCard: stripeCardElement,
           cardName,
         });
-
-        console.log({ paymentIntentResult });
 
         if (!paymentIntentResult 
           || paymentIntentResult?.error 
@@ -128,8 +116,6 @@ export class CheckoutService {
       }
 
       this.loading.set(false);
-      //return null;
-      console.log({ completedSales });
       return completedSales;
     } catch (error) {
       console.error(error);

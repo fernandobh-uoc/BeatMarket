@@ -22,12 +22,7 @@ export class ProfileService {
   usernameErrorMessage = signal<string>('');
   passwordUpdateSuccessMessage = signal<string>('');
 
-  constructor() {
-
-    effect(() => {
-      console.log(this.newProfilePictureDataURL());
-    })
-  }
+  constructor() {}
 
   async editUserData(key: string, data: string | number | object | null | undefined): Promise<boolean> {
     this.pending.set(true);
@@ -50,10 +45,6 @@ export class ProfileService {
           this.passwordUpdateSuccessMessage.set('');
         }, 2000);
         return true;
-      }
-
-      if (key === 'avatar') {
-        console.log("test");
       }
 
       if (key === 'line1' || key === "city" || key === 'country' || key === 'zipcode') {
@@ -185,7 +176,6 @@ export class ProfileService {
   private removeProfilePicture = async (uid: string): Promise<boolean> => {
     try {
       await this.cloudStorage.delete(`profilePictures/${uid}`);
-      console.log("removed");
     } catch (error) {
       console.error(`Error al eliminar avatar: ${error}`);
     }

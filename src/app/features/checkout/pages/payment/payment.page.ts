@@ -51,11 +51,7 @@ export class PaymentPage implements OnInit, ViewWillEnter {
   
   checkoutLoading = computed(() => this.checkoutService.checkoutState().loading);
 
-  constructor() {
-    effect(() => {
-      console.log(this.stripeCardElement());
-    })
-  }
+  constructor() {}
 
   ngOnInit() {}
 
@@ -74,7 +70,6 @@ export class PaymentPage implements OnInit, ViewWillEnter {
   onStripeCardReady() {
     this.stripeCardReady.set(true);
     this.stripeCardError.set(null);
-    console.log('Stripe card ready');
   }
 
   onStripeCardComplete() {
@@ -82,11 +77,9 @@ export class PaymentPage implements OnInit, ViewWillEnter {
     this.stripeCardElement.set(this.stripeCardComponent()?.card ?? null); 
     this.stripeCardComplete.set(true);
     this.stripeCardError.set(null);
-    console.log('Stripe card complete');
   }
   
   onStripeCardError(errorMessage: string | null) {
-    //this.stripeCardElement.set(null);
     this.stripeCardError.set(errorMessage);
     if (errorMessage) {
       console.error(errorMessage);
@@ -100,9 +93,6 @@ export class PaymentPage implements OnInit, ViewWillEnter {
   }
 
   async handleCheckout() {
-    console.log("handle checkout");
-    console.log(this.stripeCardElement());
-
     if (!this.stripeCardElement()) return;
     try {
       await this.checkoutService.checkout({

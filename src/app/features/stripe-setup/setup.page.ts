@@ -30,23 +30,16 @@ export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
   loadingOnboardingLink = computed(() => this.stripeService.stripeState().loading.onboardingLink);
   errorMessage = computed<string>(() => this.stripeService.stripeState().errorMessage);
 
-  constructor() { 
-    /* const nav = this.router.getCurrentNavigation();
-    const onboardingUrl = nav?.extras?.state?.['stripeOnboardingUrl'] ?? null;
-    this.stripeOnboardingUrl.set(onboardingUrl); */
-    effect(() => console.log("loading status changed to " + this.loadingAccountStatus()))
-  }
+  constructor() {}
 
   async ngOnInit() {
     Browser.addListener('browserFinished', async () => {
-      console.log("browserFinished");
       await this.stripeService.getStripeAccountStatus();
       const isActive = this.accountActive();
       if (isActive) {
         this.router.navigate(['/tabs/sell/publish']);
       } else {
         await this.stripeService.getStripeOnboardingLink();
-        console.log({ url: this.stripeOnboardingUrl() });
       }
     })
   }
@@ -56,27 +49,17 @@ export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
   }
   
   async ionViewDidEnter() {
-    console.log({ isActive1: this.accountActive() });
     if (!this.accountActive()) {
       await this.stripeService.getStripeAccountStatus();
-      console.log({ isActive2: this.accountActive() });
     }
-
-    //this.accountActive.set(true);
-    //this.router.navigate(['/tabs/sell/publish']);
     
     if (this.accountActive()) {
-      this.router.navigate(['/tabs/sell/publish'])/* .then(() => 
-        this.loadingAccountStatus.set(false)
-      ); */
+      this.router.navigate(['/tabs/sell/publish'])
       return;
     }
 
-    //this.loadingAccountStatus.set(false);
-    console.log("getting onboarding link");
-    // Renew the onboarding link every time for now
+    // Renew the onboarding link every time the view is entered
     await this.stripeService.getStripeOnboardingLink();
-    console.log({ url: this.stripeOnboardingUrl() });
   }
 
   goToStripe() {
