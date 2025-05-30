@@ -5,7 +5,7 @@ import { getStripe } from './index';
 
 const stripeSecret = defineSecret('STRIPE_SECRET_KEY');
 
-export const generateStripeOnboardingLink = onCall(
+export const createStripeOnboardingLink = onCall(
   {
     secrets: [stripeSecret]
   },

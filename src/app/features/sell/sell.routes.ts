@@ -8,13 +8,13 @@ export const SellRoutes: Routes = [
     pathMatch: 'full'
   },
   {
-    path: 'publish',
-    loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage),
-    /* canMatch: [stripeGuard] */
-  },
-  {
     path: 'stripe-setup',
     loadComponent: () => import('src/app/features/stripe-setup/setup.page').then(m => m.SetupPage)
+  },
+  {
+    path: 'publish',
+    loadComponent: () => import('src/app/features/sell/pages/publish/publish.page').then(m => m.PublishPage),
+    canMatch: [stripeGuard]
   },
   {
     path: 'splash',

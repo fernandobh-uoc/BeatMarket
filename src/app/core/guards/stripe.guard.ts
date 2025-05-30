@@ -5,13 +5,18 @@ import { getFunctions, httpsCallable } from 'firebase/functions';
 import { StripeService } from 'src/app/features/stripe-setup/data-access/stripe.service';
 
 export const stripeGuard: CanMatchFn = async (route: Route, segments: UrlSegment[]) => {
-  const authService = inject(AuthService);
   const router = inject(Router);
+  const authService = inject(AuthService);
+  const stripeService = inject(StripeService);
 
   const user = authService.currentUser();
   if (!user) {
     router.navigate(['/auth/landing']);
     return false;
+  }
+
+  if (stripeService.stripeState().accountActive) {
+    return true;
   }
 
   try {

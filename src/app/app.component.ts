@@ -17,7 +17,6 @@ export class AppComponent {
     this.platform.ready().then(() => {
       App.addListener('appUrlOpen', (data) => {
         const url = new URL(data.url);
-        
         if (url.pathname === '/stripe-onboarding-complete') {
           this.router.navigateByUrl('/tabs/sell/publish');
         } 

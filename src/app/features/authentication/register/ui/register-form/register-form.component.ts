@@ -68,6 +68,8 @@ export class RegisterFormComponent implements OnInit {
   constructor() {
     addIcons({
       atOutline,
+      atCircleOutline,
+      atCircle,
       personCircleOutline,
       keyOutline,
       checkmarkCircleOutline, 

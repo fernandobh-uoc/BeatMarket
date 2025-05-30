@@ -31,7 +31,7 @@ export const createStripeAccount = onDocumentCreated(
           line1: userData?.address.line1,
           line2: userData?.address.line2,
           postal_code: userData?.address.zipcode,
-          city: userData?.address.city
+          city: userData?.address.city,
         }
       },
       country: userData?.address.countryCode,

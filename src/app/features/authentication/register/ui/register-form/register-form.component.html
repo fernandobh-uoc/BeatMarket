@@ -11,12 +11,12 @@
             (ionFocus)="controlFocus.emit('email')"
             (ionBlur)="controlBlur.emit('email')"
           >
-            <ion-icon slot="start" name="at-outline"></ion-icon>
-            @if (submitAttempts()['email']()) {
+            <ion-icon slot="start" name="at-circle"></ion-icon>
+            <!-- @if (submitAttempts()['email']()) {
               @if (!registerForm.get('emailData.email')?.pending && registerForm.get('emailData.email')?.invalid) {
                 <ion-icon slot="end" color="danger" name="close-circle-outline"></ion-icon>
               }
-            }
+            } -->
           </ion-input>
           @if (submitAttempts()['email']() && registerForm.get('emailData.email')?.errors) {
             @if (registerForm.get('emailData.email')?.errors?.['required']) {

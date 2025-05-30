@@ -1,9 +1,9 @@
-import { Component, inject, signal, computed, linkedSignal, viewChild, effect } from '@angular/core';
+import { Component, inject, signal, computed, linkedSignal, viewChild, effect, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { Router } from '@angular/router';
+import { NavigationEnd, Router } from '@angular/router';
 import { IonContent, IonHeader } from '@ionic/angular/standalone';
-import { ViewDidLeave } from '@ionic/angular';
+import { ViewDidLeave, ViewDidEnter } from '@ionic/angular';
 
 import { LoginFormComponent } from './ui/login-form/login-form.component';
 import { addIcons } from 'ionicons';
@@ -17,7 +17,7 @@ import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.c
   styleUrls: ['./login.page.scss'],
   imports: [ToolbarComponent, IonHeader, LoginFormComponent, IonContent, CommonModule, FormsModule]
 })
-export class LoginPage implements ViewDidLeave {
+export class LoginPage {
   private router = inject(Router);
   private loginService = inject(LoginService);
 
@@ -47,9 +47,6 @@ export class LoginPage implements ViewDidLeave {
     this.router.navigate(['/auth/landing']);
   }
 
-  ionViewDidLeave(): void {
-    this.loginFormComponent()?.loginForm?.reset();
-  }
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {
     this.submitAttempted.set(true);

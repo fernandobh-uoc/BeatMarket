@@ -2,6 +2,11 @@
 	"appId": "edu.uoc.beatmarket",
 	"appName": "BeatMarket",
 	"webDir": "www",
+	"plugins": {
+		"EdgeToEdge": {
+			"backgroundColor": "#1a1a1a"
+		}
+	},
 	"packageClassList": [
 		"MediaPlugin",
 		"AppPlugin",

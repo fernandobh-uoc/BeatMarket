@@ -1,23 +1,20 @@
-import { Component, computed, ElementRef, inject, signal, effect, ViewChild, viewChild, WritableSignal, Signal, linkedSignal } from '@angular/core';
+import { Component, computed, ElementRef, inject, signal, viewChild, WritableSignal, Signal, linkedSignal } from '@angular/core';
 import { firstValueFrom } from 'rxjs/internal/firstValueFrom';
-import { filter, last } from 'rxjs/operators';
+import { filter } from 'rxjs/operators';
 
-import { IonBackButton, IonButton, IonProgressBar, IonButtons, IonContent, IonHeader, IonIcon, IonText, IonTitle, IonToolbar } from '@ionic/angular/standalone';
+import { IonContent, IonHeader } from '@ionic/angular/standalone';
 import { addIcons } from 'ionicons';
 import { arrowBackOutline } from 'ionicons/icons';
-import { Camera, CameraResultType, CameraSource } from '@capacitor/camera';
 
 import { RegisterFormComponent } from '../../ui/register-form/register-form.component';
-import { AbstractControl, FormArray, FormGroup } from '@angular/forms';
+import { FormGroup } from '@angular/forms';
 import { RegisterService } from '../../data-access/register.service';
-import { UserModel } from 'src/app/core/domain/models/user.model';
 import { Capacitor } from '@capacitor/core';
 import { Router } from '@angular/router';
 
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 
 import { ViewDidLeave } from '@ionic/angular';
-import { CountryNameToCodePipe } from 'src/app/shared/utils/pipes/country-name-to-code.pipe';
 
 @Component({
   selector: 'app-register',
@@ -89,6 +86,10 @@ export class RegisterPage implements ViewDidLeave {
 
   prevStep = () => {
     this.step.set(this.step() - 1);
+  }
+
+  resetForm = () => {
+    this.registerFormComponent()?.registerForm.reset();
   }
 
   fileInput: Signal<ElementRef<HTMLInputElement> | undefined> = viewChild('fileInput');
@@ -194,6 +195,8 @@ export class RegisterPage implements ViewDidLeave {
     });
 
     if (!this.errorMessage()) {
+      this.resetForm();
+      this.step.set(1);
       this.router.navigate(['/auth/welcome']);
     }
   }
