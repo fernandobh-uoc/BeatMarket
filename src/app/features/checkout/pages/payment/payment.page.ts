@@ -19,7 +19,7 @@ import { ViewWillEnter } from '@ionic/angular';
   templateUrl: './payment.page.html',
   styleUrls: ['./payment.page.scss'],
   standalone: true,
-  imports: [IonLabel, IonInput, StripeCardComponent, IonSpinner, ToolbarComponent, CheckoutFormComponent, IonButton, IonText, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
+  imports: [IonLabel, IonInput, StripeCardComponent, IonSpinner, ToolbarComponent, IonButton, IonText, IonContent, IonHeader, CommonModule, FormsModule, FormatCurrencyPipe]
 })
 export class PaymentPage implements OnInit, ViewWillEnter {
   router = inject(Router);
