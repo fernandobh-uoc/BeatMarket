@@ -18,35 +18,33 @@ export interface SaleUserData {
   profilePictureURL: UserModel["profilePictureURL"];
 }
 
-/* export interface SalePaymentData {
-  cardName: string;
-  cardNumber: string;
-  expirationMonth: string;
-  expirationYear: string;
-  cvc: string;
-} */
-
 export interface SaleModel extends JSONSerializable<SaleModel>, Timestamps {
   _id: string;
   postData: SalePostData;
   buyerData: SaleUserData;
   sellerData: SaleUserData;
   stripePaymentId: string;
-  //paymentData: SalePaymentData;
 }
 
 export class Sale implements SaleModel {
   public _id: string = '';
-  public postData: { postId: PostModel["_id"], title: PostModel["title"], articleCondition: PostModel["article"]["condition"], price: PostModel["price"], mainImageURL: PostModel["mainImageURL"] } = {
+  public postData: SalePostData = {
     postId: '',
     title: '',
     articleCondition: ArticleCondition.None,
     price: 0,
     mainImageURL: ''
   };
-  public buyerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
-  public sellerData: { userId: UserModel["_id"], username: UserModel["username"], profilePictureURL: UserModel["profilePictureURL"] } = { userId: '', username: '', profilePictureURL: '' };
-  //public paymentData: { cardName: string, cardNumber: string, expirationMonth: string, expirationYear: string, cvc: string } = { cardName: '', cardNumber: '', expirationMonth: '', expirationYear: '', cvc: '' };  
+  public buyerData: SaleUserData = { 
+    userId: '', 
+    username: '', 
+    profilePictureURL: '' 
+  };
+  public sellerData: SaleUserData = { 
+    userId: '', 
+    username: '', 
+    profilePictureURL: '' 
+  };
   public stripePaymentId: string = '';
 
   private constructor(sale: Partial<SaleModel> = {}) {
@@ -78,4 +76,14 @@ export class Sale implements SaleModel {
     }
     return null;
   }
+}
+
+export function isSaleModel(obj: any): obj is SaleModel {
+  return typeof obj === 'object' &&
+    obj !== null &&
+    typeof obj._id === 'string' &&
+    typeof obj.postData === 'object' &&
+    typeof obj.buyerData === 'object' &&
+    typeof obj.sellerData === 'object' &&
+    typeof obj.stripePaymentId === 'string';
 }

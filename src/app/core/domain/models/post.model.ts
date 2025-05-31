@@ -3,11 +3,6 @@ import { UserModel } from "./user.model";
 import { ArticleCategory, ArticleCondition, ArticleModel } from "./article.model";
 import { Timestamps } from "./appModel.type";
 
-/* export enum PostStatus {
-  Active = 'Activo',
-  Finished = 'Finalizado'
-} */
-
 export interface PostUserData {
   userId: UserModel["_id"];
   username: UserModel["username"];
@@ -22,8 +17,6 @@ export interface PostModel extends JSONSerializable<PostModel>, Timestamps {
   imagesURLs: string[];
   user: PostUserData;
   price: number;
-  //shipping: number;
-  //status: PostStatus;
   isActive: boolean,
   finishedAt: Date | null;
   article: ArticleModel;
@@ -41,8 +34,6 @@ export class Post implements PostModel {
     profilePictureURL: ''
   };
   public price: number = 0;
-  //public shipping: number = 0;
-  //public status: PostStatus = PostStatus.Active;
   public isActive: boolean = true;
   public finishedAt: Date | null = null;
   public article: ArticleModel = {
@@ -92,7 +83,6 @@ export function isPostModel(obj: any): obj is PostModel {
     Array.isArray(obj.imagesURLs) &&
     typeof obj.user === 'object' &&
     typeof obj.price === 'number' &&
-    //typeof obj.shipping === 'number' &&
     typeof obj.status === 'string' &&
     typeof obj.article === 'object' &&
     typeof obj.createdAt === 'object' &&

@@ -14,7 +14,7 @@ export interface CartItemModel {
 export interface CartModel extends JSONSerializable<CartModel>, Timestamps {
   _id: string;
   userId: UserModel["_id"] | string;
-  items: CartItemModel[]; // Map (should not be excessively large)
+  items: CartItemModel[];   // Map (should not be excessively large)
 }
 
 export class Cart implements CartModel {

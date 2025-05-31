@@ -2,12 +2,6 @@ import { JSONSerializable } from "../../interfaces/jsonserializable.interface";
 import { UserModel } from "./user.model";
 import { Timestamps } from "./appModel.type";
 
-/* export enum MessageStatus {
-  Pending = 'Pendiente',
-  Sent = 'Enviado',
-  Received = 'Recibido'
-} */
-
 export interface RelatedPostModel {
   postId: string;
   title: string;
@@ -28,13 +22,11 @@ export interface MessageModel {
   timestamp: Date;
   senderId: UserModel["_id"];
   recipientId: UserModel["_id"];
-  //status: MessageStatus;
 }
 
 export interface ConversationModel extends JSONSerializable<ConversationModel>, Timestamps {
   _id: string;
   relatedPost: RelatedPostModel;
-  //participants: [ParticipantModel, ParticipantModel],
   participants: {
     buyer: ParticipantModel,
     seller: ParticipantModel
