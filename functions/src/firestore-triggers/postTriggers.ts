@@ -38,7 +38,7 @@ export const onPostStatusChange = onDocumentUpdated('posts/{postId}', async (eve
         .doc(userId)
         .collection('activePosts')
         .doc(postId);
-      await activePostRef.delete().catch(console.error); // delete outside batch
+      await activePostRef.delete().catch(console.error);
     }
 
     // Update conversations where post title matches
