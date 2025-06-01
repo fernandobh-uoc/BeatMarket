@@ -116,7 +116,7 @@ export class PublishFormComponent {
 
   formatPrice() {
     const value = this.publishForm.get('commonData.price')?.value;
-    if (!isNaN(value)) {
+    if (value && !isNaN(value)) {
       const formatted = this.currencyPipe.transform(value, false); // pipe injected
       this.publishForm.get('commonData.price')?.setValue(formatted);
     }
