@@ -52,7 +52,7 @@ export class SetupPage implements OnInit, OnDestroy, ViewDidEnter {
     if (!this.accountActive()) {
       await this.stripeService.getStripeAccountStatus();
     }
-    
+
     if (this.accountActive()) {
       this.router.navigate(['/tabs/sell/publish'])
       return;

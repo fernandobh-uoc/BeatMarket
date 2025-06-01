@@ -32,7 +32,7 @@ export const stripeGuard: CanMatchFn = async (route: Route, segments: UrlSegment
     }
   } catch (err) {
     console.error('Stripe account check failed:', err);
-    router.navigate(['/error']);
+    router.navigate(['/tabs/sell/stripe-setup']);
     return false;
   }
 };

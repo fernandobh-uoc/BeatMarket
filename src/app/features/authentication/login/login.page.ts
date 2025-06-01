@@ -48,7 +48,6 @@ export class LoginPage {
   }
 
   onGoToRegister() {
-    console.log(this.loading());
     if (!this.loading()) {
       this.router.navigate(['/auth/register']);
     }
