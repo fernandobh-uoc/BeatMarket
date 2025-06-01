@@ -22,6 +22,8 @@ export class LoginFormComponent implements OnInit {
   authErrorMessage = input<string>('');
 
   controlFocus = output<string>();
+  formSubmit = output<{ emailOrUsername: string; password: string }>();
+  goToRegister = output<void>();
 
   constructor() {
     addIcons({ 
@@ -47,7 +49,5 @@ export class LoginFormComponent implements OnInit {
       }]
     })
   }
-
-  formSubmit = output<{ emailOrUsername: string; password: string }>();
 }
 

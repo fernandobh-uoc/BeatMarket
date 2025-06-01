@@ -47,6 +47,13 @@ export class LoginPage {
     this.router.navigate(['/auth/landing']);
   }
 
+  onGoToRegister() {
+    console.log(this.loading());
+    if (!this.loading()) {
+      this.router.navigate(['/auth/register']);
+    }
+  }
+
 
   async login({ emailOrUsername, password }: { emailOrUsername: string; password: string }): Promise<void> {
     this.submitAttempted.set(true);

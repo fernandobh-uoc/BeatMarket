@@ -51,7 +51,7 @@
       <ion-spinner name="crescent"></ion-spinner>
     }
   </ion-button>
-  <ion-text>¿No tienes cuenta? <a class="inline-link" [routerLink]="['/auth/register']">Regístrate</a></ion-text>
+  <ion-text>¿No tienes cuenta? <a class="inline-link" (click)="goToRegister.emit()">Regístrate</a></ion-text>
   
   <!-- <ion-button class="ion-text-uppercase" (click)="onGoogleLogin()">Google</ion-button>
   <ion-button (click)="onAppleLogin()">Apple</ion-button> -->  
