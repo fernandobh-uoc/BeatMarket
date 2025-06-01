@@ -54,7 +54,8 @@ export class CheckoutService {
     }
   })
 
-  private loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading.paymentIntent);
+  //private loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading.paymentIntent);
+  private loading = signal<boolean>(false);
   private errorMessage = linkedSignal<string>(() => this.stripeService.stripeState().errorMessage);
 
   checkoutState = computed<CheckoutState>(() => ({
@@ -115,11 +116,12 @@ export class CheckoutService {
         }
       }
 
-      this.loading.set(false);
       return completedSales;
     } catch (error) {
       console.error(error);
       return null;
+    } finally {
+      this.loading.set(false);
     }
   }
 
@@ -176,15 +178,6 @@ export class CheckoutService {
     }
 
     if (sale = await this.saleRepository.saveSale(saleData)) {
-      // Mark post as inactive (handled in firebase trigger)
-      // this.postRepository.updatePost({
-      //   _id: postData._id,
-      //   isActive: false,
-      //   finishedAt: saleDate
-      // })
-
-      // Empty user's cart (handled in firebase trigger)
-      // this.cartService.clearCart();
       return sale;
     }
     return null;
