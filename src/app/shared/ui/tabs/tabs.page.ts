@@ -24,6 +24,8 @@ export class TabsPage {
   }
 
   onTabChange(event: { tab: string }) {
-    
+    if (event.tab === 'sell') {
+      this.router.navigateByUrl('/tabs/sell/publish', { replaceUrl: true });
+    }
   }
 }
