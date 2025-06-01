@@ -10,9 +10,11 @@
         <ion-spinner name="crescent"></ion-spinner>
       </div>
     } @else {
-      <app-post-images-slider class="images-slider"
-        [imagesURLs]="postData()?.imagesURLs ?? []"
-      ></app-post-images-slider>
+      <div class="images-slider-wrapper"> 
+        <app-post-images-slider class="images-slider"
+          [imagesURLs]="postData()?.imagesURLs ?? []"
+        ></app-post-images-slider>
+      </div>
     
       <div class="title-user-container">
         <ion-text class="title">

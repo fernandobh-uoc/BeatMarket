@@ -20,6 +20,7 @@
     gap: 1rem;
 
     .cards-row-wrapper {
+      margin-inline-start: calc(var(--horizontal-margin, 24px) * -1);
       margin-inline-end: calc(var(--horizontal-margin, 24px) * -1);
     }
   }

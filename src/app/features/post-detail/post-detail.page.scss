@@ -11,8 +11,13 @@
     padding: 1rem 0;
   }
 
-  .images-slider {
-    margin: calc(var(--top-content-padding) * -1) 0 1rem 0;
+  .images-slider-wrapper {
+    margin-inline-start: calc(var(--horizontal-margin, 24px) * -1);
+    margin-inline-end: calc(var(--horizontal-margin, 24px) * -1);
+
+    .images-slider {
+      margin: calc(var(--top-content-padding) * -1) 0 1rem 0;
+    }
   }
 
   .title-user-container {
