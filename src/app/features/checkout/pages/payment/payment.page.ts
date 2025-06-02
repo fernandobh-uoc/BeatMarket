@@ -32,13 +32,7 @@ export class PaymentPage implements OnInit, ViewWillEnter {
   stripeCardComponent = viewChild<StripeCardComponent>('stripeCardComponent');
   stripeCardInstance = signal<Stripe | null>(null);
   stripeCardElement = signal<StripeCardElement | null>(null);
-  //@ViewChild('stripeCardComponent') stripeCardComponent!: StripeCardComponent;
 
-  /* checkoutFormComponent = viewChild(CheckoutFormComponent);
-  checkoutFormData = signal<Record<string, any>>({});
-  submitAttempted = signal<boolean>(false); */
-
-  //disabledCheckoutButton = signal<boolean>(false);
   stripeCardReady = signal<boolean>(false);
   stripeCardComplete = signal<boolean>(false);
   stripeCardError = signal<string | null>(null);
@@ -106,5 +100,4 @@ export class PaymentPage implements OnInit, ViewWillEnter {
       console.error(error);
     }
   }
-
 }

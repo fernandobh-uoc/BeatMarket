@@ -86,13 +86,13 @@ export class StripeService {
     try {
       const functions = getFunctions();
       const createPaymentIntent = httpsCallable<{ amount: number, currency: string, sellerStripeId: string }, { clientSecret: string | null }>(functions, 'createPaymentIntent');
-      const paymentIntentResult = await createPaymentIntent({
+      const paymentIntent = await createPaymentIntent({
         amount: totalAmount,
         currency,
         sellerStripeId
       });
 
-      return paymentIntentResult.data;
+      return paymentIntent.data;
     } catch (err) {
       console.error('Stripe payment intent creation failed:', err);
       this.errorMessage.set('Error al crear el pago con Stripe');
