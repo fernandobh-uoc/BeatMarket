@@ -13,7 +13,6 @@ export class ProfileService {
   private cloudStorage = inject(CloudStorage);
   private cache = inject(LocalStorageService);
 
-  //editNewData = signal<Record<string, string>>({});
   newProfilePictureDataURL = signal<string | undefined | null>(null);
   pending = signal<boolean>(false);
   editingInputStates = signal<Record<string, boolean>[]>([]);
@@ -98,21 +97,6 @@ export class ProfileService {
     }
   }
 
-  /* setAvatarDataNotNative = (event: any): void => {
-    const input = event.target as HTMLInputElement;
-    if (!input.files?.length) return;
-
-    const file = input.files[0];
-    const reader = new FileReader();
-
-    reader.onload = () => {
-      const dataUrl = reader.result as string;
-      this.newProfilePictureDataURL.set(dataUrl);
-    };
-
-    reader.readAsDataURL(file);
-  } */
-
   setAvatarDataNotNative = async (event: any): Promise<void> => {
     const input = event.target as HTMLInputElement;
     if (!input.files?.length) return;
@@ -167,10 +151,6 @@ export class ProfileService {
       console.error(`Error al guardar avatar: ${error}`);
       return false;
     }
-
-    /* return this.authService.updateProfile({
-      profilePictureURL: this.newProfilePictureDataURL()
-    }); */
   }
 
   private removeProfilePicture = async (uid: string): Promise<boolean> => {

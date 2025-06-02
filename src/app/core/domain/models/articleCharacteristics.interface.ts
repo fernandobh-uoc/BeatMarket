@@ -12,7 +12,6 @@ export enum InstrumentType {
 }
 
 export const InstrumentBrands = {
-  // 🎸 String
   String: {
     Fender: 'Fender',
     Gibson: 'Gibson',
@@ -21,7 +20,6 @@ export const InstrumentBrands = {
     Yamaha: 'Yamaha',
   },
 
-  // 🎹 Keyboard
   Keyboard: {
     Roland: 'Roland',
     Kawai: 'Kawai',
@@ -30,7 +28,6 @@ export const InstrumentBrands = {
     Casio: 'Casio',
   },
 
-  // 🎷 Wind (woodwinds)
   Wind: {
     BuffetCrampon: 'Buffet Crampon',
     Selmer: 'Selmer',
@@ -38,7 +35,6 @@ export const InstrumentBrands = {
     Jupiter: 'Jupiter',
   },
 
-  // 🎺 Brass
   Brass: {
     Bach: 'Bach',
     Conn: 'Conn',
@@ -46,7 +42,6 @@ export const InstrumentBrands = {
     Besson: 'Besson',
   },
 
-  // 🥁 Percussion
   Percussion: {
     Pearl: 'Pearl',
     Tama: 'Tama',
@@ -54,14 +49,12 @@ export const InstrumentBrands = {
     Ludwig: 'Ludwig',
   },
 
-  // 🎛️ Electronic
   Electronic: {
     Moog: 'Moog',
     Elektron: 'Elektron',
     NativeInstruments: 'Native Instruments',
   },
 
-  // Other (General)
   Other: 'Otra',
 
   // None or empty

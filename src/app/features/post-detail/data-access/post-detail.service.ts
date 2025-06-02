@@ -1,14 +1,10 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { Observable, of } from 'rxjs';
-import { Cart, CartItemModel } from 'src/app/core/domain/models/cart.model';
-import { Post, PostModel } from 'src/app/core/domain/models/post.model';
-import { CartRepository } from 'src/app/core/domain/repositories/cart.repository';
+import { CartItemModel } from 'src/app/core/domain/models/cart.model';
+import { PostModel } from 'src/app/core/domain/models/post.model';
 import { PostRepository } from 'src/app/core/domain/repositories/post.repository';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
-import { LocalStorageService } from 'src/app/core/storage/local-storage.service';
 import { CartService } from '../../cart/data-access/cart.service';
-import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
-import { Conversation } from 'src/app/core/domain/models/conversation.model';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Router } from '@angular/router';
 import { ConversationService } from '../../conversations/conversation/data-access/conversation.service';

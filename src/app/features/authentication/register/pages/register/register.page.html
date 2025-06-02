@@ -10,20 +10,6 @@
     [backActionType]="step() === 1 ? 'default' : 'emit'"
     (backPressed)="prevStep()"
   ></app-toolbar>
-  <!-- <ion-toolbar color="dark">
-    <ion-buttons slot="start">
-      @if (step() > 1) {
-        <ion-button (click)="prevStep()">
-          <ion-icon slot="icon-only" name="arrow-back-outline" color="light"></ion-icon>
-        </ion-button>
-      }
-      @if (step() <= 1) {
-        <ion-back-button defaultHref="/auth/welcome" icon="arrow-back-outline" color="light"></ion-back-button>
-      }
-    </ion-buttons>
-    <ion-title size="large">Registro</ion-title>
-    <ion-progress-bar [value]="progress()"></ion-progress-bar>
-  </ion-toolbar> -->
 </ion-header>
       
 <ion-content [fullscreen]="true">

@@ -1,8 +1,7 @@
-import { Component, computed, inject, linkedSignal, OnInit, signal } from '@angular/core';
+import { Component, computed, inject, signal } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonSpinner } from '@ionic/angular/standalone';
-import { ActivatedRoute } from '@angular/router';
+import { IonContent, IonHeader, IonText, IonSpinner } from '@ionic/angular/standalone';
 import { ConversationsListService } from './data-access/conversations-list.service';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { ConversationsListComponent } from './ui/conversations-list/conversations-list.component';

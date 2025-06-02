@@ -23,7 +23,6 @@ export class ToolbarComponent implements OnInit {
   mode: 'md' | 'ios';
   
   type = input<'arrow-back' | 'menu'>('arrow-back');
-  //public backActionCallback = input<(() => void) | null>(null);
 
   // Default uses the default Ion Back Button, emit just emits the event
   backActionType = input<'emit' | 'default'>('default');

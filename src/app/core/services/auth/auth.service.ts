@@ -150,9 +150,7 @@ export class AuthService {
     try {
       const result = await this.authMethod.login(credentials?.email, credentials?.password);
       
-      // Static user, return it
       if (isUserModel(result)) {
-        //return result as User;
         this.setUserId(result._id);
         return;
       }

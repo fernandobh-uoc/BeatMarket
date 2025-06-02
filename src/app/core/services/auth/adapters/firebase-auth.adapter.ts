@@ -1,4 +1,4 @@
-import { inject, Injectable, InjectionToken, Provider, signal } from '@angular/core';
+import { Injectable, inject, signal } from '@angular/core'; 
 import { 
   Auth as FirebaseAuth, 
   User as FirebaseUser,
@@ -13,11 +13,9 @@ import {
   updateProfile, 
   updatePassword,
   sendPasswordResetEmail,
-  ActionCodeSettings,
   UserCredential
 } from '@angular/fire/auth';
 import { Auth, AuthProvider, AuthReturnType, UserAuthData } from '../auth.interface';
-import { UserRepository } from 'src/app/core/domain/repositories/user.repository';
 
 @Injectable({ providedIn: 'root' })
 export class FirebaseAuthAdapter implements Auth {

@@ -41,9 +41,6 @@ export class LoginService {
         user = await this.userRepository.getUserByUsername(emailOrUsername);
         if (!user) {
           throw new Error('Credenciales incorrectas.');
-          /* this.errorMessage.set('Credenciales incorrectas.');
-          this.loading.set(false);
-          return; */
         }
         email = user.email;
       }

@@ -33,12 +33,6 @@ export class FirestoreConversationRepository implements ConversationRepository {
   getConversationById$(id: string): Observable<Conversation | null> | null {
     try {
       const conversation$: Observable<Conversation | null> = this.firestore.getById$(id, { collection: 'conversations', converter: this.conversationConverter });
-      
-      //if (!this.firestore.getCollection$) return conversation$;
-      /* const conversationMessages$: Observable<MessageModel[]> = this.firestore.getCollection$({
-        collection: `conversations/${id}/messages`,
-        converter: this.messageConverter
-      }); */
 
       const conversationMessages$: Observable<MessageModel[]> = this.firestore.query$({
         collection: `conversations/${id}/messages`,
@@ -58,7 +52,6 @@ export class FirestoreConversationRepository implements ConversationRepository {
           }
           return null;
         }),
-        //distinctUntilChanged((previous, current) => JSON.stringify(previous) === JSON.stringify(current))  // To avoid double updates 
         distinctUntilChanged((previous, current) => previous?.messages.length === current?.messages.length)  // To avoid double updates
       );
     } catch (firestoreError) {

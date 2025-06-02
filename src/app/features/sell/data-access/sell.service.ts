@@ -29,9 +29,6 @@ export class SellService {
   private userRepository = inject(UserRepository);
   private cloudStorage = inject(CloudStorage);
 
-  //imagesDataURLs = signal<string[]>([]);
-  //latestPublishedPostId = signal<string>(''); // For retrieval from splash page
-
   private imagesDataURLs = signal<string[]>([]);
   private latestPublishedPostId = signal<string>(''); // For retrieval from splash page
   private loading = signal<boolean>(false);
@@ -51,10 +48,6 @@ export class SellService {
       quality: 80,
       limit: 10
     });
-
-    /* result.photos.forEach(photo => {
-      this.imagesDataURLs.set([...this.imagesDataURLs(), photo.webPath]);
-    }); */
 
     const dataUrls = await Promise.all(
       result.photos.map(async (photo) => {
@@ -140,15 +133,12 @@ export class SellService {
         mainImageURL: downloadURLs?.[0] ?? ''
       };
 
-      //await this.#userRepository.saveActivePost(currentUser._id, post._id, activePostInfo);
       await this.userRepository.saveActivePost({
         userId: currentUser._id,
         activePostData: activePostData
       });
 
       this.latestPublishedPostId.set(post._id);
-      //currentUser.activePosts.push(post as Partial<Post>);
-      //await this.#authService.updateUser(user);
 
       this.loading.set(false);
       this.errorMessage.set('');
@@ -169,9 +159,6 @@ export class SellService {
   }
 
   #uploadImagesToCloudStorage = async (postId: string, imagesDataURLs: string[] = this.imagesDataURLs()): Promise<string[] | null> => {
-    //const imageDataURLs = this.imagesDataURLs();
-    //if (!imageDataURLs) return;
-
     const promises = imagesDataURLs.map(async (imageDataURL, index) => new Promise(async (resolve, reject) => {
       const downloadURL = await this.cloudStorage.upload(`postImages/${postId}/image_${index}`, dataUrlToBlob(imageDataURL));
       if (downloadURL) {

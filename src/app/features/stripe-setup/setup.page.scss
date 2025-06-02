@@ -25,20 +25,6 @@
     }
   }
 
-  .background-logo {
-    width: 60dvw;
-    height: 60dvw;
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background-image: url('../../../assets/stripe-logo.png');
-    background-repeat: no-repeat;
-    background-size: contain;
-    background-position: center;
-    opacity: 0.2;
-  }
-
   .button-container {
     width: 100%;
 

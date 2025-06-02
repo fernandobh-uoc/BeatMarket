@@ -16,8 +16,6 @@ export interface FirestorePostModel {
     profilePictureURL: string;
   },
   price: number;
-  //shipping: number;
-  //status: string;
   isActive: boolean;
   finishedAt: Timestamp | null;
   article: {
@@ -154,84 +152,6 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
           description: c.description
         }
       }
-      
-      /* if (category === ArticleCategory.Instruments) {
-        characteristics = c as InstrumentCharacteristics;
-      } else if (category === ArticleCategory.Books) {
-        characteristics = c as BookCharacteristics;
-      } else if (category === ArticleCategory.Recordings) {
-        characteristics = c as RecordingCharacteristics;
-      } else if (category === ArticleCategory.Accessories) {
-        characteristics = c as AccessoryCharacteristics;
-      } else if (category === ArticleCategory.Professional) {
-        characteristics = c as ProfessionalCharacteristics;
-      } else if (category === ArticleCategory.Other) {
-        characteristics = c as OtherCharacteristics;
-      } */
-
-      /* if (isInstrumentCharacteristics(c)) {
-        characteristics = {
-          type: c.type,
-          brand: c.brand,
-          model: c.model,
-          color: c.color,
-          fabricationYear: c.fabricationYear,
-          serialNumber: c.serialNumber,
-          instrumentLevel: c.instrumentLevel,
-        }
-      } else if (isBookCharacteristics(c)) {
-        characteristics = {
-          author: c.author,
-          theme: c.theme,
-          edition: c.edition,
-          publisher: c.publisher,
-          year: c.year,
-          pages: c.pages,
-          language: c.language,
-          isbn: c.isbn,
-          series: c.series,
-          volume: c.volume,
-        }
-      } else if (isRecordingCharacteristics(c)) {
-        characteristics = {
-          format: c.format,
-          recordingTitle: c.recordingTitle,
-          artist: c.artist,
-          genre: c.genre,
-          year: c.year,
-          duration: c.duration,
-          label: c.label,
-          catalogNumber: c.catalogNumber,
-          isrc: c.isrc,
-          barcode: c.barcode,
-          releaseDate: c.releaseDate,
-          releaseCountry: c.releaseCountry,
-          releaseFormat: c.releaseFormat,
-          trackCount: c.trackCount,
-          trackNumber: c.trackNumber,
-        }
-      } else if (isAccessoryCharacteristics(c)) {
-        characteristics = {
-          name: c.name,
-          brand: c.brand,
-          associatedInstrument: c.associatedInstrument,
-        }
-      } else if (isProfessionalCharacteristics(c)) {
-        characteristics = {
-          name: c.name,
-          brand: c.brand,
-          model: c.model,
-          color: c.color,
-          fabricationYear: c.fabricationYear,
-          serialNumber: c.serialNumber,
-          accessories: c.accessories,
-          warranty: c.warranty,
-          warrantyDuration: c.warrantyDuration,
-          warrantyType: c.warrantyType,
-          warrantyDate: c.warrantyDate,
-          warrantyCountry: c.warrantyCountry,
-        }
-      } */
     }
 
     return {
@@ -240,14 +160,7 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
       mainImageURL: post.mainImageURL,
       imagesURLs: post.imagesURLs,
       user: post.user,
-      /* user: {
-        userId: (<PostUserData>post.user).userId,
-        username: (<PostUserData>post.user).username,
-        profilePictureURL: (<PostUserData>post.user).profilePictureURL,
-      }, */
       price: post.price,
-      //shipping: post.shipping,
-      //status: post.status,
       isActive: post.isActive,
       finishedAt: isValidDateInput(post.finishedAt) 
         ? Timestamp.fromDate(new Date(post.finishedAt)) 
@@ -283,10 +196,6 @@ export class FirestorePostConverter implements FirestoreDataConverter<PostModel,
       imagesURLs: data.imagesURLs,
       user: data.user,
       price: data.price,
-      //shipping: data.shipping ?? 0,
-      /* status: Object.values(PostStatus).includes(data.status as PostStatus) 
-        ? (data.status as PostStatus)
-        : PostStatus.Active, */
       isActive: data.isActive,
       finishedAt: isFirestoreTimestamp(data.finishedAt) 
         ? data.finishedAt.toDate() 

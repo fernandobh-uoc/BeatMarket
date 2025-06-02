@@ -1,20 +1,18 @@
-import { Component, computed, effect, inject, OnInit, Signal, signal, viewChild, WritableSignal } from '@angular/core';
+import { Component, computed, inject, OnInit, viewChild } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonItem, IonSelect, IonSelectOption, IonThumbnail, IonLabel, IonIcon, IonBadge, IonSpinner } from '@ionic/angular/standalone';
+import { IonContent, IonHeader, IonText, IonItem, IonSelect, IonSelectOption, IonThumbnail, IonLabel, IonIcon, IonBadge, IonSpinner } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GeneralFilter, LocalFilter, SearchService } from './data-access/search.service';
-import { Post } from 'src/app/core/domain/models/post.model';
 import { FormatCurrencyPipe } from "../../shared/utils/pipes/format-currency.pipe";
 import { addIcons } from 'ionicons';
-import { closeOutline, filter, gitBranchSharp, swapVertical } from 'ionicons/icons';
+import { closeOutline, filter, swapVertical } from 'ionicons/icons';
 import { ModalController } from '@ionic/angular/standalone';
 import { FiltersModalComponent } from './ui/filters-modal/filters-modal.component';
 import { map, Subject } from 'rxjs';
 import { TranslateFilterKeyPipe } from './utils/translate-filter-key.pipe';
 import { TranslateFilterValuePipe } from './utils/translate-filter-value.pipe';
-import { toSignal } from '@angular/core/rxjs-interop';
 
 @Component({
   selector: 'app-search',

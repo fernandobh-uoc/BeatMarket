@@ -3,15 +3,12 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { IonContent, IonHeader, IonTitle, IonToolbar, IonText, IonButton, IonSpinner, IonInput, IonLabel } from '@ionic/angular/standalone';
 import { ToolbarComponent } from 'src/app/shared/ui/components/toolbar/toolbar.component';
-import { CheckoutFormComponent } from '../../ui/checkout-form/checkout-form.component';
-import { AuthService } from 'src/app/core/services/auth/auth.service';
 import { CheckoutService } from '../../data-access/checkout.service';
 import { CartItemModel } from 'src/app/core/domain/models/cart.model';
 import { FormatCurrencyPipe } from "../../../../shared/utils/pipes/format-currency.pipe";
 import { Router } from '@angular/router';
 import { StripeCardComponent } from '../../ui/stripe-card/stripe-card.component';
 import { Stripe, StripeCardElement } from '@stripe/stripe-js';
-import { setThrowInvalidWriteToSignalError } from '@angular/core/primitives/signals';
 import { ViewWillEnter } from '@ionic/angular';
 
 @Component({

@@ -19,14 +19,12 @@ import { Role } from 'src/app/core/domain/models/user.model';
   imports: [IonSpinner, RouterLink, IonTextarea, IonCheckbox, IonButton, IonIcon, IonText, IonAvatar, IonInput, IonInputPasswordToggle, IonLabel, IonSelect, IonSelectOption, ReactiveFormsModule]
 })
 export class RegisterFormComponent implements OnInit {
-  //#userRepository = inject(UserRepository);
   fb: FormBuilder = inject(FormBuilder);
   emailValidator = new EmailValidator();
   usernameValidator = new UsernameValidator();
   zipcodeValidator = new ZipcodeValidator();
   registerForm!: FormGroup;
   formReady = signal<boolean>(false);
-  //localErrorMessage = signal<string>('');
 
   step = input<number>(1);
   nextStep = output<void>();

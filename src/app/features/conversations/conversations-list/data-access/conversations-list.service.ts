@@ -1,8 +1,7 @@
-import { computed, inject, Injectable, resource, signal } from '@angular/core';
+import { computed, inject, Injectable, signal } from '@angular/core';
 import { rxResource } from '@angular/core/rxjs-interop';
 import { Observable, of } from 'rxjs';
 import { ConversationModel } from 'src/app/core/domain/models/conversation.model';
-import { User } from 'src/app/core/domain/models/user.model';
 import { ConversationRepository } from 'src/app/core/domain/repositories/conversation.repository';
 import { AuthService } from 'src/app/core/services/auth/auth.service';
 

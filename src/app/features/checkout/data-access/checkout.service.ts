@@ -54,7 +54,6 @@ export class CheckoutService {
     }
   })
 
-  //private loading = linkedSignal<boolean>(() => this.stripeService.stripeState().loading.paymentIntent);
   private loading = signal<boolean>(false);
   private errorMessage = linkedSignal<string>(() => this.stripeService.stripeState().errorMessage);
 

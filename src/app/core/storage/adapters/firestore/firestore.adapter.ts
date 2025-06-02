@@ -197,21 +197,6 @@ export class FirestoreAdapter<T extends AppModel & { _id: string }> {
         collectionRef = params?.converter ? collectionRef.withConverter(params.converter) : collectionRef;
 
         return collectionData(collectionRef, { idField: '_id' }) as Observable<any[]>;
-        /* let q: Query = collectionRef;
-
-        // Apply filters ([{ field: 'active', operator: '==', value: true }])
-        if (params.filters && Array.isArray(params.filters)) {
-          params.filters.forEach((filter: { field: string | FieldPath; operator: any; value: any }) => {
-            q = query(q, where(filter.field, filter.operator, filter.value));
-          });
-        }
-
-        // Apply ordering ({ field: 'createdAt', direction: 'desc' })
-        if (params.orderBy) {
-          q = query(q, orderBy(params.orderBy.field, params.orderBy.direction || 'asc'));
-        }
-
-        return collectionData(q, { idField: '_id' }) as Observable<any[]>; */
       } catch (firestoreError: any) {
         throw this.getErrorMessage(firestoreError);
       }

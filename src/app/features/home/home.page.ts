@@ -34,10 +34,6 @@ export class HomePage implements ViewDidEnter, ViewDidLeave {
   constructor() {}
 
   ionViewDidEnter(): void {
-    /* 
-    this.latestPosts.set(this.route.snapshot.data['latestPosts']);
-    this.recommendedPosts.set(this.route.snapshot.data['recommendedPosts']); 
-    */
    this.homeService.reloadResources();
   }
 

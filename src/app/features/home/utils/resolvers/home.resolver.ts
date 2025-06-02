@@ -11,11 +11,9 @@ export const latestPostsResolver: ResolveFn<Promise<Post[]>> = async (route, sta
   const postRepository = inject(PostRepository);
   
   return [];
-  //return await homeService.getLatestPosts({ limit: 10, orderBy: { field: 'createdAt', direction: 'desc' } }) ?? [];
 };
 
 export const recommendedPostsResolver: ResolveFn<Promise<Post[]>> = async (route, state) => {
   const homeService = inject(HomeService);
   return [];
-  //return await homeService.getRecommendedPosts({ limit: 10 }) ?? [];
 };

@@ -10,7 +10,6 @@ export class UsernameValidator {
       return await this.#userRepository.getUserByUsername(control.value) ? 
         { usernameExists: true } 
         : null;
-      //return { usernameExists: await userRepository?.getUserByUsername(control.value.toLowerCase()) == null }; 
     };
   }
 }

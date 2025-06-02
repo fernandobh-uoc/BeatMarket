@@ -37,9 +37,6 @@ export class PushNotificationsService {
         PushNotifications.register();
       } else {
         console.warn(`Error in permissions request: ${result}`); 
-        /* if (await this.cache.get<string>('fcmToken')) {
-          await this.cache.remove('fcmToken');
-        } */
       }
     });
 

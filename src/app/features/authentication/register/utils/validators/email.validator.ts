@@ -7,14 +7,6 @@ export class EmailValidator {
 
   validate(): AsyncValidatorFn {
     return async (control: AbstractControl): Promise<ValidationErrors | null> => {
-      /* return new Promise<any>(resolve => {
-        setTimeout(() => {
-          //resolve({
-          //  emailExists: "it is taken"
-          //}); 
-          //resolve(null);
-        }, 1000);
-      }); */
       return await this.#userRepository.getUserByEmail(control.value.toLowerCase(), false) ? 
         { emailExists: true } 
         : null;

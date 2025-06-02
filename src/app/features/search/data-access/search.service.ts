@@ -63,8 +63,6 @@ export class SearchService {
       try {
         this.errorMessage.set('');
 
-        //await new Promise(resolve => setTimeout(resolve, 2000));   // Simulate a delay
-
         const constraints = {
           filters: this.buildConstraintFilters(generalFilters),
           limit,

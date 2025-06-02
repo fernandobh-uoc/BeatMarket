@@ -31,22 +31,8 @@ export class FirestoreSaleConverter implements FirestoreDataConverter<SaleModel,
   toFirestore(sale: WithFieldValue<SaleModel>): WithFieldValue<FirestoreSaleModel> {
     return {
       postData: sale.postData,
-      /* postData: {
-        postId: (<SalePostData>sale.postData).postId,
-        title: (<SalePostData>sale.postData).title,
-        articleCondition: (<SalePostData>sale.postData).articleCondition,
-        price: (<SalePostData>sale.postData).price,
-      } */
       buyerData: sale.buyerData,
-      /* buyerData: {
-        userId: (<SaleUserData>sale.buyerData).userId,
-        username: (<SaleUserData>sale.buyerData).username,
-      }, */
       sellerData: sale.sellerData,
-      /* sellerData: {
-        userId: (<SaleUserData>sale.sellerData).userId,
-        username: (<SaleUserData>sale.sellerData).username,
-      }, */
       stripePaymentId: sale.stripePaymentId,
       createdAt: isValidDateInput(sale.createdAt)
         ? Timestamp.fromDate(new Date(sale.createdAt))

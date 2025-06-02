@@ -31,7 +31,6 @@ export interface FirestoreMessageModel {
   timestamp: Timestamp;
   senderId: string;
   recipientId: string;
-  //status: string;
 }
 
 export class FirestoreConversationConverter implements FirestoreDataConverter<ConversationModel, FirestoreConversationModel> {

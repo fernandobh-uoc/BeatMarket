@@ -31,7 +31,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesByBuyerId(userId: string): Promise<Sale[] | null> {
     try {
-      //const sales: Sale[] | null = await this.firestore.getByField('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
       const sales: Sale[] | null = await this.firestore.query({
         collection: 'sales',
         converter: this.saleConverter,
@@ -49,9 +48,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   getSalesByBuyerId$(userId: string): Observable<Sale[] | null> | null {
     try {
-      /* return this.firestore.getByField$('buyerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
-        map(sales => sales && sales.length > 0 ? sales : null)
-      ); */
       const sales$: Observable<Sale[] | null> | null = this.firestore.query$({
         collection: 'sales',
         converter: this.saleConverter,
@@ -70,7 +66,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesByBuyerUsername(username: string): Promise<Sale[] | null> {
     try {
-      //const sales: Sale[] | null = await this.firestore.getByField('buyerData.username', username, { collection: 'sales', converter: this.saleConverter });
       const sales: Sale[] | null = await this.firestore.query({
         collection: 'sales',
         converter: this.saleConverter,
@@ -88,9 +83,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   getSalesByBuyerUsername$(username: string): Observable<Sale[] | null> | null {
     try {
-      /* return this.firestore.getByField$('buyerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
-        map(sales => sales && sales.length > 0 ? sales : null)
-      ); */
       const sales$: Observable<Sale[] | null> | null = this.firestore.query$({
         collection: 'sales',
         converter: this.saleConverter,
@@ -109,7 +101,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesBySellerId(userId: string): Promise<Sale[] | null> {
     try {
-      //const sales: Sale[] | null = await this.firestore.getByField('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter });
       const sales: Sale[] | null = await this.firestore.query({
         collection: 'sales',
         converter: this.saleConverter,
@@ -127,9 +118,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   getSalesBySellerId$(userId: string): Observable<Sale[] | null> | null {
     try {
-      /* return this.firestore.getByField$('sellerData.userId', userId, { collection: 'sales', converter: this.saleConverter }).pipe(
-        map(sales => sales && sales.length > 0 ? sales : null)
-      ); */
       const sales$: Observable<Sale[] | null> | null = this.firestore.query$({
         collection: 'sales',
         converter: this.saleConverter,
@@ -148,7 +136,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   async getSalesBySellerUsername(username: string): Promise<Sale[] | null> {
     try {
-      //const sales: Sale[] | null = await this.firestore.getByField('sellerData.username', username, { collection: 'sales', converter: this.saleConverter });
       const sales: Sale[] | null = await this.firestore.query({
         collection: 'sales',
         converter: this.saleConverter,
@@ -166,9 +153,6 @@ export class FirestoreSaleRepository implements SaleRepository {
 
   getSalesBySellerUsername$(username: string): Observable<Sale[] | null> | null {
     try {
-      /* return this.firestore.getByField$('sellerData.username', username, { collection: 'sales', converter: this.saleConverter }).pipe(
-        map(sales => sales && sales.length > 0 ? sales : null)
-      ); */
       const sales$: Observable<Sale[] | null> | null = this.firestore.query$({
         collection: 'sales',
         converter: this.saleConverter,

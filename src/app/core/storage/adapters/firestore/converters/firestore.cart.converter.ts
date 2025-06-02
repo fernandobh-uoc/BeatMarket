@@ -20,13 +20,6 @@ export class FirestoreCartConverter implements FirestoreDataConverter<CartModel,
     return {
       userId: cart.userId,
       items: cart.items,
-      /* items: (cart.items as CartItemModel[]).map(item => ({
-        postId: item.postId,
-        title: item.title,
-        price: item.price,
-        shipping: item.shipping,
-        mainImageURL: item.mainImageURL
-      })), */
       createdAt: isValidDateInput(cart.createdAt)
         ? Timestamp.fromDate(new Date(cart.createdAt))
         : isFieldValue(cart.createdAt)
